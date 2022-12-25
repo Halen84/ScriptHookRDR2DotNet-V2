@@ -83,7 +83,7 @@ namespace RDR2
 		/// <summary>
 		/// Gets the version of the game.
 		/// </summary>
-		public static int Version => (RDR2DN.NativeMemory.GetGameVersion() + 1);
+		public static GameVersion Version => (GameVersion)RDR2DN.NativeMemory.GetGameVersion();
 
 		/// <summary>
 		/// Get the games script globals as a collection
