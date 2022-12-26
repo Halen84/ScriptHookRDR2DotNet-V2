@@ -24,6 +24,7 @@
     <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <!-- Release compilation settings -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,6 +44,7 @@
     <Compile Include="examples\BasicSetupExample.cs" />
     <Compile Include="examples\ReviveExample.cs" />
     <Compile Include="examples\RagdollExample.cs" />
+    <Compile Include="examples\StructExample.cs" />
     <Compile Include="examples\VehicleBoostExample.cs" />
   </ItemGroup>
   <ItemGroup>
