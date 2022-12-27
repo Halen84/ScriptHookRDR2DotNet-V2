@@ -1,3 +1,6 @@
+#define CPP_SCRIPTHOOKRDR_V2
+#undef CPP_SCRIPTHOOKRDR_V2 // Comment this out if you are using keps C++ ScriptHookRDR V2
+
 using RDR2.Math;
 using RDR2.Native;
 using System;
@@ -143,13 +146,13 @@ namespace RDR2
 
 		#region Entities
 
-
 		public static Ped[] GetAllPeds()
 		{
 			int[] peds = new int[1024];
-			int entityCount = RDR2DN.NativeMemory.worldGetAllPeds(peds, 1024);
+			int count = RDR2DN.NativeMemory.worldGetAllPeds(peds, 1024);
+
 			List<Ped> Peds = new List<Ped>();
-			for (int i = 0; i < entityCount; i++)
+			for (int i = 0; i < count; i++)
 				Peds.Add(new Ped(peds[i]));
 
 			return Peds.ToArray();
@@ -158,10 +161,10 @@ namespace RDR2
 		public static Vehicle[] GetAllVehicles()
 		{
 			int[] vehs = new int[1024];
-			int entityCount = RDR2DN.NativeMemory.worldGetAllVehicles(vehs, 1024);
+			int count = RDR2DN.NativeMemory.worldGetAllVehicles(vehs, 1024);
 
 			List<Vehicle> Vehs = new List<Vehicle>();
-			for (int i = 0; i < entityCount; i++)
+			for (int i = 0; i < count; i++)
 				Vehs.Add(new Vehicle(vehs[i]));
 
 			return Vehs.ToArray();
@@ -179,7 +182,49 @@ namespace RDR2
 			return Prop.ToArray();
 		}
 
-		public static T GetClosest<T>(Vector3 position, params T[] spatials) where T : ISpatial
+#if CPP_SCRIPTHOOKRDR_V2
+
+		public static Blip[] GetAllBlips()
+		{
+			int[] blips = new int[1024];
+			int count = RDR2DN.NativeMemory.worldGetAllBlips(blips, 1024);
+
+			List<Blip> blipsArr = new List<Blip>();
+			for (int i = 0; i < count; i++)
+				blipsArr.Add(new Blip(blips[i]));
+
+			return blipsArr.ToArray();
+		}
+
+		public static Camera[] GetAllCams()
+		{
+			int[] cams = new int[1024];
+			int count = RDR2DN.NativeMemory.worldGetAllCams(cams, 1024);
+
+			List<Camera> cameras = new List<Camera>();
+			for (int i = 0; i < count; i++)
+				cameras.Add(new Camera(cams[i]));
+
+			return cameras.ToArray();
+		}
+
+		public static int[] GetAllVolumes()
+		{
+			int[] vols = new int[1024];
+			int count = RDR2DN.NativeMemory.worldGetAllVolumes(vols, 1024);
+
+			// There's no Volume class yet, so just return its handle for now
+			List<int> volumes = new List<int>();
+			for (int i = 0; i < count; i++)
+				volumes.Add(i);
+
+			return volumes.ToArray();
+		}
+
+#endif //CPP_SCRIPTHOOKRDR_V2
+
+		public static T GetClosest<T>(Vector3 position, params T[] spatials)
+			where T : ISpatial
 		{
 			ISpatial closest = null;
 			float closestDistance = 3e38f;
@@ -320,9 +365,9 @@ namespace RDR2
 			var handle = OBJECT.CREATE_PICKUP((uint)type, pos.X, pos.Y, pos.Z, 32770, 0, true, 0, 0, 0.0f, 0);
 			return new Pickup(handle);
 		}
-		#endregion
+#endregion
 
-		#region Cameras
+#region Cameras
 
 		public static void DestroyAllCameras()
 		{
@@ -350,9 +395,9 @@ namespace RDR2
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Others
+#region Others
 
 
 		public static void ShootBullet(Vector3 sourcePosition, Vector3 targetPosition, Ped owner, Model model, int damage)
@@ -409,9 +454,9 @@ namespace RDR2
 			PED.CLEAR_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group2, group1);
 		}
 
-		#endregion
+#endregion
 
-		#region Drawing
+#region Drawing
 
 
 		public static void DrawLight(Vector3 position, Color color, float range, float brightness)
@@ -449,9 +494,9 @@ namespace RDR2
 				 scale.Y, scale.Z, color.R, color.G, color.B, color.A, bobUpAndDown, faceCamera, 2, rotateY, "", "", drawOnEntity);
 			}
 		}
-		#endregion
+#endregion
 
-		#region Positioning
+#region Positioning
 
 		public static float GetDistance(Vector3 origin, Vector3 destination)
 		{
@@ -558,7 +603,7 @@ namespace RDR2
 		}
 
 
-		#endregion
+#endregion
 	}
 
 	public enum WeatherType : uint

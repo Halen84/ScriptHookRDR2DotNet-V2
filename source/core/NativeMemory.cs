@@ -3,6 +3,9 @@
 // License: https://github.com/crosire/ScriptHookRDR2dotnet#license
 //
 
+#define CPP_SCRIPTHOOKRDR_V2
+#undef CPP_SCRIPTHOOKRDR_V2 // Comment this out if you are using keps C++ ScriptHookRDR V2
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,21 +37,51 @@ namespace RDR2DN
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getGlobalPtr@@YAPEA_KH@Z")]
 		public static extern IntPtr GetGlobalPtr(int index);
 
-        [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getScriptHandleBaseAddress@@YAPEAEH@Z")]
-        static extern IntPtr _GetScriptHandleBaseAddress(int handle);
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getScriptHandleBaseAddress@@YAPEAEH@Z")]
+        static extern IntPtr GetScriptHandleBaseAddress(int handle);
 
         // Pools
         [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllObjects@@YAHPEAHH@Z")]
         public static extern int worldGetAllObjects(int[] arr, int arrSize);
 
-        [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPeds@@YAHPEAHH@Z")]
-        public static extern int worldGetAllPeds(int[] arr, int arrSize);
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPeds@@YAHPEAHH@Z")]
+		public static extern int worldGetAllPeds(int[] arr, int arrSize);
 
         [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPickups@@YAHPEAHH@Z")]
         public static extern int worldGetAllPickups(int[] arr, int arrSize);
 
         [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVehicles@@YAHPEAHH@Z")]
         public static extern int worldGetAllVehicles(int[] arr, int arrSize);
+
+#if CPP_SCRIPTHOOKRDR_V2
+		
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllBlips@@YAHPEAHH@Z")]
+		public static extern int worldGetAllBlips(int[] arr, int arrSize);
+
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllCams@@YAHPEAHH@Z")]
+		public static extern int worldGetAllCams(int[] arr, int arrSize);
+
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVolumes@@YAHPEAHH@Z")]
+		public static extern int worldGetAllVolumes(int[] arr, int arrSize);
+
+		/// <summary>
+		/// Switch text labels from the game with your own, this will allow you to provide your custom text in input boxes such as the onscreen keyboard
+		/// <param name="oldLabel">The old label to replace</param>
+		/// <param name="newLabel">Your new label</param>
+		/// </summary>
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?switchLabel@@YAXPEBD0@Z")]
+        public static extern int SwitchLabel([MarshalAs(UnmanagedType.LPStr)] string oldLabel, [MarshalAs(UnmanagedType.LPStr)] string newLabel);
+
+		/// <summary>
+		/// Returns a pointer to local variables in game scripts 
+		/// </summary>
+		/// <param name="scriptName">The script name</param>
+		/// <param name="staticIndex">The local variable index</param>
+		/// <returns>Pointer to the variable, or <see cref="IntPtr.Zero"/> if it does not exist.</returns>
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getStaticPtr@@YAPEA_KPEBDH@Z")]
+		public static extern IntPtr GetStaticPtr([MarshalAs(UnmanagedType.LPStr)] string scriptName, int staticIndex);
+
+#endif //CPP_SCRIPTHOOKRDR_V2
 
 		#endregion
 
@@ -115,10 +148,17 @@ namespace RDR2DN
 		{
 			/*byte* address;
 
-            address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
+			address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
             GetPlayerAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
-                new IntPtr(*(int*)(address + 3) + address + 7));*/
-        }
+                new IntPtr(*(int*)address));
+
+			address = FindPattern("\x44\x8B\xC9\x83\xF9\xFF", "xxxxxx");
+			GetEntityAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
+				new IntPtr(*(int*)address));
+
+			address = FindPattern("\x48\x83\xEC\x28\x45\x33\xC0\x44\x8B\xC9", "xxxxxxxxxx");
+			GameplayCameraAddress = (ulong*)(*(int*)address);*/
+		}
 
 		/// <summary>
 		/// Reads a single 8-bit value from the specified <paramref name="address"/>.
@@ -354,7 +394,6 @@ namespace RDR2DN
 
 		#endregion
 
-
 		#region -- Game Data --
 
 		delegate uint GetHashKeyDelegate(IntPtr stringPtr, uint initialHash);
@@ -370,10 +409,17 @@ namespace RDR2DN
 		delegate ulong GetLabelTextByHashFuncDelegate(ulong address, int labelHash);
 		//static GetLabelTextByHashFuncDelegate GetLabelTextByHashFunc;
 
-		
+
 
 		#endregion
 
+
+		// temp
+		/*static ulong* GameplayCameraAddress;
+		public static IntPtr GetGameplayCameraAddress()
+		{
+			return new IntPtr((long)*GameplayCameraAddress);
+		}*/
 
 		enum ModelInfoClassType
 		{
