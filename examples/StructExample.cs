@@ -27,33 +27,16 @@ namespace RDR2
 		}
 
 
-		[Serializable]
-		[StructLayout(LayoutKind.Explicit, Size = 0x40/*64*/)]
+		[StructLayout(LayoutKind.Explicit, Size = 0x38/*56*/), Serializable]
 		public struct ScriptedSpeechParams
 		{
-			[FieldOffset(0)]
-			public StructString speechName;
-
-			[FieldOffset(8)]
-			public StructString voiceName;
-
-			[FieldOffset(16)]
-			public int v3;
-
-			[FieldOffset(24)]
-			public uint speechParamHash;
-
-			[FieldOffset(32)]
-			public int entity;
-
-			[FieldOffset(40)]
-			public StructBool v6;
-
-			[FieldOffset(48)]
-			public int v7;
-
-			[FieldOffset(56)]
-			public int v8;
+			[FieldOffset(0)] public StructString speechName;
+			[FieldOffset(8)] public StructString voiceName;
+			[FieldOffset(16)] public int variation;
+			[FieldOffset(24)] public uint speechParamHash;
+			[FieldOffset(32)] public int listenerPed;
+			[FieldOffset(40)] public StructBool syncOverNetwork;
+			[FieldOffset(48)] public int v7; // Always 1 (Only 0 in one game script)
 		}
 
 		private void OnTick(object sender, EventArgs e)
@@ -67,29 +50,29 @@ namespace RDR2
 		private unsafe void PlaySpeechOnPed(Ped speaker, string speechName, string voiceName, uint speechParamHash)
 		{
 			ScriptedSpeechParams @params = new ScriptedSpeechParams();
-			IntPtr pSpeechName = MarshalManagedToNative(speechName);
-			IntPtr pVoiceName = MarshalManagedToNative(voiceName);
+
+			// Convert the strings to a unmanaged IntPtr
+			IntPtr pSpeechName = MarshalManagedStrToNative(speechName);
+			IntPtr pVoiceName = MarshalManagedStrToNative(voiceName);
 
 			@params.speechName = pSpeechName.ToInt64(); // Convert the pointers to int64 (StructString)
 			@params.voiceName = pVoiceName.ToInt64();
-			@params.v3 = 1;
+			@params.variation = 1;
 			@params.speechParamHash = speechParamHash;
-			@params.entity = 0;
-			@params.v6 = 1; // TRUE
+			@params.listenerPed = 0;
+			@params.syncOverNetwork = 1; // TRUE
 			@params.v7 = 1;
-			@params.v8 = 1;
 
 			// RAGE Script structs must be passed as type "ulong*".
 			// So cast it to a pointer and get its address.
 			AUDIO.PLAY_PED_AMBIENT_SPEECH_NATIVE(speaker.Handle, (ulong*)&@params);
 
-			// Is this necessary?
 			Marshal.FreeCoTaskMem(pSpeechName);
 			Marshal.FreeCoTaskMem(pVoiceName);
 		}
 
 		// Used for struct fields that are strings (StructString)
-		private IntPtr MarshalManagedToNative(string str)
+		private IntPtr MarshalManagedStrToNative(string str)
 		{
 			var bytes = Encoding.UTF8.GetBytes(str);
 			var ptr = Marshal.AllocCoTaskMem(bytes.Length + 1);
