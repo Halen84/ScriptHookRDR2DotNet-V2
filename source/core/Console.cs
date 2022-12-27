@@ -198,7 +198,7 @@ namespace RDR2DN
 		{
 			if (args.Length > 0)
 				msg = String.Format(msg, args);
-			AddLines("[<b>~COLOR_BLUE~INFO~s~</b>] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
+			AddLines("[~COLOR_BLUE~INFO~s~] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
 		}
 		/// <summary>
 		/// Writes an error message to the console.
@@ -209,7 +209,7 @@ namespace RDR2DN
 		{
 			if (args.Length > 0)
 				msg = String.Format(msg, args);
-			AddLines("[<b>~COLOR_RED~ERROR~s~</b>] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
+			AddLines("[~COLOR_RED~ERROR~s~] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
 		}
 		/// <summary>
 		/// Writes a warning message to the console.
@@ -220,7 +220,7 @@ namespace RDR2DN
 		{
 			if (args.Length > 0)
 				msg = String.Format(msg, args);
-			AddLines("[<b>~COLOR_YELLOW~WARNING~s~</b>] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
+			AddLines("[~COLOR_YELLOW~WARNING~s~] ", msg.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
 		}
 
 		/// <summary>
