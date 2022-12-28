@@ -688,7 +688,7 @@ namespace RDR2DN
 			float w = (float)(width) / BASE_WIDTH;
 			float h = (float)(height) / BASE_HEIGHT;
 
-			NativeFunc.InvokeInternal(0x405224591DF02025  /*DRAW_RECT*/,
+			NativeFunc.InvokeInternal(0x405224591DF02025  /*GRAPHICS::DRAW_RECT*/,
 				(x / BASE_WIDTH) + w * 0.5f,
 				(y / BASE_HEIGHT) + h * 0.5f,
 				w, h,
@@ -698,25 +698,25 @@ namespace RDR2DN
 		{
 			float fX = x / (float)1280;
 			float fY = y / (float)720;
-			NativeFunc.Invoke(0x4170B650590B3B00  /*SET_TEXT_SCALE*/, 0.35f, 0.35f);
-			NativeFunc.Invoke(0x50A41AD966910F03  /*SET_TEXT_COLOR*/, color.R, color.G, color.B, color.A);
-			var res = NativeFunc.Invoke(0xFA925AC00EB830B9, 10, "LITERAL_STRING", text);
-			NativeFunc.Invoke(0xD79334A4BB99BAD1, *res, fX, fY);
+			NativeFunc.Invoke(0xA1253A3C870B6843  /*UIDEBUG::_BG_SET_TEXT_SCALE*/, 0.35f, 0.35f);
+			NativeFunc.Invoke(0x16FA5CE47F184F1E  /*UIDEBUG::_BG_SET_TEXT_COLOR*/, color.R, color.G, color.B, color.A);
+			var res = NativeFunc.Invoke(0xFA925AC00EB830B9  /*MISC::VAR_STRING*/, 10, "LITERAL_STRING", text);
+			NativeFunc.Invoke(0x16794E044C9EFB58  /*UIDEBUG::_BG_DISPLAY_TEXT*/, *res, fX, fY);
 
 		}
 
 		static unsafe void DisableControlsThisFrame()
 		{
-			NativeFunc.InvokeInternal(0x5F4B6931816E599B  /*DISABLE_ALL_CONTROL_ACTIONS*/, 0);
+			NativeFunc.InvokeInternal(0x5F4B6931816E599B  /*PAD::DISABLE_ALL_CONTROL_ACTIONS*/, 0);
 
 			// LookLeftRight .. LookRightOnly
 			for (ulong i = 1; i <= 6; i++)
-				NativeFunc.InvokeInternal(0x351220255D64C155 /*ENABLE_CONTROL_ACTION*/, 0, i, 0);
+				NativeFunc.InvokeInternal(0x351220255D64C155  /*PAD::ENABLE_CONTROL_ACTION*/, 0, i, 0);
 		}
 
 		static unsafe float GetTextLength(string text)
 		{
-			NativeFunc.InvokeInternal(0x4170B650590B3B00 /*SET_TEXT_SCALE*/, 0.35f, 0.35f);
+			NativeFunc.InvokeInternal(0xA1253A3C870B6843  /*UIDEBUG::_BG_SET_TEXT_SCALE*/, 0.35f, 0.35f);
 			NativeFunc.PushLongString(text);
 			return (float)text.Length;
 		}

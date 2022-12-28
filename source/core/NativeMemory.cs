@@ -38,20 +38,20 @@ namespace RDR2DN
 		public static extern IntPtr GetGlobalPtr(int index);
 
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getScriptHandleBaseAddress@@YAPEAEH@Z")]
-        static extern IntPtr GetScriptHandleBaseAddress(int handle);
+		static extern IntPtr GetScriptHandleBaseAddress(int handle);
 
-        // Pools
-        [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllObjects@@YAHPEAHH@Z")]
-        public static extern int worldGetAllObjects(int[] arr, int arrSize);
+		// Pools
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllObjects@@YAHPEAHH@Z")]
+		public static extern int worldGetAllObjects(int[] arr, int arrSize);
 
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPeds@@YAHPEAHH@Z")]
 		public static extern int worldGetAllPeds(int[] arr, int arrSize);
 
-        [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPickups@@YAHPEAHH@Z")]
-        public static extern int worldGetAllPickups(int[] arr, int arrSize);
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPickups@@YAHPEAHH@Z")]
+		public static extern int worldGetAllPickups(int[] arr, int arrSize);
 
-        [DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVehicles@@YAHPEAHH@Z")]
-        public static extern int worldGetAllVehicles(int[] arr, int arrSize);
+		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVehicles@@YAHPEAHH@Z")]
+		public static extern int worldGetAllVehicles(int[] arr, int arrSize);
 
 #if CPP_SCRIPTHOOKRDR_V2
 		
@@ -70,7 +70,7 @@ namespace RDR2DN
 		/// <param name="newLabel">Your new label</param>
 		/// </summary>
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?switchLabel@@YAXPEBD0@Z")]
-        public static extern int SwitchLabel([MarshalAs(UnmanagedType.LPStr)] string oldLabel, [MarshalAs(UnmanagedType.LPStr)] string newLabel);
+		public static extern int SwitchLabel([MarshalAs(UnmanagedType.LPStr)] string oldLabel, [MarshalAs(UnmanagedType.LPStr)] string newLabel);
 
 		/// <summary>
 		/// Returns a pointer to local variables in game scripts 
@@ -149,8 +149,8 @@ namespace RDR2DN
 			/*byte* address;
 
 			address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
-            GetPlayerAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
-                new IntPtr(*(int*)address));
+			GetPlayerAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
+				new IntPtr(*(int*)address));
 
 			address = FindPattern("\x44\x8B\xC9\x83\xF9\xFF", "xxxxxx");
 			GetEntityAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
@@ -359,22 +359,22 @@ namespace RDR2DN
 		}
 		public static string PtrToStringUTF8(IntPtr nativeUtf8, int len)
 		{
-            while (Marshal.ReadByte(nativeUtf8, len) != 0) ++len;
-            byte[] buffer = new byte[len];
-            Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
-            return Encoding.UTF8.GetString(buffer);
-        }
+			while (Marshal.ReadByte(nativeUtf8, len) != 0) ++len;
+			byte[] buffer = new byte[len];
+			Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
+			return Encoding.UTF8.GetString(buffer);
+		}
 
 
-        public static IntPtr StringToCoTaskMemUTF8(string managedString)
-        {
-            int len = Encoding.UTF8.GetByteCount(managedString);
-            byte[] buffer = new byte[len + 1];
-            Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
-            IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
-            Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
-            return nativeUtf8;
-        }
+		public static IntPtr StringToCoTaskMemUTF8(string managedString)
+		{
+			int len = Encoding.UTF8.GetByteCount(managedString);
+			byte[] buffer = new byte[len + 1];
+			Encoding.UTF8.GetBytes(managedString, 0, managedString.Length, buffer, 0);
+			IntPtr nativeUtf8 = Marshal.AllocHGlobal(buffer.Length);
+			Marshal.Copy(buffer, 0, nativeUtf8, buffer.Length);
+			return nativeUtf8;
+		}
 
 
 		#region -- Pool Addresses --

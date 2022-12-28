@@ -17,13 +17,13 @@ namespace RDR2DN
 		internal SemaphoreSlim continueEvent = new SemaphoreSlim(0);
 		internal ConcurrentQueue<Tuple<bool, KeyEventArgs>> keyboardEvents = new ConcurrentQueue<Tuple<bool, KeyEventArgs>>();
 
-        private bool firstTime = true;
+		private bool firstTime = true;
 
 		/// <summary>
 		/// Gets or sets the interval in ms between each <see cref="Tick"/>.
 		/// Default interval is 0.
 		/// </summary>
-		public int Interval { get; set; } = 0;
+		public int Interval { get; set; }
 
 		/// <summary>
 		/// Gets whether executing of this script is paused or not.
@@ -125,8 +125,24 @@ namespace RDR2DN
 					Abort(); return;
 				}
 
-                // Yield execution to next tick
-                Wait(Interval);
+				// Yield execution to next tick
+				Wait(Interval);
+			}
+		}
+
+		// This is needed because RDR2.UI.TextElement wont work properly without this
+		private unsafe void TextPoolInit()
+		{
+			if (firstTime)
+			{
+				for (float i = 0.0f; i < 10.24; i += 0.01f)
+				{
+					NativeFunc.Invoke(0xA1253A3C870B6843, 0.1f, 0.1f); // UIDEBUG::_BG_SET_TEXT_SCALE
+					NativeFunc.Invoke(0x16FA5CE47F184F1E, 255, 255, 255, 255); // UIDEBUG::_BG_SET_TEXT_COLOR
+					var res = NativeFunc.Invoke(0xFA925AC00EB830B9, 10, "LITERAL_STRING", " "); // MISC::VAR_STRING
+					NativeFunc.Invoke(0x16794E044C9EFB58, *res, i, i); // UIDEBUG::_BG_DISPLAY_TEXT
+				}
+				firstTime = false;
 			}
 		}
 
@@ -138,8 +154,10 @@ namespace RDR2DN
 			thread = new Thread(new ThreadStart(MainLoop));
 			thread.Start();
 
-            Log.Message(Log.Level.Info, "Started script ", Name, ".");
-        }
+			TextPoolInit();
+
+			Log.Message(Log.Level.Info, "Started script ", Name, ".");
+		}
 		/// <summary>
 		/// Aborts execution of this script.
 		/// </summary>
