@@ -104,17 +104,6 @@ namespace RDR2.Native
 		public InputArgument(double value)	: this((float)value) { }
 		public InputArgument(string value)	: this((object)value) { }
 		public InputArgument(float value)	{ unsafe { data = *(uint*)&value; } }
-
-		// Script Types - ctor
-		public InputArgument(Model value)	: this((uint)value.Hash) { }
-		public InputArgument(Blip value)	: this((object)value) { }
-		public InputArgument(Camera value)	: this((object)value) { }
-		public InputArgument(Entity value)	: this((object)value) { }
-		public InputArgument(Ped value)		: this((object)value) { }
-		public InputArgument(Player value)	: this((object)value) { }
-		public InputArgument(Prop value)	: this((object)value) { }
-		public InputArgument(Vehicle value)	: this((object)value) { }
-		public InputArgument(Rope value)	: this((object)value) { }
 		public InputArgument(Vector3 value)	: this((object)value) { }
 
 		// Types - Operator
@@ -129,8 +118,9 @@ namespace RDR2.Native
 		public static implicit operator InputArgument(float value) { return new InputArgument(value); }
 		public static implicit operator InputArgument(string value) { return new InputArgument(value); }
 		public static implicit operator InputArgument(double value) { return new InputArgument((float)value); }
-		
-		// Pointers - Operator
+		public static implicit operator InputArgument(Vector3 value) { return new InputArgument(value); }
+
+		// Pointer Types - Operator
 		public static unsafe implicit operator InputArgument(bool* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(int* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(uint* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
@@ -138,24 +128,13 @@ namespace RDR2.Native
 		public static unsafe implicit operator InputArgument(float* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(Vector3* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(sbyte* value) { return new InputArgument(new string(value)); }
-
-		// Script Types - Operator
-		public static implicit operator InputArgument(Model value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Blip value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Camera value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Entity value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Ped value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Player value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Prop value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Vehicle value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Rope value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(Vector3 value) { return new InputArgument(value); }
+		
 
 		public override string ToString() { return data.ToString(); }
 	}
 
 
-	public static class Function
+	internal static class Function
 	{
 		public static T Call<T>(ulong hash, params InputArgument[] arguments)
 		{
@@ -240,7 +219,6 @@ namespace RDR2.Native
 			unsafe { RDR2DN.NativeFunc.Invoke(hash, args); }
 		}
 
-
 		internal static unsafe ulong ObjectToNative(object value)
 		{
 			if (value is null)
@@ -276,6 +254,7 @@ namespace RDR2.Native
 			}
 			if (value is string valueString)
 			{
+				//if (valueString == string.Empty) return 0; // null string
 				return (ulong)RDR2DN.ScriptDomain.CurrentDomain.PinString(valueString).ToInt64();
 			}
 
@@ -329,40 +308,6 @@ namespace RDR2.Native
 			if (type == typeof(string))
 			{
 				return RDR2DN.NativeMemory.PtrToStringUTF8(new IntPtr((byte*)*value));
-			}
-
-			// Scripting types
-			if (type == typeof(Blip))
-			{
-				return new Blip(*(int*)value);
-			}
-			if (type == typeof(Camera))
-			{
-				return new Camera(*(int*)value);
-			}
-			if (type == typeof(Entity))
-			{
-				return Entity.FromHandle(*(int*)value);
-			}
-			if (type == typeof(Ped))
-			{
-				return new Ped(*(int*)value);
-			}
-			if (type == typeof(Player))
-			{
-				return new Player(*(int*)value);
-			}
-			if (type == typeof(Prop))
-			{
-				return new Prop(*(int*)value);
-			}
-			if (type == typeof(Rope))
-			{
-				return new Rope(*(int*)value);
-			}
-			if (type == typeof(Vehicle))
-			{
-				return new Vehicle(*(int*)value);
 			}
 
 			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", type, "'"));
