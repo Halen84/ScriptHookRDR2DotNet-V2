@@ -12,7 +12,7 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets or set the position of this <see cref="Volume"/>.
+		/// Gets or sets the position of this <see cref="Volume"/>.
 		/// </summary>
 		public Vector3 Position
 		{
@@ -21,7 +21,7 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets or set the rotation of this <see cref="Volume"/>.
+		/// Gets or sets the rotation of this <see cref="Volume"/>.
 		/// </summary>
 		public Vector3 Rotation
 		{
@@ -30,7 +30,7 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets or set the scale of this <see cref="Volume"/>.
+		/// Gets or sets the scale of this <see cref="Volume"/>.
 		/// </summary>
 		public Vector3 Scale
 		{

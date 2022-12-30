@@ -213,10 +213,9 @@ namespace RDR2
 			int[] vols = new int[1024];
 			int count = RDR2DN.NativeMemory.worldGetAllVolumes(vols, 1024);
 
-			// There's no Volume class yet, so just return its handle for now
-			List<int> volumes = new List<int>();
+			List<Volume> volumes = new List<Volume>();
 			for (int i = 0; i < count; i++)
-				volumes.Add(i);
+				volumes.Add(new Volume(vols[i]));
 
 			return volumes.ToArray();
 		}
@@ -367,7 +366,7 @@ namespace RDR2
 		}
 #endregion
 
-#region Cameras
+		#region Cameras
 
 		public static void DestroyAllCameras()
 		{
@@ -395,9 +394,9 @@ namespace RDR2
 			}
 		}
 
-#endregion
+		#endregion
 
-#region Others
+		#region Others
 
 
 		public static void ShootBullet(Vector3 sourcePosition, Vector3 targetPosition, Ped owner, Model model, int damage)
@@ -454,9 +453,9 @@ namespace RDR2
 			PED.CLEAR_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group2, group1);
 		}
 
-#endregion
+		#endregion
 
-#region Drawing
+		#region Drawing
 
 
 		public static void DrawLight(Vector3 position, Color color, float range, float brightness)
@@ -494,9 +493,9 @@ namespace RDR2
 				 scale.Y, scale.Z, color.R, color.G, color.B, color.A, bobUpAndDown, faceCamera, 2, rotateY, "", "", drawOnEntity);
 			}
 		}
-#endregion
+		#endregion
 
-#region Positioning
+		#region Positioning
 
 		public static float GetDistance(Vector3 origin, Vector3 destination)
 		{
@@ -603,7 +602,7 @@ namespace RDR2
 		}
 
 
-#endregion
+		#endregion
 	}
 
 	public enum WeatherType : uint
@@ -639,5 +638,4 @@ namespace RDR2
 		Xmas,
 		XmasSecondary,
 	}
-
 }
