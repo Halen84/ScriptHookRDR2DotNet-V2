@@ -1,0 +1,43 @@
+﻿namespace RDR2
+{
+	public enum eExplosionTag
+	{
+		DontCare = -1,
+		Grenade,
+		StickyBomb,
+		Molotov,
+		MolotovVolatile,
+		HiOctane,
+		Car,
+		Plane,
+		PetrolPump,
+		DirSteam,
+		DirFlame,
+		DirWaterHydrant,
+		Boat,
+		Bullet,
+		SmokeGrenade,
+		BZGas,
+		GasCanister,
+		Extinguisher,
+		Train,
+		DirFlameExplode,
+		VehicleBullet,
+		BirdCrap,
+		Firework,
+		Torpedo,
+		TorpedoUnderwater,
+		Lantern,
+		Dynamite,
+		DynamiteStack,
+		DynamiteVolatile,
+		RiverBlast,
+		PlacedDynamite,
+		FireArrow,
+		DynamiteArrow,
+		PhosphorousBullet,
+		LightningStrike,
+		TrackingArrow,
+		PoisonBottle
+	}
+}
