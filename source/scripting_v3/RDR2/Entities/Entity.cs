@@ -122,7 +122,7 @@ namespace RDR2
 			if (!IsOwnedByThisScript) {
 				IsMissionEntity = true;
 			}
-			return IsMissionEntity == true;
+			return IsOwnedByThisScript;
 		}
 
 		/// <summary>
@@ -682,7 +682,7 @@ namespace RDR2
 			if (!IsOwnedByThisScript) {
 				this.RequestOwnership();
 			}
-			
+
 			unsafe { ENTITY.DELETE_ENTITY(&handle); }
 		}
 
@@ -722,7 +722,6 @@ namespace RDR2
 		}
 
 		public static implicit operator Entity(int handle) => Entity.FromHandle(handle);
-		public static implicit operator int(Entity e) => e.Handle;
 
 		public override int GetHashCode()
 		{

@@ -302,6 +302,9 @@ namespace RDR2
 			return !(left == right);
 		}
 
+		public static implicit operator int(Player e) => e.Handle;
+		public static implicit operator Player(int handle) => Game.Player;
+
 		public sealed override int GetHashCode()
 		{
 			return Handle.GetHashCode();
