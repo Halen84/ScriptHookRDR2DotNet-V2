@@ -129,7 +129,6 @@ namespace RDR2.Native
 		public static unsafe implicit operator InputArgument(Vector3* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(sbyte* value) { return new InputArgument(new string(value)); }
 		
-
 		public override string ToString() { return data.ToString(); }
 	}
 
@@ -165,6 +164,7 @@ namespace RDR2.Native
 			// Add __VA_ARGS__
 			if (variadicSize > 0) {
 				for (int i = 0; i < variadicSize; i++) {
+					// assign the rest of the args array with aData content
 					args[i + (args.Length - variadicSize)] = arguments[arguments.Length - 1].aData[i];
 				}
 			}
@@ -289,7 +289,7 @@ namespace RDR2.Native
 			{
 				return NativeHelper<T>.PtrToStructure(new IntPtr(value));
 			}
-
+			
 			if (typeof(T) == typeof(double))
 			{
 				return NativeHelper<T>.Convert(NativeHelper<T>.PtrToStructure(new IntPtr(value)));
@@ -298,6 +298,11 @@ namespace RDR2.Native
 			if (typeof(T) == typeof(Vector2) || typeof(T) == typeof(Vector3))
 			{
 				return NativeHelper<T>.Convert(*(scrVector3*)value);
+			}
+
+			if (typeof(T) == typeof(IntPtr))
+			{
+				return NativeHelper<T>.PtrToStructure(new IntPtr(value));
 			}
 
 			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", typeof(T), "'"));

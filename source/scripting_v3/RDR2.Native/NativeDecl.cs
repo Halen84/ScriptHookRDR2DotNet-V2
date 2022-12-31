@@ -2,6 +2,7 @@
 
 #pragma warning disable CS1570 // XML comment has badly formed XML
 
+using System;
 using Any = System.UInt64;
 using ScrHandle = System.Int32;
 using AnimScene = System.Int32;
@@ -15,7 +16,7 @@ using PersChar = System.Int32;
 using PopZone = System.Int32;
 using Prompt = System.Int32;
 using PropSet = System.Int32;
-using RDR2.Math; // Vector3
+using RDR2.Math;
 
 namespace RDR2.Native
 {
@@ -1886,6 +1887,8 @@ namespace RDR2.Native
 		public static float DATADICT_GET_FLOAT(Any* objectData, string key) { return Function.Call<float>(0x814643ECA258ADF5, objectData, key); }
 		public static string DATADICT_GET_STRING(Any* objectData, string key) { return Function.Call<string>(0xE37B38C0B4E95DFA, objectData, key); }
 		public static Vector3 DATADICT_GET_VECTOR(Any* objectData, string key) { return Function.Call<Vector3>(0xE459C941431E0FFA, objectData, key); }
+		public static IntPtr DATADICT_GET_DICT(Any* objectData, string key) { return Function.Call<IntPtr>(0x4D7A30130F46AC9C, objectData, key); }
+		public static IntPtr DATADICT_GET_ARRAY(Any* objectData, string key) { return Function.Call<IntPtr>(0x1B5447CF18544B18, objectData, key); }
 		/// <summary>
 		/// Types:
 		/// 1 = Boolean
@@ -1907,6 +1910,7 @@ namespace RDR2.Native
 		public static float DATAARRAY_GET_FLOAT(Any* arrayData, int arrayIndex) { return Function.Call<float>(0xA9D003CF419CB81E, arrayData, arrayIndex); }
 		public static string DATAARRAY_GET_STRING(Any* arrayData, int arrayIndex) { return Function.Call<string>(0xB6790A8FF80F889F, arrayData, arrayIndex); }
 		public static Vector3 DATAARRAY_GET_VECTOR(Any* arrayData, int arrayIndex) { return Function.Call<Vector3>(0x850DA2750DA14E9A, arrayData, arrayIndex); }
+		public static IntPtr DATAARRAY_GET_DICT(Any* arrayData, int arrayIndex) { return Function.Call<IntPtr>(0xA010655985853485, arrayData, arrayIndex); }
 		public static int DATAARRAY_GET_COUNT(Any* arrayData) { return Function.Call<int>(0x6A885BF69239E539, arrayData); }
 		/// <summary>
 		/// Types:
@@ -7497,6 +7501,7 @@ namespace RDR2.Native
 		public static bool _NAVMESH_IS_SWAP_ACTIVE(string name) { return Function.Call<bool>(0x5AC0944C156E5F44, name); }
 		public static bool _NAVMESH_DOES_SWAP_EXIST(string name) { return Function.Call<bool>(0x495CFAB2924237C7, name); }
 		public static int _0x5A3B54ADDF5472A3(string p0) { return Function.Call<int>(0x5A3B54ADDF5472A3, p0); }
+		public static IntPtr _0xA33914B00CA55756(string p0, int p1) { return Function.Call<IntPtr>(0xA33914B00CA55756, p0, p1); }
 		public static bool _NAVMESH_ASSIGN_NAVMESH_TO_VEHICLE(int vehicle, string navMeshName) { return Function.Call<bool>(0x44026E3DB3CED602, vehicle, navMeshName); }
 		public static Any ADD_NAVMESH_BLOCKING_OBJECT(float p0, float p1, float p2, float p3, float p4, float p5, float p6, bool p7, Any p8) { return Function.Call<Any>(0xFCD5C8E06E502F5A, p0, p1, p2, p3, p4, p5, p6, p7, p8); }
 		public static void REMOVE_NAVMESH_BLOCKING_OBJECT(Any p0) { Function.Call(0x46399A7895957C0E, p0); }
