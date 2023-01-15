@@ -2015,7 +2015,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static bool DECOR_SET_INT(int entity, string propertyName, int value) { return Function.Call<bool>(0xE88F4D7F52A6090F, entity, propertyName, value); }
 		public static bool _DECOR_SET_UINT8(int entity, string propertyName, int value) { return Function.Call<bool>(0x4BDC83150D43772D, entity, propertyName, value); }
-		public static bool _DECOR_SET_STRING(int entity, string propertyName, string value) { return Function.Call<bool>(0x0671C1A3FF7AFDFC, entity, propertyName, value); }
+		public static bool DECOR_SET_STRING(int entity, string propertyName, string value) { return Function.Call<bool>(0x0671C1A3FF7AFDFC, entity, propertyName, value); }
 		public static bool DECOR_GET_BOOL(int entity, string propertyName) { return Function.Call<bool>(0xDEF3F1B071ABB197, entity, propertyName); }
 		public static float DECOR_GET_FLOAT(int entity, string propertyName) { return Function.Call<float>(0xE5FF70CD842CA9D4, entity, propertyName); }
 		public static int DECOR_GET_INT(int entity, string propertyName) { return Function.Call<int>(0x44DB62727762FD9B, entity, propertyName); }
@@ -2025,7 +2025,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static bool DECOR_EXIST_ON(int entity, string propertyName) { return Function.Call<bool>(0xD9D1CDBF3464DCDF, entity, propertyName); }
 		public static bool DECOR_REMOVE(int entity, string propertyName) { return Function.Call<bool>(0x2BA7F5877A088A1D, entity, propertyName); }
-		public static bool _DECOR_REMOVE_ALL(int entity) { return Function.Call<bool>(0x88942780E0ADEA42, entity); }
+		public static bool DECOR_REMOVE_ALL(int entity) { return Function.Call<bool>(0x88942780E0ADEA42, entity); }
 		public static void DECOR_REGISTER(string propertyName, int type) { Function.Call(0x0B253D644E3C36B3, propertyName, type); }
 		public static void _DECOR_REGISTER_2(string propertyName, int type, bool p2) { Function.Call(0x4587374F88B7F6C2, propertyName, type, p2); }
 		/// <summary>
@@ -2177,7 +2177,7 @@ namespace RDR2.Native
 		public static Vector3 _0x3AB3A77672F6473F(Any p0, Any p1, Any p2, Any p3) { return Function.Call<Vector3>(0x3AB3A77672F6473F, p0, p1, p2, p3); }
 		public static int GET_NEAREST_PLAYER_TO_ENTITY(int entity, int playerPedToIgnore, int flags) { return Function.Call<int>(0x990E294FC387FB88, entity, playerPedToIgnore, flags); }
 		public static int GET_NEAREST_PLAYER_TO_ENTITY_ON_TEAM(int entity, int team, int playerPedToIgnore, int flags) { return Function.Call<int>(0xB2C30C3B4AFF718C, entity, team, playerPedToIgnore, flags); }
-		public static int _GET_NEAREST_PARTICIPANT_TO_ENTITY(int entity) { return Function.Call<int>(0x6888A43C35A5F630, entity); }
+		public static int GET_NEAREST_PARTICIPANT_TO_ENTITY(int entity) { return Function.Call<int>(0x6888A43C35A5F630, entity); }
 		public static bool PLACE_ENTITY_ON_GROUND_PROPERLY(int entity, bool p1) { return Function.Call<bool>(0x9587913B9E772D29, entity, p1); }
 		/// <summary>
 		/// Returns:
@@ -2626,7 +2626,7 @@ namespace RDR2.Native
 	public unsafe static class EVENT
 	{
 		public static void SET_DECISION_MAKER(int ped, Hash name) { Function.Call(0x8AE2F981CDDB8FA4, ped, name); }
-		public static void _SET_DECISION_MAKER_DEFAULT(int ped) { Function.Call(0x6B9C5C38838FB6E6, ped); }
+		public static void SET_DECISION_MAKER_TO_DEFAULT(int ped) { Function.Call(0x6B9C5C38838FB6E6, ped); }
 		public static ScrHandle _CREATE_SHOCKING_EVENT(Any* args) { return Function.Call<ScrHandle>(0xCA1315C33B9A2847, args); }
 		/// <summary>
 		/// eventType: https://alloc8or.re/rdr3/doc/enums/eEventType.txt
@@ -2655,7 +2655,7 @@ namespace RDR2.Native
 		/// <summary>
 		/// eventType: https://alloc8or.re/rdr3/doc/enums/eEventType.txt
 		/// </summary>
-		public static void _REMOVE_ALL_SHOCKING_EVENTS_OF_TYPE(Hash eventType, bool p1) { Function.Call(0x118873DD538490B4, eventType, p1); }
+		public static void REMOVE_ALL_SHOCKING_EVENTS_OF_TYPE(Hash eventType, bool p1) { Function.Call(0x118873DD538490B4, eventType, p1); }
 		public static void REMOVE_SHOCKING_EVENT_SPAWN_BLOCKING_AREAS() { Function.Call(0xDB249021652420C5); }
 		/// <summary>
 		/// _ADD* (_ADD_SHOCKING_EVENT_* ?)
@@ -4912,7 +4912,7 @@ namespace RDR2.Native
 		/// <summary>
 		/// Same return values as GET_CURRENT_LANGUAGE
 		/// </summary>
-		public static int _LOCALIZATION_GET_SYSTEM_LANGUAGE() { return Function.Call<int>(0x3C1A05F86AE6ACB5); }
+		public static int LOCALIZATION_GET_SYSTEM_LANGUAGE() { return Function.Call<int>(0x3C1A05F86AE6ACB5); }
 		/// <summary>
 		/// 0 = american (en-US)
 		/// 1 = french (fr-FR)
@@ -5314,9 +5314,9 @@ namespace RDR2.Native
 		/// </summary>
 		public static int _GET_GAME_TIMER_NON_SCALED_CLIPPED() { return Function.Call<int>(0x483B8C542103AD72); }
 		public static int GET_SYSTEM_TIME() { return Function.Call<int>(0xBE7F225417E35A7C); }
-		public static int _GET_NUMBER_OF_MICROSECONDS_SINCE_LAST_CALL() { return Function.Call<int>(0xB0CE5E5ED8BB3581); }
-		public static int _GET_SCRIPT_TIME_WITHIN_FRAME_IN_MICROSECONDS() { return Function.Call<int>(0x63219768C586667C); }
-		public static void _RESET_SCRIPT_TIME_WITHIN_FRAME() { Function.Call(0x1411A7CBC3A6EB7B); }
+		public static int GET_NUMBER_OF_MICROSECONDS_SINCE_LAST_CALL() { return Function.Call<int>(0xB0CE5E5ED8BB3581); }
+		public static int GET_SCRIPT_TIME_WITHIN_FRAME_IN_MICROSECONDS() { return Function.Call<int>(0x63219768C586667C); }
+		public static void RESET_SCRIPT_TIME_WITHIN_FRAME() { Function.Call(0x1411A7CBC3A6EB7B); }
 		public static float GET_FRAME_TIME() { return Function.Call<float>(0x5E72022914CE3C38); }
 		/// <summary>
 		/// Old name: _GET_BENCHMARK_TIME
@@ -5580,7 +5580,10 @@ namespace RDR2.Native
 		public static Any _0x6C7B68D3CE60E8DE(Any p0) { return Function.Call<Any>(0x6C7B68D3CE60E8DE, p0); }
 		public static Any _0x627B68D9CE6EE8DE(Any p0) { return Function.Call<Any>(0x627B68D9CE6EE8DE, p0); }
 		public static Any _0x7CF96F1250EF3221(Any p0) { return Function.Call<Any>(0x7CF96F1250EF3221, p0); }
-		public static void _COPY_MEMORY(Any* dst, Any* src, int size) { Function.Call(0xF7AC7DC0DEE7C9BE, dst, src, size); }
+		/// <summary>
+		/// Old name: _COPY_MEMORY
+		/// </summary>
+		public static void COPY_SCRIPT_STRUCT(Any* dst, Any* src, int size) { Function.Call(0xF7AC7DC0DEE7C9BE, dst, src, size); }
 		/// <summary>
 		/// enum DispatchType
 		/// {
@@ -5697,12 +5700,12 @@ namespace RDR2.Native
 		/// Appears to remove stealth kill action from memory (?)
 		/// </summary>
 		public static void ACTION_MANAGER_ENABLE_ACTION(Hash hash, bool enable) { Function.Call(0x7ACF124C12A2B045, hash, enable); }
-		public static Any _0xFD0759658268FD8E(Any p0) { return Function.Call<Any>(0xFD0759658268FD8E, p0); }
+		public static bool ACTION_MANAGER_IS_ACTION_ENABLED(Hash hash) { return Function.Call<bool>(0xFD0759658268FD8E, hash); }
 		/// <summary>
 		/// Returns GET_GAME_TIMER() / 1000
 		/// Only used in rcm_pearson1.ysc
 		/// </summary>
-		public static int _GET_REAL_GAME_TIMER_IN_SECONDS() { return Function.Call<int>(0x2E036F0480B8BF02); }
+		public static int GET_REAL_WORLD_TIME() { return Function.Call<int>(0x2E036F0480B8BF02); }
 		public static void SET_SUPER_JUMP_THIS_FRAME(int player) { Function.Call(0xB3E9BE963F10C445, player); }
 		public static void SCRIPT_RACE_INIT(int numCheckpoints, int numLaps, int numPlayers, Any p3) { Function.Call(0x8AE059F47158417E, numCheckpoints, numLaps, numPlayers, p3); }
 		public static void SCRIPT_RACE_SHUTDOWN() { Function.Call(0x334CE0DA4FAF330C); }
@@ -6163,10 +6166,7 @@ namespace RDR2.Native
 		public static bool _NETWORK_IS_IN_SESSION_LOBBY() { return Function.Call<bool>(0xC5196C42DE19F646); }
 		public static bool NETWORK_IS_SESSION_STARTED() { return Function.Call<bool>(0x9DE624D2FC4B603F); }
 		public static bool NETWORK_CAN_SESSION_END() { return Function.Call<bool>(0x4EEBC3694E49C572); }
-		/// <summary>
-		/// _NETWORK_GET_G*
-		/// </summary>
-		public static int _0x225640E09EFFDC3F() { return Function.Call<int>(0x225640E09EFFDC3F); }
+		public static int NETWORK_GET_GAME_MODE() { return Function.Call<int>(0x225640E09EFFDC3F); }
 		/// <summary>
 		/// enum eSessionFlags
 		/// {
@@ -6284,7 +6284,7 @@ namespace RDR2.Native
 		public static bool NETWORK_IS_HOST_OF_THIS_SCRIPT() { return Function.Call<bool>(0x83CD99A1E6061AB5); }
 		public static int NETWORK_GET_HOST_OF_THIS_SCRIPT() { return Function.Call<int>(0xC7B4D79B01FA7A5C); }
 		public static int NETWORK_GET_HOST_OF_SCRIPT(string scriptName, int p1, int p2) { return Function.Call<int>(0x1D6A14F1F9A736FC, scriptName, p1, p2); }
-		public static int _NETWORK_GET_HOST_OF_THREAD(int threadId) { return Function.Call<int>(0xB4A25351D79B444C, threadId); }
+		public static int NETWORK_GET_HOST_OF_THREAD(int threadId) { return Function.Call<int>(0xB4A25351D79B444C, threadId); }
 		public static void NETWORK_SET_MISSION_FINISHED() { Function.Call(0x3B3D11CD9FFCDFC9); }
 		public static bool NETWORK_IS_SCRIPT_ACTIVE(string scriptName, int p1, bool p2, int p3) { return Function.Call<bool>(0x9D40DF90FAD26098, scriptName, p1, p2, p3); }
 		public static bool NETWORK_IS_SCRIPT_ACTIVE_BY_HASH(Hash scriptHash, int p1, bool p2, int p3) { return Function.Call<bool>(0x1B89BC43B6E69107, scriptHash, p1, p2, p3); }
@@ -6476,8 +6476,8 @@ namespace RDR2.Native
 		public static void _0xD78A26024BB13E08(int player) { Function.Call(0xD78A26024BB13E08, player); }
 		public static void SET_NETWORK_ID_EXISTS_ON_ALL_MACHINES(int netId, bool toggle) { Function.Call(0xE05E81A888FA63C8, netId, toggle); }
 		public static void SET_NETWORK_ID_ALWAYS_EXISTS_FOR_PLAYER(int netId, int player, bool toggle) { Function.Call(0xA8A024587329F36A, netId, player, toggle); }
-		public static void _0x9ED3108D6847760A(int netHandle, Any p1) { Function.Call(0x9ED3108D6847760A, netHandle, p1); }
-		public static void _0xD785864798258032(int entity, bool toggle) { Function.Call(0xD785864798258032, entity, toggle); }
+		public static void SET_NETWORK_ID_STOP_CLONING(int networkId, bool bStopCloning) { Function.Call(0x9ED3108D6847760A, networkId, bStopCloning); }
+		public static void NETWORK_SET_ENTITY_REMAINS_WHEN_UNNETWORKED(int entity, bool toggle) { Function.Call(0xD785864798258032, entity, toggle); }
 		/// <summary>
 		/// if set to true other network players can't see it
 		/// if set to false other network player can see it
@@ -6684,7 +6684,7 @@ namespace RDR2.Native
 		/// <summary>
 		/// Note: this native was added in build 1311.16
 		/// </summary>
-		public static bool _IS_OBJECT_REASSIGNMENT_IN_PROGRESS() { return Function.Call<bool>(0x8FE9EB11EC9CC23A); }
+		public static bool IS_OBJECT_REASSIGNMENT_IN_PROGRESS() { return Function.Call<bool>(0x8FE9EB11EC9CC23A); }
 		/// <summary>
 		/// Note: this native was added in build 1311.23
 		/// </summary>
@@ -6703,8 +6703,8 @@ namespace RDR2.Native
 		/// Must be called from a background script, otherwise it will do nothing.
 		/// </summary>
 		public static void _NETWORK_DEBUG_REQUEST_ENTITY_POSITION(Any* p0) { Function.Call(0xFA38B52F91B59075, p0); }
-		public static int _NETWORK_GET_NETWORK_ID_FROM_ROPE(int ropeId) { return Function.Call<int>(0x42871327315EDAE8, ropeId); }
-		public static int _NETWORK_GET_ROPE_FROM_NETWORK_ID(int netId) { return Function.Call<int>(0xEB1A4DD8352EC828, netId); }
+		public static int NETWORK_GET_NETWORK_ID_FROM_ROPE_ID(int ropeId) { return Function.Call<int>(0x42871327315EDAE8, ropeId); }
+		public static int NETWORK_GET_ROPE_ID_FROM_NETWORK_ID(int netId) { return Function.Call<int>(0xEB1A4DD8352EC828, netId); }
 		public static void _NETWORK_SPAWN_CONFIG_ADD_SPAWN_POINT(float x, float y, float z, float heading) { Function.Call(0xFD1AC0B3858F224C, x, y, z, heading); }
 		public static void _NETWORK_SPAWN_CONFIG_ADD_SPAWN_POINT(Vector3 vec, float heading) { Function.Call(0xFD1AC0B3858F224C, vec.X, vec.Y, vec.Z, heading); }
 		public static void _0xA63E4F050F20021F() { Function.Call(0xA63E4F050F20021F); }
@@ -6771,9 +6771,9 @@ namespace RDR2.Native
 		public static bool NETWORK_DOES_TUNABLE_EXIST(Hash tunableContext, Hash tunableName) { return Function.Call<bool>(0x85E5F8B9B898B20A, tunableContext, tunableName); }
 		public static bool NETWORK_ACCESS_TUNABLE_INT(Hash tunableContext, Hash tunableName, int* value) { return Function.Call<bool>(0x8BE1146DFD5D4468, tunableContext, tunableName, value); }
 		public static bool NETWORK_ACCESS_TUNABLE_BOOL(Hash tunableContext, Hash tunableName) { return Function.Call<bool>(0xAA6A47A573ABB75A, tunableContext, tunableName); }
-		public static int _NETWORK_TRY_ACCESS_TUNABLE_INT(Hash tunableContext, Hash tunableName, int defaultValue) { return Function.Call<int>(0xA25E006B36719774, tunableContext, tunableName, defaultValue); }
-		public static float _NETWORK_TRY_ACCESS_TUNABLE_FLOAT(Hash tunableContext, Hash tunableName, float defaultValue) { return Function.Call<float>(0xA18393089C05E49C, tunableContext, tunableName, defaultValue); }
-		public static bool _NETWORK_TRY_ACCESS_TUNABLE_BOOL(Hash tunableContext, Hash tunableName, bool defaultValue) { return Function.Call<bool>(0xB2AD5D29A99D4B26, tunableContext, tunableName, defaultValue); }
+		public static int NETWORK_TRY_ACCESS_TUNABLE_INT_HASH(Hash tunableContext, Hash tunableName, int defaultValue) { return Function.Call<int>(0xA25E006B36719774, tunableContext, tunableName, defaultValue); }
+		public static float NETWORK_TRY_ACCESS_TUNABLE_FLOAT_HASH(Hash tunableContext, Hash tunableName, float defaultValue) { return Function.Call<float>(0xA18393089C05E49C, tunableContext, tunableName, defaultValue); }
+		public static bool NETWORK_TRY_ACCESS_TUNABLE_BOOL_HASH(Hash tunableContext, Hash tunableName, bool defaultValue) { return Function.Call<bool>(0xB2AD5D29A99D4B26, tunableContext, tunableName, defaultValue); }
 		public static void _0x894B5ECAB45D2342(int netHandle, Any p1) { Function.Call(0x894B5ECAB45D2342, netHandle, p1); }
 		public static void NETWORK_DISABLE_PROXIMITY_MIGRATION(int netID) { Function.Call(0x407091CF6037118E, netID); }
 		public static int _0xCE5E79D9E303628E() { return Function.Call<int>(0xCE5E79D9E303628E); }
@@ -6781,7 +6781,7 @@ namespace RDR2.Native
 		public static bool CLOUD_HAS_REQUEST_COMPLETED(int id) { return Function.Call<bool>(0x4C61B39930D045DA, id); }
 		public static bool CLOUD_DID_REQUEST_SUCCEED(int id) { return Function.Call<bool>(0x3A3D5568AF297CD5, id); }
 		public static bool _GET_LAUNCH_PARAM_EXISTS(string paramName) { return Function.Call<bool>(0x02E97CE283648CD9, paramName); }
-		public static string _GET_LAUNCH_PARAM_VALUE(string paramName) { return Function.Call<string>(0x65E65CA6A0FE59D4, paramName); }
+		public static string GET_LAUNCH_PARAM_VALUE(string paramName) { return Function.Call<string>(0x65E65CA6A0FE59D4, paramName); }
 		public static void _SET_LAUNCH_PARAM_VALUE(string paramName, string value) { Function.Call(0x668AF6E4933AC13F, paramName, value); }
 		public static void _CLEAR_LAUNCH_PARAM(string paramName) { Function.Call(0x782C94DB6469634D, paramName); }
 		public static string _GET_LAUNCH_PARAM_STRING() { return Function.Call<string>(0xC59AB6A04333C502); }
