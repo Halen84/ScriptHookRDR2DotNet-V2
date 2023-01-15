@@ -388,8 +388,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsBulletProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 1) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 1, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 0)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 0) : (proofs -= (proofs & (1 << 0))), false);
+			}
 		}
 
 		/// <summary>
@@ -397,8 +401,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsFlameProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 2) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 2, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 1)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 1) : (proofs -= (proofs & (1 << 1))), false);
+			}
 		}
 
 		/// <summary>
@@ -406,8 +414,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsExplosionProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 4) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 4, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 2)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 2) : (proofs -= (proofs & (1 << 2))), false);
+			}
 		}
 
 		/// <summary>
@@ -415,8 +427,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsCollisionProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 8) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 8, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 3)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 3) : (proofs -= (proofs & (1 << 3))), false);
+			}
 		}
 
 		/// <summary>
@@ -424,8 +440,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsMeleeProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 16) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 16, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 4)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 4) : (proofs -= (proofs & (1 << 4))), false);
+			}
 		}
 
 		/// <summary>
@@ -433,8 +453,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsSteamProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 32) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 32, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 5)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 5) : (proofs -= (proofs & (1 << 5))), false);
+			}
 		}
 
 		/// <summary>
@@ -442,8 +466,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsSmokeProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 64) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 64, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 6)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 6) : (proofs -= (proofs & (1 << 6))), false);
+			}
 		}
 
 		/// <summary>
@@ -451,8 +479,12 @@ namespace RDR2
 		/// </summary>
 		public bool IsHeadshotProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 128) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 128, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 7)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 7) : (proofs -= (proofs & (1 << 7))), false);
+			}
 		}
 
 		/// <summary>
@@ -460,8 +492,20 @@ namespace RDR2
 		/// </summary>
 		public bool IsProjectileProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & 256) != 0;
-			set => ENTITY.SET_ENTITY_PROOFS(Handle, 256, value);
+			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 8)) != 0;
+			set
+			{
+				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 8) : (proofs -= (proofs & (1 << 8))), false);
+			}
+		}
+
+		/// <summary>
+		/// Removes all proofs that are set on this <see cref="Entity"/>
+		/// </summary>
+		public void ClearProofs()
+		{
+			ENTITY.SET_ENTITY_PROOFS(Handle, 0, false);
 		}
 
 		#endregion
