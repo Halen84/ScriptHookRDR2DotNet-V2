@@ -10,10 +10,77 @@ namespace RDR2.UI
 	/// </summary>
 	public enum Font
 	{
-		ChaletLondon = 0,
-		HouseScript = 0,
-		Monospace = 0,
-		ChaletComprimeCologne = 0,
-		Pricedown = 0
+		/// <summary>
+		/// Body
+		/// </summary>
+		HapnaSlabSerifDemiBold,
+		/// <summary>
+		/// Body1
+		/// </summary>
+		DroidSerifPro,
+		/// <summary>
+		/// Catalog1
+		/// </summary>
+		RDRGothica,
+		/// <summary>
+		/// Catalog2
+		/// </summary>
+		RDRCatalogueNumbers,
+		/// <summary>
+		/// Catalog3
+		/// </summary>
+		ArialDEBUG,
+		/// <summary>
+		/// Catalog4
+		/// </summary>
+		RDRCatalogueBold,
+		/// <summary>
+		/// Catalog5
+		/// </summary>
+		CabritoNormDemi,
+		/// <summary>
+		/// Chalk
+		/// </summary>
+		RDRChalkHand,
+		/// <summary>
+		/// Debug_Bold
+		/// </summary>
+		HelveticaNeueLT47LightCn,
+		/// <summary>
+		/// FixedWidthNumbers
+		/// </summary>
+		RDRLinoNumbers,
+		/// <summary>
+		/// Font5
+		/// </summary>
+		Redemption,
+		/// <summary>
+		/// Gamername
+		/// </summary>
+		RockstarGamertagCond,
+		/// <summary>
+		/// Handwritten
+		/// </summary>
+		DreamerScript,
+		/// <summary>
+		/// Ledger
+		/// </summary>
+		RDRLedgerHand,
+		/// <summary>
+		/// RockstarTAG
+		/// </summary>
+		RockstarTag,
+		/// <summary>
+		/// Social_Club_Cond_Bold
+		/// </summary>
+		Arial,
+		/// <summary>
+		/// Title
+		/// </summary>
+		RDRLino,
+		/// <summary>
+		/// WantedPostersGeneric
+		/// </summary>
+		RDRTurri,
 	}
 }
