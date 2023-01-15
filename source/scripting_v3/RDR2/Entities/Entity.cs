@@ -383,17 +383,31 @@ namespace RDR2
 			get => ENTITY._GET_ENTITY_CAN_BE_DAMAGED(Handle);
 		}
 
+		private void setProof(bool set, int bit)
+		{
+			int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
+			if (set) {
+				proofs |= 1 << bit;
+			}
+			else {
+				// remove only this bit
+				proofs -= (proofs & (1 << bit));
+			}
+			ENTITY.SET_ENTITY_PROOFS(Handle, proofs, false);
+		}
+
+		private bool isProofSet(int bit)
+		{
+			return (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << bit)) != 0;
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Entity"/> is bullet proof.
 		/// </summary>
 		public bool IsBulletProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 0)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 0) : (proofs -= (proofs & (1 << 0))), false);
-			}
+			get => isProofSet(0);
+			set => setProof(value, 0);
 		}
 
 		/// <summary>
@@ -401,12 +415,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsFlameProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 1)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 1) : (proofs -= (proofs & (1 << 1))), false);
-			}
+			get => isProofSet(1);
+			set => setProof(value, 1);
 		}
 
 		/// <summary>
@@ -414,12 +424,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsExplosionProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 2)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 2) : (proofs -= (proofs & (1 << 2))), false);
-			}
+			get => isProofSet(2);
+			set => setProof(value, 2);
 		}
 
 		/// <summary>
@@ -427,12 +433,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsCollisionProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 3)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 3) : (proofs -= (proofs & (1 << 3))), false);
-			}
+			get => isProofSet(3);
+			set => setProof(value, 3);
 		}
 
 		/// <summary>
@@ -440,12 +442,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsMeleeProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 4)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 4) : (proofs -= (proofs & (1 << 4))), false);
-			}
+			get => isProofSet(4);
+			set => setProof(value, 4);
 		}
 
 		/// <summary>
@@ -453,12 +451,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsSteamProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 5)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 5) : (proofs -= (proofs & (1 << 5))), false);
-			}
+			get => isProofSet(5);
+			set => setProof(value, 5);
 		}
 
 		/// <summary>
@@ -466,12 +460,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsSmokeProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 6)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 6) : (proofs -= (proofs & (1 << 6))), false);
-			}
+			get => isProofSet(6);
+			set => setProof(value, 6);
 		}
 
 		/// <summary>
@@ -479,12 +469,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsHeadshotProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 7)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 7) : (proofs -= (proofs & (1 << 7))), false);
-			}
+			get => isProofSet(7);
+			set => setProof(value, 7);
 		}
 
 		/// <summary>
@@ -492,12 +478,8 @@ namespace RDR2
 		/// </summary>
 		public bool IsProjectileProof
 		{
-			get => (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << 8)) != 0;
-			set
-			{
-				int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-				ENTITY.SET_ENTITY_PROOFS(Handle, value ? (1 << 8) : (proofs -= (proofs & (1 << 8))), false);
-			}
+			get => isProofSet(8);
+			set => setProof(value, 8);
 		}
 
 		/// <summary>
