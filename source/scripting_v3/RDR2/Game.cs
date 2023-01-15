@@ -91,6 +91,17 @@ namespace RDR2
 		public static GlobalCollection Globals { get; private set; } = new GlobalCollection();
 
 		/// <summary>
+		/// Gets an instance of a <see cref="Global"/> that holds data to a script global.
+		/// <remarks>Make sure that you check the game version before accessing globals. ID's may differ between patches.</remarks>
+		/// </summary>
+		/// <param name="globalId">The script global index</param>
+		/// <returns>An instance to a script <see cref="Global"/></returns>
+		public static Global GetGlobalPtr(int globalId)
+		{
+			return Globals.Get(globalId);
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether a cutscene is currently playing.
 		/// </summary>
 		public static bool IsCutsceneActive => ANIMSCENE.DOES_ANIM_SCENE_EXIST((int)RDR2DN.NativeMemory.GetGlobalPtr(43800)) && ANIMSCENE.IS_ANIM_SCENE_RUNNING((int)RDR2DN.NativeMemory.GetGlobalPtr(43800), false);

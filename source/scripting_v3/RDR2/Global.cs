@@ -14,9 +14,9 @@ namespace RDR2
 	{
 		readonly IntPtr address;
 
-		internal Global(int index)
+		internal Global(int globalId)
 		{
-			address = RDR2DN.NativeMemory.GetGlobalPtr(index);
+			address = RDR2DN.NativeMemory.GetGlobalPtr(globalId);
 		}
 
 		public unsafe ulong* MemoryAddress => (ulong*)address.ToPointer();
