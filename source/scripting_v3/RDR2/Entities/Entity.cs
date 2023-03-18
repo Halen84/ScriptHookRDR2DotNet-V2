@@ -150,6 +150,11 @@ namespace RDR2
 		}
 
 		/// <summary>
+		/// Gets the <see cref="eCarriableState"/> this <see cref="Entity"/> is currently in.
+		/// </summary>
+		public eCarriableState CarriableState => (eCarriableState)ENTITY.GET_CARRIABLE_ENTITY_STATE(Handle);
+
+		/// <summary>
 		/// Gets the model of the current <see cref="Entity"/>.
 		/// </summary>
 		public Model Model => new Model(ENTITY.GET_ENTITY_MODEL(Handle));
@@ -168,8 +173,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets or sets how opaque this <see cref="Entity"/> is.
-		/// <remarks>This is an alias for <see cref="Alpha"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="Alpha"/></remarks>
 		/// <value>
 		/// 0 for completely see through, 255 for fully opaque
 		/// </value>
@@ -318,6 +323,12 @@ namespace RDR2
 		}
 
 		/// <summary>
+		/// Gets the vector that points in front of this <see cref="Entity"/>.
+		/// </summary>
+		/// <remarks>This is an alias for <see cref="ForwardVector"/></remarks>
+		public Vector3 Forward => ForwardVector;
+
+		/// <summary>
 		/// Gets the position in world coordinates of an offset relative this <see cref="Entity"/>.
 		/// </summary>
 		public Vector3 GetOffsetPosition(Vector3 offset)
@@ -383,10 +394,10 @@ namespace RDR2
 			get => ENTITY._GET_ENTITY_CAN_BE_DAMAGED(Handle);
 		}
 
-		private void setProof(bool set, int bit)
+		internal void setProof(bool set, int bit)
 		{
 			int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-			if (set) {
+			if (set && !isProofSet(bit)) {
 				proofs |= 1 << bit;
 			}
 			else {
@@ -396,7 +407,7 @@ namespace RDR2
 			ENTITY.SET_ENTITY_PROOFS(Handle, proofs, false);
 		}
 
-		private bool isProofSet(int bit)
+		internal bool isProofSet(int bit)
 		{
 			return (ENTITY._GET_ENTITY_PROOFS(Handle) & (1 << bit)) != 0;
 		}
@@ -487,7 +498,16 @@ namespace RDR2
 		/// </summary>
 		public void ClearProofs()
 		{
-			ENTITY.SET_ENTITY_PROOFS(Handle, 0, false);
+			ProofBits = 0;
+		}
+
+		/// <summary>
+		/// Gets or sets the proofs currently set on this <see cref="Entity"/> via bits
+		/// </summary>
+		public int ProofBits
+		{
+			get => ENTITY._GET_ENTITY_PROOFS(Handle);
+			set => ENTITY.SET_ENTITY_PROOFS(Handle, value, false);
 		}
 
 		#endregion
@@ -505,8 +525,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Entity"/> has collision.
-		/// <remarks>This is an alias for <see cref="HasCollision"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="HasCollision"/></remarks>
 		public bool IsCollisionEnabled
 		{
 			get => HasCollision;
@@ -570,8 +590,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Determines whether this <see cref="Entity"/> is near a specified <see cref="Entity"/>.
-		/// <remarks>This is an alias for <see cref="IsNearEntity(Entity, Vector3)"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsNearEntity(Entity, Vector3)"/></remarks>
 		public bool IsAtEntity(Entity entity, Vector3 distance)
 		{
 			return ENTITY.IS_ENTITY_AT_ENTITY(Handle, entity.Handle, distance.X, distance.Y, distance.Z, false, true, 0);
@@ -615,6 +635,26 @@ namespace RDR2
 		#region Attaching
 
 		/// <summary>
+		/// Determines whether this <see cref="Entity"/> is attached to any other <see cref="Entity"/>.
+		/// </summary>
+		public bool IsAttached => ENTITY.IS_ENTITY_ATTACHED(Handle);
+
+		/// <summary>
+		/// Determines whether this <see cref="Entity"/> is attached to a <see cref="Prop"/>.
+		/// </summary>
+		public bool IsAttachedToAnyObject => ENTITY.IS_ENTITY_ATTACHED_TO_ANY_OBJECT(Handle);
+
+		/// <summary>
+		/// Determines whether this <see cref="Entity"/> is attached to a <see cref="Ped"/>.
+		/// </summary>
+		public bool IsAttachedToAnyPed => ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(Handle);
+
+		/// <summary>
+		/// Determines whether this <see cref="Entity"/> is attached to a <see cref="Vehicle"/>.
+		/// </summary>
+		public bool IsAttachedToAnyVehicle => ENTITY.IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(Handle);
+
+		/// <summary>
 		/// Detaches this <see cref="Entity"/> from any <see cref="Entity"/> it may be attached to.
 		/// </summary>
 		public void Detach()
@@ -636,14 +676,6 @@ namespace RDR2
 		public void AttachTo(Entity entity, int boneIndex, Vector3 position, Vector3 rotation)
 		{
 			ENTITY.ATTACH_ENTITY_TO_ENTITY(Handle, entity.Handle, boneIndex, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, false, false, false, false, 2, true, false, false);
-		}
-
-		/// <summary>
-		/// Determines whether this <see cref="Entity"/> is attached to any other <see cref="Entity"/>.
-		/// </summary>
-		public bool IsAttached()
-		{
-			return ENTITY.IS_ENTITY_ATTACHED(Handle);
 		}
 
 		/// <summary>
