@@ -27,8 +27,8 @@
     <LangVersion>8</LangVersion>
     <PackageReadmeFile></PackageReadmeFile>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>2.1.1.0</AssemblyVersion>
-    <FileVersion>2.1.1.0</FileVersion>
+    <AssemblyVersion>2.2.0</AssemblyVersion>
+    <FileVersion>2.2.0</FileVersion>
     <RootNamespace>RDR2</RootNamespace>
   </PropertyGroup>
 
