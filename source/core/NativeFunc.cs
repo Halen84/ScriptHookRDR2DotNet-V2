@@ -6,6 +6,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Security;
 
 namespace RDR2DN
 {
@@ -19,6 +20,7 @@ namespace RDR2DN
 		/// Initializes the stack for a new script function call.
 		/// </summary>
 		/// <param name="hash">The function hash to call.</param>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?nativeInit@@YAX_K@Z")]
 		static extern void NativeInit(ulong hash);
 
@@ -26,6 +28,7 @@ namespace RDR2DN
 		/// Pushes a function argument on the script function stack.
 		/// </summary>
 		/// <param name="val">The argument value.</param>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?nativePush64@@YAX_K@Z")]
 		static extern void NativePush64(ulong val);
 
@@ -33,6 +36,7 @@ namespace RDR2DN
 		/// Executes the script function call.
 		/// </summary>
 		/// <returns>A pointer to the return value of the call.</returns>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?nativeCall@@YAPEA_KXZ")]
 		static unsafe extern ulong* NativeCall();
 		#endregion
@@ -58,36 +62,40 @@ namespace RDR2DN
 		/// <param name="str">The string to push.</param>
 		static void PushString(string str)
 		{
-			
 			var domain = RDR2DN.ScriptDomain.CurrentDomain;
 			if (domain == null)
 			{
 				throw new InvalidOperationException("Illegal scripting call outside script domain.");
 			}
 
-			/*
 			ulong[] conargs = ConvertPrimitiveArguments(new object[] { 10, "LITERAL_STRING", str });
-			IntPtr strUtf8 = domain.PinString(str);
-			var strArg = (ulong)strUtf8.ToInt64();
-			*/
-
-			//ulong[] conargs = ConvertPrimitiveArguments(new object[] { 10, "LITERAL_STRING", &strArg });
-			ulong[] conargs = ConvertPrimitiveArguments(new object[] { 10, "LITERAL_STRING", str });
-			domain.ExecuteTask(new NativeTask {
+			domain.ExecuteTask(new NativeTask
+			{
 				Hash = 0xFA925AC00EB830B9, /*MISC::VAR_STRING*/
 				Arguments = conargs
 			});
 		}
 
+		/// <summary>
+		/// Splits up a string into manageable components and adds them as text components to the current text command.
+		/// This requires that a text command that accepts multiple text components is active.
+		/// </summary>
+		/// <param name="str">The string to split up.</param>
 		public static void PushLongString(string str)
 		{
 			PushLongString(str, PushString);
 		}
+
+		/// <summary>
+		/// Splits up a string into manageable components and performs an <paramref name="action"/> on them.
+		/// </summary>
+		/// <param name="str">The string to split up.</param>
+		/// <param name="action">The action to perform on the component.</param>
 		public static void PushLongString(string str, Action<string> action)
 		{
 			const int maxLengthUtf8 = 99;
 
-			if (Encoding.UTF8.GetByteCount(str) <= maxLengthUtf8)
+			if (str == null || Encoding.UTF8.GetByteCount(str) <= maxLengthUtf8)
 			{
 				action(str);
 				return;

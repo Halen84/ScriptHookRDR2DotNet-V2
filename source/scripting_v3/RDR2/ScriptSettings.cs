@@ -21,6 +21,10 @@ namespace RDR2
 			_fileName = fileName;
 		}
 
+		/// <summary>
+		/// Loads a <see cref="ScriptSettings"/> from the specified file.
+		/// </summary>
+		/// <param name="filename">The filename to load the settings from.</param>
 		public static ScriptSettings Load(string filename)
 		{
 			var result = new ScriptSettings(filename);
@@ -96,6 +100,10 @@ namespace RDR2
 			return result;
 		}
 
+		/// <summary>
+		/// Saves this <see cref="ScriptSettings"/> to file.
+		/// </summary>
+		/// <returns><see langword="true" /> if the file saved successfully; otherwise, <see langword="false" /></returns>
 		public bool Save()
 		{
 			var result = new Dictionary<string, List<Tuple<string, string>>>();
@@ -155,19 +163,30 @@ namespace RDR2
 			return true;
 		}
 
+		/// <summary>
+		/// Reads a value from this <see cref="ScriptSettings"/>.
+		/// </summary>
+		/// <param name="section">The section where the value is.</param>
+		/// <param name="name">The name of the key the value is saved at.</param>
+		/// <param name="defaultvalue">The fall-back value if the key doesn't exist or casting to type <typeparamref name="T"/> fails.</param>
 		public T GetValue<T>(string section, string name, T defaultvalue)
 		{
-			string value = GetValue(section, name);
+			string lookup = $"[{section}]{name}//0".ToUpper();
+
+			if (!_values.TryGetValue(lookup, out string internalValue))
+			{
+				return defaultvalue;
+			}
 
 			try
 			{
 				if (typeof(T).IsEnum)
 				{
-					return (T)Enum.Parse(typeof(T), value, true);
+					return (T)Enum.Parse(typeof(T), internalValue, true);
 				}
 				else
 				{
-					return (T)Convert.ChangeType(value, typeof(T));
+					return (T)Convert.ChangeType(internalValue, typeof(T));
 				}
 			}
 			catch (Exception)
@@ -175,48 +194,49 @@ namespace RDR2
 				return defaultvalue;
 			}
 		}
-		public string GetValue(string section, string key)
+
+		/// <summary>
+		/// Sets a value in this <see cref="ScriptSettings"/>.
+		/// </summary>
+		/// <param name="section">The section where the value is.</param>
+		/// <param name="name">The name of the key the value is saved at.</param>
+		/// <param name="value">The value to set the key to.</param>
+		public void SetValue<T>(string section, string name, T value)
 		{
-			return GetValue(section, key, string.Empty);
+			string lookup = $"[{section}]{name}//0".ToUpper();
+			string internalValue = value.ToString();
+
+			if (!_values.ContainsKey(lookup)) {
+				_values.Add(lookup, internalValue);
+			}
+
+			_values[lookup] = internalValue;
 		}
-		public string GetValue(string section, string key, string defaultvalue)
+
+		/// <summary>
+		/// Reads all the values at a specified key and section from this <see cref="ScriptSettings"/>.
+		/// </summary>
+		/// <param name="section">The section where the value is.</param>
+		/// <param name="name">The name of the key the values are saved at.</param>
+		public T[] GetAllValues<T>(string section, string name)
 		{
-			string lookup = $"[{section}]{key}".ToUpper();
+			var values = new List<T>();
 
-			if (_values.TryGetValue(lookup, out string value))
-				return value;
-			else
-				return defaultvalue;
-		}
-
-		public string[] GetAllValues(string section, string key)
-		{
-			var values = new List<string>();
-			string value = GetValue(section, key, null);
-
-			if (!ReferenceEquals(value, null))
-			{
-				values.Add(value);
-
-				for (int i = 1; _values.TryGetValue($"[{section}]{key}//{i}".ToUpper(), out value); ++i)
-					values.Add(value);
+			for (int i = 0; _values.TryGetValue($"[{section}]{name}//{i}".ToUpper(), out string internalValue); ++i) {
+				try {
+					if (typeof(T).IsEnum) {
+						values.Add((T)Enum.Parse(typeof(T), internalValue, true));
+					}
+					else {
+						values.Add((T)Convert.ChangeType(internalValue, typeof(T)));
+					}
+				}
+				catch {
+					continue;
+				}
 			}
 
 			return values.ToArray();
-		}
-
-		public void SetValue<T>(string section, string name, T value)
-		{
-			SetValue(section, name, value.ToString());
-		}
-		public void SetValue(string section, string key, string value)
-		{
-			string lookup = $"[{section}]{key}".ToUpper();
-
-			if (!_values.ContainsKey(lookup))
-				_values.Add(lookup, value);
-			else
-				_values[lookup] = value;
 		}
 	}
 }

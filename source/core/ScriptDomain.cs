@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -21,6 +22,11 @@ namespace RDR2DN
 
 	public class ScriptDomain : MarshalByRefObject, IDisposable
 	{
+		// Debugger.IsAttached does not detect a Visual Studio debugger
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport("Kernel32.dll")]
+		internal static extern bool IsDebuggerPresent();
+
 		int executingThreadId = Thread.CurrentThread.ManagedThreadId;
 		Script executingScript = null;
 		List<IntPtr> pinnedStrings = new List<IntPtr>();
@@ -81,8 +87,6 @@ namespace RDR2DN
 				try
 				{
 					scriptApis.Add(Assembly.LoadFrom(apiPath));
-					Log.Message(Log.Level.Debug, "API from ", apiPath, " loaded", " ...");
-
 				}
 				catch (Exception ex)
 				{
@@ -419,15 +423,15 @@ namespace RDR2DN
 			}
 
 			// Find all script files and assemblies in the specified script directory
-			var filenamesSource = new List<string>();
-			var filenamesAssembly = new List<string>();
+			var sourceFiles = new List<string>();
+			var assemblyFiles = new List<string>();
 
 			try
 			{
-				filenamesSource.AddRange(Directory.GetFiles(ScriptPath, "*.vb", SearchOption.AllDirectories));
-				filenamesSource.AddRange(Directory.GetFiles(ScriptPath, "*.cs", SearchOption.AllDirectories));
+				sourceFiles.AddRange(Directory.GetFiles(ScriptPath, "*.vb", SearchOption.AllDirectories));
+				sourceFiles.AddRange(Directory.GetFiles(ScriptPath, "*.cs", SearchOption.AllDirectories));
 
-				filenamesAssembly.AddRange(Directory.GetFiles(ScriptPath, "*.dll", SearchOption.AllDirectories)
+				assemblyFiles.AddRange(Directory.GetFiles(ScriptPath, "*.dll", SearchOption.AllDirectories)
 					.Where(x => IsManagedAssembly(x)));
 			}
 			catch (Exception ex)
@@ -436,31 +440,31 @@ namespace RDR2DN
 			}
 
 			// Filter out non-script assemblies
-			for (int i = 0; i < filenamesAssembly.Count; i++)
+			for (int i = 0; i < assemblyFiles.Count; i++)
 			{
 				try
 				{
-					var assemblyName = AssemblyName.GetAssemblyName(filenamesAssembly[i]);
+					var assemblyName = AssemblyName.GetAssemblyName(assemblyFiles[i]);
 
 					if (assemblyName.Name.StartsWith("ScriptHookRDRDotNet", StringComparison.OrdinalIgnoreCase))
 					{
 						// Delete copies of ScriptHookRDRDotNet, since these can cause issues with the assembly binder loading multiple copies
-						File.Delete(filenamesAssembly[i]);
+						File.Delete(assemblyFiles[i]);
 
-						filenamesAssembly.RemoveAt(i--);
+						assemblyFiles.RemoveAt(i--);
 					}
 				}
 				catch (Exception ex)
 				{
-					Log.Message(Log.Level.Warning, "Ignoring assembly file ", Path.GetFileName(filenamesAssembly[i]), " because of exception: ", ex.ToString());
+					Log.Message(Log.Level.Warning, "Ignoring assembly file ", Path.GetFileName(assemblyFiles[i]), " because of exception: ", ex.ToString());
 
-					filenamesAssembly.RemoveAt(i--);
+					assemblyFiles.RemoveAt(i--);
 				}
 			}
 
-			foreach (var filename in filenamesSource)
+			foreach (var filename in sourceFiles)
 				LoadScriptsFromSource(filename);
-			foreach (var filename in filenamesAssembly)
+			foreach (var filename in assemblyFiles)
 				LoadScriptsFromAssembly(filename);
 
 			// Instantiate scripts after they were all loaded, so that dependencies are launched with the right ordering
@@ -589,7 +593,8 @@ namespace RDR2DN
 
 				executingScript = null;
 
-				if (!finishedInTime)
+				// Tolerate long execution time if a debugger is attached since some script may be debugged using breakpoints
+				if (!finishedInTime && !IsDebuggerPresent())
 				{
 					Log.Message(Log.Level.Error, "Script '", script.Name, "' is not responding! Aborting ...");
 
@@ -833,6 +838,18 @@ namespace RDR2DN
 				return compatibleApi;
 			}
 
+			// Try to resolve referenced assemblies that the assembly loader failed to find by itself (e.g. because they are in a subdirectory of the scripts directory)
+			if (CurrentDomain != null)
+			{
+				string filename = Directory.GetFiles(CurrentDomain.ScriptPath, "*.dll", SearchOption.AllDirectories)
+					.Where(x => x.EndsWith(assemblyName.Name + ".dll", StringComparison.OrdinalIgnoreCase))
+					.FirstOrDefault();
+				if (filename != null)
+				{
+					return Assembly.LoadFrom(filename);
+				}
+			}
+
 			return null;
 		}
 
@@ -849,7 +866,7 @@ namespace RDR2DN
 
 				// Show a notification with the script crash information
 				var domain = ScriptDomain.CurrentDomain;
-				if (domain != null && domain.executingScript != null)
+				if (domain != null && domain.executingScript != null && !args.IsTerminating)
 				{
 					unsafe
 					{

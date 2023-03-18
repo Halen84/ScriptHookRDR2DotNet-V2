@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Security;
 using static System.Runtime.InteropServices.Marshal;
 
 namespace RDR2DN
@@ -26,6 +27,7 @@ namespace RDR2DN
 		/// <summary>
 		/// Gets the game version enumeration value as specified by ScriptHookRDR2.
 		/// </summary>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getGameVersion@@YA?AW4eGameVersion@@XZ")]
 		public static extern int GetGameVersion();
 
@@ -34,33 +36,42 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="index">The variable ID to query.</param>
 		/// <returns>Pointer to the variable, or <see cref="IntPtr.Zero"/> if it does not exist.</returns>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getGlobalPtr@@YAPEA_KH@Z")]
 		public static extern IntPtr GetGlobalPtr(int index);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getScriptHandleBaseAddress@@YAPEAEH@Z")]
 		static extern IntPtr GetScriptHandleBaseAddress(int handle);
 
 		// Pools
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllObjects@@YAHPEAHH@Z")]
 		public static extern int worldGetAllObjects(int[] arr, int arrSize);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPeds@@YAHPEAHH@Z")]
 		public static extern int worldGetAllPeds(int[] arr, int arrSize);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllPickups@@YAHPEAHH@Z")]
 		public static extern int worldGetAllPickups(int[] arr, int arrSize);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVehicles@@YAHPEAHH@Z")]
 		public static extern int worldGetAllVehicles(int[] arr, int arrSize);
 
 #if CPP_SCRIPTHOOKRDR_V2
-		
+
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllBlips@@YAHPEAHH@Z")]
 		public static extern int worldGetAllBlips(int[] arr, int arrSize);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllCams@@YAHPEAHH@Z")]
 		public static extern int worldGetAllCams(int[] arr, int arrSize);
 
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?worldGetAllVolumes@@YAHPEAHH@Z")]
 		public static extern int worldGetAllVolumes(int[] arr, int arrSize);
 
@@ -69,6 +80,7 @@ namespace RDR2DN
 		/// <param name="oldLabel">The old label to replace</param>
 		/// <param name="newLabel">Your new label</param>
 		/// </summary>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?switchLabel@@YAXPEBD0@Z")]
 		public static extern int SwitchLabel([MarshalAs(UnmanagedType.LPStr)] string oldLabel, [MarshalAs(UnmanagedType.LPStr)] string newLabel);
 
@@ -78,6 +90,7 @@ namespace RDR2DN
 		/// <param name="scriptName">The script name</param>
 		/// <param name="staticIndex">The local variable index</param>
 		/// <returns>Pointer to the variable, or <see cref="IntPtr.Zero"/> if it does not exist.</returns>
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport("ScriptHookRDR2.dll", ExactSpelling = true, EntryPoint = "?getStaticPtr@@YAPEA_KPEBDH@Z")]
 		public static extern IntPtr GetStaticPtr([MarshalAs(UnmanagedType.LPStr)] string scriptName, int staticIndex);
 

@@ -1,6 +1,15 @@
-bool sGameReloaded = false;
+//
+// Copyright (C) 2015 crosire & contributors
+// License: https://github.com/crosire/ScriptHookRDR2dotnet#license
+//
 
-#pragma managed
+#pragma managed(push, off)
+
+#include <Windows.h>
+
+#pragma managed(pop)
+
+bool sGameReloaded = false;
 
 // Import C# code base
 #using "ScriptHookRDRDotNet.netmodule"
@@ -10,24 +19,19 @@ using namespace System::Collections::Generic;
 using namespace System::Reflection;
 namespace WinForms = System::Windows::Forms;
 
-[assembly:AssemblyTitleAttribute("Script Hook RDR2 .NET")];
-[assembly:AssemblyCompanyAttribute("Salty, SHVDN: crosire & contributors")];
-[assembly:AssemblyProductAttribute("ScriptHookRDRDotNet")];
-[assembly:AssemblyDescriptionAttribute("An ASI plugin for Red Dead Redemption 2, which allows running scripts written in any .NET language in-game.")];
-[assembly:AssemblyVersionAttribute("1.5.5.4")];
-
-/*
+[assembly:AssemblyTitle("Script Hook RDR2 .NET")];
+[assembly:AssemblyDescription("An ASI plugin for Red Dead Redemption 2, which allows running scripts written in any .NET language in-game.")];
+[assembly:AssemblyCompany("Salty, SHVDN: crosire & contributors")];
+[assembly:AssemblyProduct("ScriptHookRDRDotNet")];
+[assembly:AssemblyCopyright("Copyright © 2015 crosire | Copyright © 2019 Salty")];
 [assembly:AssemblyVersion("1.5.5.4")];
 [assembly:AssemblyFileVersion("1.5.5.4")];
-*/
-
-[assembly:AssemblyCopyrightAttribute("Copyright © 2015 crosire | Copyright © 2019 Salty")];
 // Sign with a strong name to distinguish from older versions and cause .NET framework runtime to bind the correct assemblies
 // There is no version check performed for assemblies without strong names (https://docs.microsoft.com/en-us/dotnet/framework/deployment/how-the-runtime-locates-assemblies)
 [assembly:AssemblyKeyFileAttribute("PublicKeyToken.snk")];
 
 
-public ref class ScriptHookRDRDotNet
+public ref class ScriptHookRDRDotNet // This is not a static class, so that console scripts can inherit from it
 {
 public:
 	[RDR2DN::ConsoleCommand("Print the default help")]
@@ -40,6 +44,7 @@ public:
 		console->PrintInfo("~c~--- Commands ---");
 		console->PrintHelpText();
 	}
+
 	[RDR2DN::ConsoleCommand("Print the help for a specific command")]
 	static void Help(String^ command)
 	{
@@ -77,6 +82,7 @@ public:
 
 		domain->StartScripts(filename);
 	}
+
 	[RDR2DN::ConsoleCommand("Abort all scripts from a file")]
 	static void Abort(String^ filename)
 	{
@@ -93,6 +99,7 @@ public:
 
 		domain->AbortScripts(filename);
 	}
+
 	[RDR2DN::ConsoleCommand("Abort all scripts currently running")]
 	static void AbortAll()
 	{
@@ -119,8 +126,13 @@ internal:
 	{
 		console = (RDR2DN::Console^)AppDomain::CurrentDomain->GetData("Console");
 	}
-
 };
+
+static void ForceCLRInit()
+{
+	// Just a function that doesn't do anything, except for being compiled to MSIL
+}
+
 static void ScriptHookRDRDotNet_ManagedInit()
 {
 	RDR2DN::Console^% console = ScriptHookRDRDotNet::console;
@@ -167,9 +179,6 @@ static void ScriptHookRDRDotNet_ManagedInit()
 			else if (data[0] == "ScriptsLocation")
 				scriptPath = data[1];
 		}
-
-		RDR2DN::Log::Message(RDR2DN::Log::Level::Info, "Config loaded from ", IO::Path::ChangeExtension(Assembly::GetExecutingAssembly()->Location, ".ini"));
-
 	}
 	catch (Exception ^ ex)
 	{
@@ -280,64 +289,34 @@ static void ScriptHookRDRDotNet_ManagedKeyboardMessage(unsigned long keycode, bo
 #pragma unmanaged
 
 #include <Main.h>
-#include <Windows.h>
-#include <WinBase.h>
 
 PVOID sGameFiber = nullptr;
-PVOID sScriptFiber = nullptr;
 
 static void ScriptMain()
 {
-	sGameReloaded = true;
-
 	// ScriptHookRDR2 already turned the current thread into a fiber, so we can safely retrieve it.
 	sGameFiber = GetCurrentFiber();
 
-	// Check if our CLR fiber already exists. It should be created only once for the entire lifetime of the game process.
-	if (sScriptFiber == nullptr)
-	{
-		
-		const LPFIBER_START_ROUTINE FiberMain = [](LPVOID lpFiberParameter) {
-			// Main script execution loop
-			while (true)
-			{
-				sGameReloaded = false;
-
-				ScriptHookRDRDotNet_ManagedInit();
-
-				// If the game is reloaded, ScriptHookRDR2 will call the script main function again.
-				// This will set the global 'sGameReloaded' variable to 'true' and on the next fiber switch to our CLR fiber, run into this condition, therefore exiting the inner loop and re-initialize.
-				while (!sGameReloaded)
-				{
-					ScriptHookRDRDotNet_ManagedTick();
-
-					// Switch back to main script fiber used by ScriptHookRDR2.
-					// Code continues from here the next time the loop below switches back to our CLR fiber.
-					SwitchToFiber(sGameFiber);
-				}
-
-
-			}
-		};
-
-		// Create our own fiber for the common language runtime, aka CLR, once.
-		// This is done because ScriptHookRDR2 switches its internal fibers sometimes, which would corrupt the CLR stack.
-		sScriptFiber = CreateFiber(0, FiberMain, nullptr);
-	}
-
 	while (true)
 	{
-		// Yield execution and give it back to ScriptHookRDR2.
-		scriptWait(0);
+		sGameReloaded = false;
 
-		// Switch to our CLR fiber and wait for it to switch back.
-		SwitchToFiber(sScriptFiber);
+		ScriptHookRDRDotNet_ManagedInit();
+
+		while (!sGameReloaded)
+		{
+			// ScriptHookRDR2 creates a new fiber only right after a "Started thread" message is written to the log
+			const PVOID currentFiber = GetCurrentFiber();
+			if (currentFiber != sGameFiber) {
+				sGameFiber = currentFiber;
+				sGameReloaded = true;
+				break;
+			}
+
+			ScriptHookRDRDotNet_ManagedTick();
+			scriptWait(0);
+		}
 	}
-}
-
-static void ScriptCleanup()
-{
-	DeleteFiber(sScriptFiber);
 }
 
 static void ScriptKeyboardMessage(DWORD key, WORD repeats, BYTE scanCode, BOOL isExtended, BOOL isWithAlt, BOOL wasDownBefore, BOOL isUpNow)
@@ -357,13 +336,16 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpvReserved)
 	case DLL_PROCESS_ATTACH:
 		// Avoid unnecessary DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 		DisableThreadLibraryCalls(hModule);
+		// Call a managed function to force the CLR to initialize immediately
+		// This is technically a very bad idea (https://learn.microsoft.com/cpp/dotnet/initialization-of-mixed-assemblies), but fixes a crash that would otherwise occur when the CLR is initialized later on
+		if (!GetModuleHandle(TEXT("clr.dll")))
+			ForceCLRInit();
 		// Register ScriptHookRDRDotNet native script
 		scriptRegister(hModule, ScriptMain);
 		// Register handler for keyboard messages
 		keyboardHandlerRegister(ScriptKeyboardMessage);
 		break;
 	case DLL_PROCESS_DETACH:
-		ScriptCleanup();
 		// Unregister ScriptHookRDRDotNet native script
 		scriptUnregister(hModule);
 		// Unregister handler for keyboard messages
