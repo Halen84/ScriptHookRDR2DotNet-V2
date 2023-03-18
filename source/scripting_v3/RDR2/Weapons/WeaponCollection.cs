@@ -129,7 +129,7 @@ namespace RDR2
 			return true;
 		}
 
-		public Weapon Give(uint hash, int ammoCount, bool equipNow, bool isAmmoLoaded)
+		public Weapon Give(uint hash, int ammoCount)
 		{
 			if (!weapons.TryGetValue(hash, out Weapon weapon))
 			{
