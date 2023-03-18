@@ -1,89 +1,86 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using RDR2.Native;
 
 namespace RDR2.UI
 {
-	public sealed class Prompt : IHandleable
+	internal sealed class Prompt : IHandleable
 	{
 		public int Handle { get; private set; }
+
+		public Prompt(int handle)
+		{
+			Handle = handle;
+		}
 
 		/// <summary>
 		/// Create a interactable HUD prompt.
 		/// </summary>
-		/// <param name="control">The prompt control action</param>
-		/// <param name="mode">The prompt mode/type</param>
-		/// <param name="text">The prompt text</param>
-		/// <param name="numMashes">The number of mashes required to fill the prompt if <see cref="eUseContextMode"/> is mashable</param>
-		/// <param name="holdTime">The amount of time it takes to fill the prompt by holding it</param>
-		/// <param name="depletionTime">The amount of time it takes for the prompt to deplete</param>
-		/// <param name="fillTime">The amount of time it takes to automatically fill the prompt</param>
-		/// <param name="timedEvent">Timed event hash</param>
-		public Prompt(eInputType control, eUseContextMode mode, string text, int numMashes = 0, int holdTime = 4000, int depletionTime = 4000, int fillTime = 4000, PromptTimingEvent timedEvent = 0)
+		public static Prompt CreatePrompt(eInputType control, eUseContextMode mode, string text, int numMashes = 0, int holdTimeMs = 4000, int depletionTimeMs = 4000, int fillTimeMs = 4000, PromptTimingEvent timedEvent = 0)
 		{
-			Handle = HUD._UI_PROMPT_REGISTER_BEGIN();
-			HUD._UI_PROMPT_SET_CONTROL_ACTION(Handle, (uint)control);
-			Text = text;
-			Priority = 3;
+			Prompt prompt = new Prompt(HUD._UI_PROMPT_REGISTER_BEGIN());
+			HUD._UI_PROMPT_SET_CONTROL_ACTION(prompt.Handle, (uint)control);
+			prompt.Text = text;
+			prompt.Priority = 3;
 
 			switch (mode)
 			{
 				case eUseContextMode.Press:
-					HUD._UI_PROMPT_SET_STANDARD_MODE(Handle, false);
+					HUD._UI_PROMPT_SET_STANDARD_MODE(prompt.Handle, false);
 					break;
 				case eUseContextMode.TimedPress:
-					HUD._UI_PROMPT_SET_PRESSED_TIMED_MODE(Handle, depletionTime);
+					HUD._UI_PROMPT_SET_PRESSED_TIMED_MODE(prompt.Handle, depletionTimeMs);
 					break;
 				case eUseContextMode.Release:
-					HUD._UI_PROMPT_SET_STANDARD_MODE(Handle, true);
+					HUD._UI_PROMPT_SET_STANDARD_MODE(prompt.Handle, true);
 					break;
 				case eUseContextMode.Hold:
-					HUD._UI_PROMPT_SET_HOLD_INDEFINITELY_MODE(Handle);
+					HUD._UI_PROMPT_SET_HOLD_INDEFINITELY_MODE(prompt.Handle);
 					break;
 				case eUseContextMode.TimedEvent:
-					HUD._UI_PROMPT_SET_STANDARDIZED_HOLD_MODE(Handle, (uint)timedEvent);
+					HUD._UI_PROMPT_SET_STANDARDIZED_HOLD_MODE(prompt.Handle, (uint)timedEvent);
 					break;
 				case eUseContextMode.AutoFill:
-					HUD._UI_PROMPT_SET_HOLD_AUTO_FILL_MODE(Handle, fillTime, holdTime);
+					HUD._UI_PROMPT_SET_HOLD_AUTO_FILL_MODE(prompt.Handle, fillTimeMs, holdTimeMs);
 					break;
 				case eUseContextMode.AutoFillWithDecay:
-					HUD._UI_PROMPT_SET_HOLD_AUTO_FILL_WITH_DECAY_MODE(Handle, fillTime, holdTime);
+					HUD._UI_PROMPT_SET_HOLD_AUTO_FILL_WITH_DECAY_MODE(prompt.Handle, fillTimeMs, holdTimeMs);
 					break;
 				case eUseContextMode.Mash:
-					HUD._UI_PROMPT_SET_MASH_MODE(Handle, numMashes);
+					HUD._UI_PROMPT_SET_MASH_MODE(prompt.Handle, numMashes);
 					break;
 				case eUseContextMode.MashAutoFill:
-					HUD._UI_PROMPT_SET_MASH_AUTO_FILL_MODE(Handle, fillTime, numMashes);
+					HUD._UI_PROMPT_SET_MASH_AUTO_FILL_MODE(prompt.Handle, fillTimeMs, numMashes);
 					break;
 				case eUseContextMode.MashResistance:
-					HUD._UI_PROMPT_SET_MASH_WITH_RESISTANCE_MODE(Handle, numMashes, 0.0f, 0.0f); // TODO: Figure out what these floats do
+					HUD._UI_PROMPT_SET_MASH_WITH_RESISTANCE_MODE(prompt.Handle, numMashes, 0.0f, 0.0f); // TODO: Figure out what these floats do
 					break;
 				case eUseContextMode.MashResistanceCanFail:
-					HUD._UI_PROMPT_SET_MASH_WITH_RESISTANCE_CAN_FAIL_MODE(Handle, numMashes, 0.0f, 0.0f); // TODO: Figure out what these floats do
+					HUD._UI_PROMPT_SET_MASH_WITH_RESISTANCE_CAN_FAIL_MODE(prompt.Handle, numMashes, 0.0f, 0.0f); // TODO: Figure out what these floats do
 					break;
 				case eUseContextMode.MashResistanceDynamic:
-					HUD._UI_PROMPT_SET_MASH_MANUAL_MODE(Handle, (1.0f / 10.0f), 0.0f, 0.0f, 0); // TODO: Figure out what these floats do
+					HUD._UI_PROMPT_SET_MASH_MANUAL_MODE(prompt.Handle, (1.0f / 10.0f), 0.0f, 0.0f, 0); // TODO: Figure out what these floats do
 					break;
 				case eUseContextMode.MashResistanceDynamicCanFail:
-					HUD._UI_PROMPT_SET_MASH_MANUAL_CAN_FAIL_MODE(Handle, (1.0f / 10.0f), 0.0f, 0.0f, 0); // TODO: Figure out what these floats do
+					HUD._UI_PROMPT_SET_MASH_MANUAL_CAN_FAIL_MODE(prompt.Handle, (1.0f / 10.0f), 0.0f, 0.0f, 0); // TODO: Figure out what these floats do
 					break;
 				case eUseContextMode.MashIndefinitely:
-					HUD._UI_PROMPT_SET_MASH_INDEFINITELY_MODE(Handle);
+					HUD._UI_PROMPT_SET_MASH_INDEFINITELY_MODE(prompt.Handle);
 					break;
 				case eUseContextMode.Rotate:
-					HUD._UI_PROMPT_SET_ROTATE_MODE(Handle, 1.0f, false);
-					HUD._UI_PROMPT_SET_ATTRIBUTE(Handle, 10, true);
+					HUD._UI_PROMPT_SET_ROTATE_MODE(prompt.Handle, 1.0f, false);
+					HUD._UI_PROMPT_SET_ATTRIBUTE(prompt.Handle, 10, true);
 					break;
 				case eUseContextMode.TargetMeter:
-					HUD._UI_PROMPT_SET_TARGET_MODE(Handle, 0.5f, 0.1f, 0);
+					HUD._UI_PROMPT_SET_TARGET_MODE(prompt.Handle, 0.5f, 0.1f, 0);
 					break;
 				default:
 					break;
 			}
 
-			HUD._UI_PROMPT_REGISTER_END(Handle);
-			Visible = false;
-			Enabled = false;
+			HUD._UI_PROMPT_REGISTER_END(prompt.Handle);
+			prompt.Visible = false;
+			prompt.Enabled = false;
+			return prompt;
 		}
 
 		private string _text;
@@ -93,12 +90,12 @@ namespace RDR2.UI
 		/// </summary>
 		public string Text
 		{
+			// TODO: Fix this. Only works with strings already registered in the database.
+			// VAR_STRING does not work with this.
 			get => _text;
 			set {
-				// TODO: Doesn't work?
 				_text = value;
-				string varString = MISC.VAR_STRING(10, "LITERAL_STRING", value);
-				HUD._UI_PROMPT_SET_TEXT(Handle, varString);
+				HUD._UI_PROMPT_SET_TEXT(Handle, value);
 			}
 		}
 
