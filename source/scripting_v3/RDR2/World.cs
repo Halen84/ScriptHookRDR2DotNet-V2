@@ -7,6 +7,8 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
+using System.Security;
 
 namespace RDR2
 {
@@ -119,13 +121,6 @@ namespace RDR2
 
 		}*/
 
-
-		/*
-		public static int GravityLevel
-		{
-			set => Function.Call(Hash.SET_GRAVITY_LEVEL, value);
-		}*/
-
 		#endregion
 
 		#region Blips
@@ -146,10 +141,26 @@ namespace RDR2
 
 		#region Entities
 
+		/// <summary>
+		/// Gets all of the <see cref="Ped"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Ped"/>s found</returns>
+		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllPeds() failed</remarks>
+		[HandleProcessCorruptedStateExceptions]
 		public static Ped[] GetAllPeds()
 		{
 			int[] peds = new int[1024];
-			int count = RDR2DN.NativeMemory.worldGetAllPeds(peds, 1024);
+			int count = 0;
+
+			// So for some reason, ScriptHookRDR2 likes to error at random when accessing pools so
+			// we'll wrap this in a try catch and return empty if the call fails and prevent a crash.
+			// https://github.com/Halen84/ScriptHookRDR2DotNet-V2/issues/2
+			try {
+				count = RDR2DN.NativeMemory.worldGetAllPeds(peds, 1024);
+			}
+			catch {
+				return Array.Empty<Ped>();
+			}
 
 			List<Ped> Peds = new List<Ped>();
 			for (int i = 0; i < count; i++)
@@ -158,10 +169,23 @@ namespace RDR2
 			return Peds.ToArray();
 		}
 
+		/// <summary>
+		/// Gets all of the <see cref="Vehicle"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Vehicle"/>s found</returns>
+		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllVehicles() failed</remarks>
+		[HandleProcessCorruptedStateExceptions]
 		public static Vehicle[] GetAllVehicles()
 		{
 			int[] vehs = new int[1024];
-			int count = RDR2DN.NativeMemory.worldGetAllVehicles(vehs, 1024);
+			int count = 0;
+
+			try {
+				count = RDR2DN.NativeMemory.worldGetAllVehicles(vehs, 1024);
+			}
+			catch {
+				return Array.Empty<Vehicle>();
+			}
 
 			List<Vehicle> Vehs = new List<Vehicle>();
 			for (int i = 0; i < count; i++)
@@ -170,10 +194,23 @@ namespace RDR2
 			return Vehs.ToArray();
 		}
 
+		/// <summary>
+		/// Gets all of the <see cref="Prop"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Prop"/>s found</returns>
+		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllObjects() failed</remarks>
+		[HandleProcessCorruptedStateExceptions]
 		public static Prop[] GetAllObjects()
 		{
 			int[] props = new int[1024];
-			int count = RDR2DN.NativeMemory.worldGetAllObjects(props, 1024);
+			int count = 0;
+
+			try {
+				count = RDR2DN.NativeMemory.worldGetAllObjects(props, 1024);
+			}
+			catch {
+				return Array.Empty<Prop>();
+			}
 
 			List<Prop> Prop = new List<Prop>();
 			for (int i = 0; i < count; i++)
@@ -184,9 +221,15 @@ namespace RDR2
 
 #if CPP_SCRIPTHOOKRDR_V2
 
+		/// <summary>
+		/// Gets all of the <see cref="Blip"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Blips"/>s found</returns>
 		public static Blip[] GetAllBlips()
 		{
 			int[] blips = new int[1024];
+
+			// ScriptHookRDR2 V2 pools don't crash, so no need for a try catch
 			int count = RDR2DN.NativeMemory.worldGetAllBlips(blips, 1024);
 
 			List<Blip> blipsArr = new List<Blip>();
@@ -196,6 +239,10 @@ namespace RDR2
 			return blipsArr.ToArray();
 		}
 
+		/// <summary>
+		/// Gets all of the <see cref="Camera"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Camera"/>s found</returns>
 		public static Camera[] GetAllCams()
 		{
 			int[] cams = new int[1024];
@@ -208,6 +255,10 @@ namespace RDR2
 			return cameras.ToArray();
 		}
 
+		/// <summary>
+		/// Gets all of the <see cref="Volume"/>s currently spawned/loaded in the game world
+		/// </summary>
+		/// <returns>An <see cref="Array"/> of all <see cref="Volume"/>s found</returns>
 		public static int[] GetAllVolumes()
 		{
 			int[] vols = new int[1024];
@@ -364,7 +415,17 @@ namespace RDR2
 			var handle = OBJECT.CREATE_PICKUP((uint)type, pos.X, pos.Y, pos.Z, 32770, 0, true, 0, 0, 0.0f, 0);
 			return new Pickup(handle);
 		}
-#endregion
+
+		public static void SetAmbientRoadPopulationEnabled(bool enabled)
+		{
+			if (enabled) {
+				POPULATION.ENABLE_AMBIENT_ROAD_POPULATION();
+			}
+			else {
+				POPULATION.DISABLE_AMBIENT_ROAD_POPULATION(true);
+			}
+		}
+		#endregion
 
 		#region Cameras
 
@@ -438,16 +499,16 @@ namespace RDR2
 		{
 			PED.REMOVE_RELATIONSHIP_GROUP(group);
 		}
-		public static Relationship GetRelationshipBetweenGroups(uint group1, uint group2)
+		public static eRelationshipType GetRelationshipBetweenGroups(uint group1, uint group2)
 		{
-			return (Relationship)PED.GET_RELATIONSHIP_BETWEEN_GROUPS(group1, group2);
+			return (eRelationshipType)PED.GET_RELATIONSHIP_BETWEEN_GROUPS(group1, group2);
 		}
-		public static void SetRelationshipBetweenGroups(Relationship relationship, uint group1, uint group2)
+		public static void SetRelationshipBetweenGroups(eRelationshipType relationship, uint group1, uint group2)
 		{
 			PED.SET_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group1, group2);
 			PED.SET_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group2, group1);
 		}
-		public static void ClearRelationshipBetweenGroups(Relationship relationship, uint group1, uint group2)
+		public static void ClearRelationshipBetweenGroups(eRelationshipType relationship, uint group1, uint group2)
 		{
 			PED.CLEAR_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group1, group2);
 			PED.CLEAR_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, group2, group1);
@@ -479,18 +540,17 @@ namespace RDR2
 		/// <param name="textureName">Name of texture inside the dictionary to load the texture from, leave null for no texture in the marker.</param>
 		/// <param name="drawOnEntity">if set to <c>true</c> draw on any <see cref="Entity"/> that intersects the marker.</param>
 		public static void DrawMarker(MarkerType type, Vector3 pos, Vector3 dir, Vector3 rot, Vector3 scale, Color color,
-		 bool bobUpAndDown = false, bool faceCamera = false, bool rotateY = false, string textueDict = null, string textureName = null, bool drawOnEntity = false)
+		 bool bobUpAndDown = false, bool faceCamera = false, bool rotateY = false, string textueDict = "", string textureName = "", bool drawOnEntity = false)
 		{
 			if (!string.IsNullOrEmpty(textueDict) && !string.IsNullOrEmpty(textureName))
 			{
-				GRAPHICS._DRAW_MARKER((uint)type, pos.X, pos.Y, pos.Z, dir.X, dir.Y, dir.Z, rot.X, rot.Y, rot.Z, scale.X,
-				 scale.Y, scale.Z, color.R, color.G, color.B, color.A, bobUpAndDown, faceCamera, 2, rotateY, textueDict,
-				 textureName, drawOnEntity);
+				GRAPHICS._DRAW_MARKER((uint)type, pos, dir, rot, scale, color.R, color.G, color.B, color.A,
+					bobUpAndDown, faceCamera, 2, rotateY, textueDict, textureName, drawOnEntity);
 			}
 			else
 			{
-				GRAPHICS._DRAW_MARKER((uint)type, pos.X, pos.Y, pos.Z, dir.X, dir.Y, dir.Z, rot.X, rot.Y, rot.Z, scale.X,
-				 scale.Y, scale.Z, color.R, color.G, color.B, color.A, bobUpAndDown, faceCamera, 2, rotateY, "", "", drawOnEntity);
+				GRAPHICS._DRAW_MARKER((uint)type, pos, dir, rot, scale, color.R, color.G, color.B, color.A,
+					bobUpAndDown, faceCamera, 2, rotateY, "", "", drawOnEntity);
 			}
 		}
 		#endregion
