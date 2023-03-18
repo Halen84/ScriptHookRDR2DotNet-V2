@@ -7,7 +7,6 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using RDR2.Math;
@@ -24,12 +23,9 @@ namespace RDR2.Native
 	[StructLayout(LayoutKind.Explicit, Size = 0x18)]
 	internal struct scrVector3
 	{
-		[FieldOffset(0x00)]
-		internal float X;
-		[FieldOffset(0x08)]
-		internal float Y;
-		[FieldOffset(0x10)]
-		internal float Z;
+		[FieldOffset(0x00)] internal float X;
+		[FieldOffset(0x08)] internal float Y;
+		[FieldOffset(0x10)] internal float Z;
 
 		internal scrVector3(float x, float y, float z)
 		{
@@ -85,7 +81,7 @@ namespace RDR2.Native
 	public class InputArgument
 	{
 		internal ulong data;
-		internal List<ulong> aData = new List<ulong>();
+		internal List<ulong> arData = new List<ulong>();
 
 		public InputArgument(ulong value)	{ data = value; }
 		public InputArgument(object value)	{ data = Function.ObjectToNative(value); }
@@ -93,12 +89,12 @@ namespace RDR2.Native
 		{
 			// Copy the data over
 			for (int i = 0; i < value.Length; i++) {
-				aData.Add(value[i].data);
+				arData.Add(value[i].data);
 			}
 		}
 
 		// Types - ctor
-		public InputArgument([MarshalAs(UnmanagedType.U1)] bool value)	: this(value ? 1UL : 0UL) { }
+		public InputArgument([MarshalAs(UnmanagedType.U1)] bool value) : this(value ? 1UL : 0UL) { }
 		public InputArgument(int value)		: this((uint)value) { }
 		public InputArgument(uint value)	: this((ulong)value) { }
 		public InputArgument(double value)	: this((float)value) { }
@@ -133,90 +129,66 @@ namespace RDR2.Native
 	}
 
 
-	internal static class Function
+	public static class Function
 	{
-		public static T Call<T>(ulong hash, params InputArgument[] arguments)
+		internal static ulong[] FillArgsArray(InputArgument[] arguments)
 		{
-			int arraySize = arguments.Length;
-			int variadicSize = 0;
+			int argCount = arguments.Length;
+			int variadicArgsCount = 0;
 
-			// Check if we can even access InputArgument::aData
-			if (arraySize > 0) {
-				// Both template natives have their templated args as the last param
-				variadicSize = arguments[arguments.Length - 1].aData.Count;
+			if (argCount > 0) {
+				// Both template natives have their templated param as the last one
+				variadicArgsCount = arguments[arguments.Length - 1].arData.Count;
+				// Check if this is a templated native, and get number of params passed to it
+				if (variadicArgsCount > 0) {
+					// -1 because the variadic param array counts as +1 param length
+					// which would end up making our array size 1 more than it should be
+					argCount += variadicArgsCount - 1;
+				}
 			}
 
-			// If this is a templated native, then increase array size
-			if (variadicSize > 0) {
-				// Subtract 1 from arg length because the variadic arg array counts as a param length
-				// which would end up making our array size 1 more than it should be
-				arraySize = (arguments.Length - 1) + variadicSize;
-			}
+			ulong[] args = new ulong[argCount];
 
-			ulong[] args = new ulong[arraySize];
-
-			// Add args
-			int len = (variadicSize > 0 ? (arguments.Length - 1) : arguments.Length);
+			// Add InputArgument.Data
+			int len = (variadicArgsCount > 0 ? (arguments.Length - 1) : arguments.Length);
 			for (int i = 0; i < len; i++) {
 				args[i] = arguments[i].data;
 			}
 
-			// Add __VA_ARGS__
-			if (variadicSize > 0) {
-				for (int i = 0; i < variadicSize; i++) {
-					// assign the rest of the args array with aData content
-					args[i + (args.Length - variadicSize)] = arguments[arguments.Length - 1].aData[i];
+			// Add InputArgument.arData
+			if (variadicArgsCount > 0) {
+				for (int i = 0; i < variadicArgsCount; i++) {
+					args[i + (args.Length - variadicArgsCount)] = arguments[arguments.Length - 1].arData[i];
 				}
 			}
 
-			unsafe {
-				var res = RDR2DN.NativeFunc.Invoke(hash, args);
+			return args;
+		}
 
-				// The result will be null when this method is called from a thread other than the main thread
-				if (res == null) {
-					throw new InvalidOperationException("Native.Function.Call can only be called from the main thread.");
-				}
+		public static unsafe T Call<T>(ulong hash, params InputArgument[] arguments)
+		{
+			ulong[] args = FillArgsArray(arguments);
 
-				// Get native return value
-				if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2)) {
-					return ObjectFromNative<T>(res);
-				}
-				else {
-					return (T)ObjectFromNative(typeof(T), res);
-				}
+			var result = RDR2DN.NativeFunc.Invoke(hash, args);
+
+			// The result will be null when this method is called from a thread other than the main thread
+			if (result == null) {
+				throw new InvalidOperationException("Native.Function.Call can only be called from the main thread.");
+			}
+
+			// Get native return value
+			if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2)) {
+				return ObjectFromNative<T>(result);
+			}
+			else {
+				return (T)ObjectFromNative(typeof(T), result);
 			}
 		}
 
-		public static void Call(ulong hash, params InputArgument[] arguments)
+		public static unsafe void Call(ulong hash, params InputArgument[] arguments)
 		{
-			// See above Function.Call() for more info
-			
-			int arraySize = arguments.Length;
-			int variadicSize = 0;
-
-			if (arraySize > 0) {
-				variadicSize = arguments[arguments.Length - 1].aData.Count;
-			}
-
-			if (variadicSize > 0) {
-				arraySize = (arguments.Length - 1) + variadicSize;
-			}
-
-			ulong[] args = new ulong[arraySize];
-
-			int len = (variadicSize > 0 ? (arguments.Length - 1) : arguments.Length);
-			for (int i = 0; i < len; i++) {
-				args[i] = arguments[i].data;
-			}
-
-			if (variadicSize > 0) {
-				for (int i = 0; i < variadicSize; i++) {
-					args[i + (args.Length - variadicSize)] = arguments[arguments.Length - 1].aData[i];
-				}
-			}
-
-			// Void call
-			unsafe { RDR2DN.NativeFunc.Invoke(hash, args); }
+			ulong[] args = FillArgsArray(arguments);
+			RDR2DN.NativeFunc.Invoke(hash, args);
 		}
 
 		internal static unsafe ulong ObjectToNative(object value)
@@ -254,7 +226,8 @@ namespace RDR2.Native
 			}
 			if (value is string valueString)
 			{
-				//if (valueString == string.Empty) return 0; // null string
+				// A C# null/empty string is different from a C++ null/empty string, which is 0.
+				if (string.IsNullOrEmpty(valueString)) { return 0; }
 				return (ulong)RDR2DN.ScriptDomain.CurrentDomain.PinString(valueString).ToInt64();
 			}
 
