@@ -3,7 +3,7 @@
 	public enum eVehicleSeat
 	{
 		AnyPassenger = -2,
-		Driver,
+		Driver = -1,
 		FrontLeft = -1,
 		FrontRight,
 		BackLeft,
@@ -14,6 +14,6 @@
 		ExtraRight2,
 		ExtraLeft3,
 		ExtraRight3,
-		NumberOfSeats,
+		NumSeats,
 	}
 }

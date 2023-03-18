@@ -5,14 +5,17 @@
 
 namespace RDR2
 {
-	public enum Relationship
+	public enum eRelationshipType
 	{
-		Hate2 = 6,
-		Hate = 5,
-		Dislike = 4,
-		Neutral = 3,
-		Like = 2,
+		None = 0,
 		Respect = 1,
-		Companion = 0,
+		Like = 2,
+		Ignore = 3,
+		Dislike = 4,
+		Wanted = 5,
+		Hate = 6,
+		Dead = 7,
+		Disguise = 8,
+		Thief = 9,
 	}
 }

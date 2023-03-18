@@ -45,12 +45,12 @@ namespace RDR2
 			set => Hash = unchecked((int)value);
 		}
 
-		public Relationship GetRelationshipBetweenGroups(RelationshipGroup targetGroup)
+		public eRelationshipType GetRelationshipBetweenGroups(RelationshipGroup targetGroup)
 		{
-			return (Relationship)PED.GET_RELATIONSHIP_BETWEEN_GROUPS((uint)Hash, (uint)targetGroup.NativeValue);
+			return (eRelationshipType)PED.GET_RELATIONSHIP_BETWEEN_GROUPS((uint)Hash, (uint)targetGroup.NativeValue);
 		}
 
-		public void SetRelationshipBetweenGroups(RelationshipGroup targetGroup, Relationship relationship, bool bidirectionally = false)
+		public void SetRelationshipBetweenGroups(RelationshipGroup targetGroup, eRelationshipType relationship, bool bidirectionally = false)
 		{
 			PED.SET_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, (uint)Hash, (uint)targetGroup.NativeValue);
 
@@ -60,7 +60,7 @@ namespace RDR2
 			}
 		}
 
-		public void ClearRelationshipBetweenGroups(RelationshipGroup targetGroup, Relationship relationship, bool bidirectionally = false)
+		public void ClearRelationshipBetweenGroups(RelationshipGroup targetGroup, eRelationshipType relationship, bool bidirectionally = false)
 		{
 			PED.CLEAR_RELATIONSHIP_BETWEEN_GROUPS((int)relationship, (uint)Hash, (uint)targetGroup.NativeValue);
 

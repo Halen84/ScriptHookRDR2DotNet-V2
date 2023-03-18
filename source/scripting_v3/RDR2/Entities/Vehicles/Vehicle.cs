@@ -12,11 +12,11 @@ using System.Linq;
 
 namespace RDR2
 {
-    public sealed class Vehicle : Entity
-    {
-        public Vehicle(int handle) : base(handle)
-        {
-        }
+	public sealed class Vehicle : Entity
+	{
+		public Vehicle(int handle) : base(handle)
+		{
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Vehicle"/> is xxx.
@@ -108,41 +108,41 @@ namespace RDR2
 		public bool HasPropSetAttached => VEHICLE._GET_VEHICLE_IS_PROP_SET_APPLIED(Handle);
 
 		public bool IsExtraOn(int extra)
-        {
-            return VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(Handle, extra);
-        }
+		{
+			return VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(Handle, extra);
+		}
 
-        public bool ExtraExists(int extra)
-        {
-            return VEHICLE.DOES_EXTRA_EXIST(Handle, extra);
-        }
+		public bool ExtraExists(int extra)
+		{
+			return VEHICLE.DOES_EXTRA_EXIST(Handle, extra);
+		}
 
-        public void ToggleExtra(int extra, bool toggle)
-        {
-            VEHICLE.SET_VEHICLE_EXTRA(Handle, extra, !toggle);
-        }
+		public void ToggleExtra(int extra, bool toggle)
+		{
+			VEHICLE.SET_VEHICLE_EXTRA(Handle, extra, !toggle);
+		}
 
-        #endregion
+		#endregion
 
-        #region Damaging
+		#region Damaging
 
-        public bool IsDamaged
-        {
-            get
-            {
-                int health = ENTITY.GET_ENTITY_HEALTH(Handle);
+		public bool IsDamaged
+		{
+			get
+			{
+				int health = ENTITY.GET_ENTITY_HEALTH(Handle);
 				int maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(Handle, false);
 
 				if (health < maxHealth)
-                {
-                    return true;
-                }
+				{
+					return true;
+				}
 				if (health > maxHealth)
-                {
-                    return false;
-                }
-                return false;
-            }
+				{
+					return false;
+				}
+				return false;
+			}
 		}
 		public bool IsDriveable
 		{
@@ -175,106 +175,108 @@ namespace RDR2
 
 		#region Occupants
 
-		public Ped Driver => GetPedInSeat(-1);
+		/// <summary>
+		/// Gets the driver of this <see cref="Vehicle"/>
+		/// </summary>
+		public Ped Driver => GetPedInSeat(eVehicleSeat.Driver);
 
-		public Ped GetPedInSeat(int seat)
+		/// <summary>
+		/// Gets the <see cref="Ped"/> thats in the specified <see cref="eVehicleSeat"/>
+		/// </summary>
+		public Ped GetPedInSeat(eVehicleSeat seat)
 		{
-			return (Ped)FromHandle(VEHICLE.GET_PED_IN_VEHICLE_SEAT(Handle, seat));
+			return (Ped)FromHandle(VEHICLE.GET_PED_IN_VEHICLE_SEAT(Handle, (int)seat));
 		}
 
+		/// <summary>
+		/// Returns an <see cref="Array"/> of all occupants in this <see cref="Vehicle"/>, INCLUDING the driver
+		/// </summary>
 		public Ped[] Occupants
 		{
 			get
 			{
 				Ped driver = Driver;
 
-				int arraySize = Entity.Exists(driver) ? PassengerCount + 1 : PassengerCount;
-				Ped[] occupantsArray = new Ped[arraySize];
-				int occupantIndex = 0;
-
-				if (arraySize == 0)
-				{
-					return occupantsArray;
+				if (PassengerCount == 0 && !Ped.Exists(driver)) {
+					return Array.Empty<Ped>();
 				}
 
-				if (Entity.Exists(driver))
+				Ped[] peds = new Ped[PassengerCount + 1];
+				int pedIndex = 1;
+				peds[0] = driver;
+
+				for (int i = 0; i < (int)eVehicleSeat.NumSeats; i++)
 				{
-					occupantsArray[0] = driver;
-					++occupantIndex;
-				}
+					Ped ped = GetPedInSeat((eVehicleSeat)i);
 
-				for (int i = 0, seats = PassengerSeats; i < seats; i++)
-				{
-					Ped ped = GetPedInSeat((int)i);
+					if (!Ped.Exists(ped)) { continue; }
 
-					if (!Entity.Exists(ped))
-					{
-						continue;
-					}
+					peds[pedIndex] = ped;
+					pedIndex++;
 
-					occupantsArray[occupantIndex] = ped;
-					++occupantIndex;
-
-					if (occupantIndex >= arraySize)
-					{
-						return occupantsArray;
+					if (pedIndex >= peds.Length) {
+						return peds;
 					}
 				}
 
-				return occupantsArray;
+				return peds;
 			}
 		}
 
+		/// <summary>
+		/// Returns an <see cref="Array"/> of all passengers in this <see cref="Vehicle"/>, EXCLUDING the driver
+		/// </summary>
 		public Ped[] Passengers
 		{
 			get
 			{
-				var passengersArray = new Ped[PassengerCount];
-				int passengerIndex = 0;
-
-				if (passengersArray.Length == 0)
-				{
-					return passengersArray;
+				if (PassengerCount == 0) {
+					return Array.Empty<Ped>();
 				}
 
-				for (int i = 0, seats = PassengerSeats; i < seats; i++)
+				Ped[] peds = new Ped[PassengerCount];
+				int pedIndex = 0;
+
+				for (int i = 0; i < (int)eVehicleSeat.NumSeats; i++)
 				{
-					Ped ped = GetPedInSeat((int)i);
+					Ped ped = GetPedInSeat((eVehicleSeat)i);
 
-					if (!Entity.Exists(ped))
-					{
-						continue;
-					}
+					if (!Ped.Exists(ped)) { continue; }
 
-					passengersArray[passengerIndex] = ped;
-					++passengerIndex;
+					peds[pedIndex] = ped;
+					pedIndex++;
 
-					if (passengerIndex >= passengersArray.Length)
-					{
-						return passengersArray;
+					if (pedIndex >= peds.Length) {
+						return peds;
 					}
 				}
 
-				return passengersArray;
+				return peds;
 			}
 		}
 
+		/// <summary>
+		/// Gets the current number of passengers in this <see cref="Vehicle"/>
+		/// </summary>
 		public int PassengerCount => VEHICLE.GET_VEHICLE_NUMBER_OF_PASSENGERS(Handle);
 
+		/// <summary>
+		/// Gets the max number of passengers this <see cref="Vehicle"/> can have
+		/// </summary>
 		public int PassengerSeats => VEHICLE.GET_VEHICLE_MAX_NUMBER_OF_PASSENGERS(Handle);
 
-		public Ped CreatePedOnSeat(int seat, Model model)
+		public Ped CreatePedOnSeat(eVehicleSeat seat, Model model)
 		{
 			if (!model.IsPed || !model.Request(1000))
 			{
 				return null;
 			}
 
-			return (Ped)FromHandle(PED.CREATE_PED_INSIDE_VEHICLE(Handle, (uint)model.Hash, seat, true, true, false));
+			return (Ped)FromHandle(PED.CREATE_PED_INSIDE_VEHICLE(Handle, (uint)model.Hash, (int)seat, true, true, false));
 		}
 
 		
-		public bool IsSeatFree(int seat)
+		public bool IsSeatFree(eVehicleSeat seat)
 		{
 			return VEHICLE.IS_VEHICLE_SEAT_FREE(Handle, (int)seat);
 		}
