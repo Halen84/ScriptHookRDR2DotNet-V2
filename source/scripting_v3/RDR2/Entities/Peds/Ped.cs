@@ -7,15 +7,19 @@ using RDR2.Math;
 using RDR2.Native;
 using RDR2.NaturalMotion;
 using System;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace RDR2
 {
 	public sealed class Ped : Entity
 	{
 		#region Fields
-		private Tasks _tasks;
+		private TaskInvoker _tasks;
 		private Euphoria _euphoria;
 		private WeaponCollection _weapons;
+		private PedCoreAttribs _coreAttribs;
+		private PedAttribs _pedAttribs;
 		#endregion
 
 		public Ped(int handle) : base(handle)
@@ -64,8 +68,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is in a scenario.
-		/// <remarks>This is an alias for <see cref="IsUsingScenario"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsUsingScenario"/></remarks>
 		public bool IsInScenario => IsUsingScenario;
 
 		/// <summary>
@@ -118,8 +122,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Revives this <see cref="Ped"/> from death.
-		/// <remarks>This is an alias for <see cref="Resurrect"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="Resurrect"/></remarks>
 		public void Revive()
 		{
 			Resurrect();
@@ -217,6 +221,15 @@ namespace RDR2
 			PED._UPDATE_PED_VARIATION(Handle, false, true, true, true, false);
 		}
 
+		/// <summary>
+		/// Equip a specific outfit component on this <see cref="Ped"/>.
+		/// Must call <see cref="UpdateVariation"/> to see changes.
+		/// </summary>
+		public void EquipOutfitComponent(uint componentHash)
+		{
+			PED._EQUIP_META_PED_OUTFIT(Handle, componentHash);
+		}
+
 		#endregion
 
 		#region Configuration
@@ -261,7 +274,7 @@ namespace RDR2
 		{
 			return GetBoneCoord(BoneID, Vector3.Zero);
 		}
-		public Vector3 GetBoneCoord(BoneID BoneID, Vector3 Offset)
+		public Vector3 GetBoneCoord(BoneID BoneID, Vector3 Offset = default)
 		{
 			return PED.GET_PED_BONE_COORDS(Handle, (int)BoneID, Offset.X, Offset.Y, Offset.Z);
 		}
@@ -387,8 +400,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is idle.
-		/// <remarks>This is an alias for <see cref="IsStandingStill"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsStandingStill"/></remarks>
 		public bool IsIdle => IsStandingStill;
 
 		/// <summary>
@@ -415,7 +428,7 @@ namespace RDR2
 			set => PED.SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(Handle, value);
 		}
 
-		public Tasks Task => _tasks ?? (_tasks = new Tasks(this));
+		public TaskInvoker Task => _tasks ?? (_tasks = new TaskInvoker(this));
 
 		public int TaskSequenceProgress => TASK.GET_SEQUENCE_PROGRESS(Handle);
 
@@ -548,8 +561,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is on a mount.
-		/// <remarks>This is an alias for <see cref="IsOnHorse"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsOnHorse"/></remarks>
 		public bool IsOnMount => IsOnHorse;
 
 		/// <summary>
@@ -564,8 +577,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is getting into a vehicle.
-		/// <remarks>This is an alias for <see cref="IsEnteringVehicle"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsEnteringVehicle"/></remarks>
 		public bool IsGettingIntoAVehicle => IsEnteringVehicle;
 
 		/// <summary>
@@ -702,11 +715,14 @@ namespace RDR2
 
 		#region Damaging
 
-		/*public bool CanWrithe
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Ped"/> can writhe.
+		/// </summary>
+		public bool CanWrithe
 		{
-			get => !GetConfigFlag(281);
-			set => SetConfigFlag(281, !value);
-		}*/
+			get => !GetConfigFlag(ePedScriptConfigFlags.PCF_DisableFatallyWoundedBehaviour);
+			set => SetConfigFlag(ePedScriptConfigFlags.PCF_DisableFatallyWoundedBehaviour, !value);
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is incapacitated.
@@ -749,9 +765,9 @@ namespace RDR2
 
 		#region Relationship
 
-		public Relationship GetRelationshipWithPed(Ped ped)
+		public eRelationshipType GetRelationshipWithPed(Ped ped)
 		{
-			return (Relationship)PED.GET_RELATIONSHIP_BETWEEN_PEDS(Handle, ped.Handle);
+			return (eRelationshipType)PED.GET_RELATIONSHIP_BETWEEN_PEDS(Handle, ped.Handle);
 		}
 
 		public uint RelationshipGroup
@@ -766,15 +782,18 @@ namespace RDR2
 
 		public bool IsInGroup => PED.IS_PED_IN_GROUP(Handle);
 
+		public int GroupIndex => PED.GET_PED_GROUP_INDEX(Handle);
+
 		public void LeaveGroup()
 		{
 			PED.REMOVE_PED_FROM_GROUP(Handle);
 		}
 
-		/*public bool NeverLeavesGroup
+		public bool NeverLeavesGroup
 		{
-			set => PED.SET_PED_NEVER_LEAVES_GROUP(Handle, value);
-		}*/
+			get => GetConfigFlag(ePedScriptConfigFlags.PCF_NeverLeavesGroup);
+			set => SetConfigFlag(ePedScriptConfigFlags.PCF_NeverLeavesGroup, value);
+		}
 
 		public RelationshipGroup CurrentPedGroup => IsInGroup ? PED.GET_PED_RELATIONSHIP_GROUP_HASH(Handle) : 0;
 
@@ -787,111 +806,58 @@ namespace RDR2
 			set => PED.SET_PED_CAN_PLAY_GESTURE_ANIMS(Handle, (ulong)(value == true ? 1 : 0), 0);
 		}
 
+		/// <summary>
+		/// Set the voice this <see cref="Ped"/> has
+		/// </summary>
 		public string Voice
 		{
 			set => AUDIO.SET_AMBIENT_VOICE_NAME(Handle, value);
 		}
 
-		#endregion
-
-		#region Cores
-		public int HealthCore
+		/// <summary>
+		/// Play a speech on this <see cref="Ped"/>
+		/// </summary>
+		public void PlaySpeech(string speechName, string voiceName, eSpeechParams speechParamHash, int variation = 1)
 		{
-			get => GetCoreValue(PedCore.Health);
-			set => SetCoreValue(PedCore.Health, value);
-		}
-
-		public int HealthCoreRank
-		{
-			get => GetCoreRank(PedCore.Health);
-			set => SetCoreRank(PedCore.Health, value);
-		}
-
-		public int StaminaCore
-		{
-			get => GetCoreValue(PedCore.Stamina);
-			set => SetCoreValue(PedCore.Stamina, value);
-		}
-
-		public int StaminaCoreRank
-		{
-			get => GetCoreRank(PedCore.Stamina);
-			set => SetCoreRank(PedCore.Stamina, value);
-		}
-
-		public int DeadEyeCore
-		{
-			get => GetCoreValue(PedCore.DeadEye);
-			set => SetCoreValue(PedCore.DeadEye, value);
-		}
-
-		public int DeadEyeRank
-		{
-			get => GetCoreRank(PedCore.DeadEye);
-			set => SetCoreRank(PedCore.DeadEye, value);
-		}
-
-		public int GetCoreValue(PedCore core)
-		{
-			return ATTRIBUTE._GET_ATTRIBUTE_CORE_VALUE(Handle, (int)core);
-		}
-
-		public void SetCoreValue(PedCore core, int value)
-		{
-			ATTRIBUTE._SET_ATTRIBUTE_CORE_VALUE(Handle, (int)core, value);
-		}
-
-		public int GetCoreRank(PedCore core)
-		{
-			return ATTRIBUTE.GET_ATTRIBUTE_RANK(Handle, (int)core);
-		}
-
-		public void SetCoreRank(PedCore core, int level)
-		{
-			ATTRIBUTE.SET_ATTRIBUTE_POINTS(Handle, (int)core, GetExperienceByRank(level));
-		}
-
-		private static int GetExperienceByRank(int level)
-		{
-			switch (level)
+			// Used for struct fields that are of type  const char*
+			static IntPtr MarshalManagedStrToNative(string str)
 			{
-				case -1:
-					return -1;
-				case 0:
-					return 0;
-
-				case 1:
-					return 50;
-
-				case 2:
-					return 100;
-
-				case 3:
-					return 200;
-
-				case 4:
-					return 350;
-
-				case 5:
-					return 550;
-
-				case 6:
-					return 800;
-
-				case 7:
-					return 1100;
-
-				default:
-					return 0;
+				var bytes = Encoding.UTF8.GetBytes(str);
+				var ptr = Marshal.AllocCoTaskMem(bytes.Length + 1);
+				Marshal.Copy(bytes, 0, ptr, bytes.Length);
+				Marshal.WriteByte(ptr, bytes.Length, 0);
+				return ptr;
 			}
-		}
-		#endregion
-	}
 
-	public enum PedCore
-	{
-		Health = 0,
-		Stamina,
-		DeadEye
+			ScriptedSpeechParams @params = new ScriptedSpeechParams();
+
+			// Convert the strings to a unmanaged IntPtr
+			IntPtr pSpeechName = MarshalManagedStrToNative(speechName);
+			IntPtr pVoiceName = MarshalManagedStrToNative(voiceName);
+
+			@params.speechName = pSpeechName.ToInt64(); // Convert the pointers to Int64 (they will act as strings)
+			@params.voiceName = pVoiceName.ToInt64();
+			@params.variation = variation;
+			@params.speechParamHash = (uint)speechParamHash;
+			@params.listenerPed = 0;
+			@params.syncOverNetwork = 1; // TRUE
+			@params.v7 = 1;
+			@params.v8 = 0;
+
+			// RAGE Script structs must be passed to natives as type ulong* aka Any*
+			unsafe { AUDIO.PLAY_PED_AMBIENT_SPEECH_NATIVE(Handle, (ulong*)&@params); }
+
+			Marshal.FreeCoTaskMem(pSpeechName);
+			Marshal.FreeCoTaskMem(pVoiceName);
+		}
+
+		#endregion
+
+		#region Attributes & Cores
+
+		public PedCoreAttribs Cores => _coreAttribs ??= new PedCoreAttribs(this);
+		public PedAttribs Attributes => _pedAttribs ??= new PedAttribs(this);
+
+		#endregion
 	}
 }
