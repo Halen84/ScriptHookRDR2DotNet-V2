@@ -104,8 +104,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Player"/> can control himself.
-		/// <remarks>Use <see cref="SetPlayerControl(bool, eSetPlayerControlFlags, bool)"/> to change this value.</remarks>
 		/// </summary>
+		/// <remarks>Use <see cref="SetPlayerControl(bool, eSetPlayerControlFlags, bool)"/> to change this value.</remarks>
 		public bool IsControlOn => PLAYER.IS_PLAYER_CONTROL_ON(Handle);
 
 		/// <summary>
@@ -125,8 +125,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets the <see cref="RDR2.Ped"/> this <see cref="RDR2.Player"/> is controlling.
-		/// <remarks>This is an alias for <see cref="Character"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="Character"/></remarks>
 		public Ped Ped => Character;
 
 		/// <summary>
@@ -149,8 +149,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets or sets how much money this <see cref="Player"/> has.
-		/// <remarks>This is an alias for <see cref="Money"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="Money"/></remarks>
 		public int Cash
 		{
 			get => Money;
@@ -177,8 +177,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Sets a value indicating whether this <see cref="Player"/> is ignored by everyone.
-		/// <remarks>This should be set every frame (if possible) to take full effect</remarks>
 		/// </summary>
+		/// <remarks>This should be set every frame (if possible) to take full effect</remarks>
 		public bool IgnoredByEveryone
 		{
 			set

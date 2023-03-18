@@ -23,7 +23,7 @@ namespace RDR2
 		public bool IsValid => WEAPON.IS_WEAPON_VALID((uint)Hash);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Weapon"/> has CWeaponInfoFlags::Flags::Gun set.
+		/// Gets a value indicating whether this <see cref="Weapon"/> has flag CWeaponInfoFlags::Flags::Gun set.
 		/// </summary>
 		public bool IsGun => WEAPON.IS_WEAPON_A_GUN((uint)Hash);
 

@@ -26,8 +26,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Get the interval in seconds from the last frame to the current one
-		/// <remarks>This is an alias for <see cref="FrameTime"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="FrameTime"/></remarks>
 		public static float DeltaTime => FrameTime;
 
 		/// <summary>
@@ -92,8 +92,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets an instance of a <see cref="Global"/> that holds data to a script global.
-		/// <remarks>Make sure that you check the game version before accessing globals. ID's may differ between patches.</remarks>
 		/// </summary>
+		/// <remarks>Make sure that you check the game version before accessing globals. ID's may differ between patches.</remarks>
 		/// <param name="globalId">The script global index</param>
 		/// <returns>An instance to a script <see cref="Global"/></returns>
 		public static Global GetGlobalPtr(int globalId)
@@ -108,8 +108,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets a value indicating whether a cutscene is currently playing.
-		/// <remarks>This is an alias for <see cref="IsCutsceneActive"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsCutsceneActive"/></remarks>
 		public static bool InCutscene => IsCutsceneActive;
 
 		/// <summary>
@@ -201,8 +201,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Set the zoom on the minimap/radar
-		/// <remarks>This is an alias for <see cref="RadarZoom"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="RadarZoom"/></remarks>
 		public static int MinimapZoom
 		{
 			set => RadarZoom = value;
@@ -219,8 +219,8 @@ namespace RDR2
 
 		/// <summary>
 		/// Gets or sets a value informing the engine if a mission is in progress.
-		/// <remarks>This is an alias for <see cref="IsMissionActive"/></remarks>
 		/// </summary>
+		/// <remarks>This is an alias for <see cref="IsMissionActive"/></remarks>
 		public static bool InMission
 		{
 			get => IsMissionActive;

@@ -25,10 +25,9 @@ namespace RDR2
 
 		/// <summary>
 		/// Returns an instance of <see cref="Global"/> to a script global.
-		/// <remarks>Make sure that you check the game version before accessing globals. ID's may differ between patches.</remarks>
 		/// </summary>
+		/// <remarks>Make sure that you check the game version before accessing globals. ID's may differ between patches.</remarks>
 		/// <param name="globalId">The script global index</param>
-		/// <returns></returns>
 		public Global Get(int globalId)
 		{
 			return new Global(globalId);
