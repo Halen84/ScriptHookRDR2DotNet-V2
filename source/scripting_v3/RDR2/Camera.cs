@@ -15,12 +15,6 @@ namespace RDR2
 			Handle = handle;
 		}
 
-		public int Handle
-		{
-			get;
-		}
-
-
 		public bool IsInterpolating => CAM.IS_CAM_INTERPOLATING(Handle);
 		public bool IsShaking => CAM.IS_CAM_SHAKING(Handle);
 		public bool IsRendering => CAM.IS_CAM_RENDERING(Handle);
@@ -129,38 +123,9 @@ namespace RDR2
 		}
 
 
-
-		private string getShakeName(CameraShake shakeType)
-		{
-			switch ((int)shakeType)
-			{
-				case -1:
-					return "NONE";
-				case 0:
-					return "SMALL_EXPLOSION_SHAKE";
-				case 1:
-					return "MEDIUM_EXPLOSION_SHAKE";
-				case 2:
-					return "LARGE_EXPLOSION_SHAKE";
-				case 3:
-					return "HAND_SHAKE";
-				case 4:
-					return "JOLT_SHAKE";
-				case 5:
-					return "VIBRATE_SHAKE";
-				case 6:
-					return "WOBBLY_SHAKE";
-				case 7:
-					return "DRUNK_SHAKE";
-				default:
-					break;
-			}
-			return "NONE";
-		}
-
 		public void Shake(CameraShake shakeType, float amplitude)
 		{
-			CAM.SHAKE_CAM(Handle, getShakeName(shakeType), amplitude);
+			CAM.SHAKE_CAM(Handle, shakeType.ToString(), amplitude);
 		}
 
 		public void StopShaking()

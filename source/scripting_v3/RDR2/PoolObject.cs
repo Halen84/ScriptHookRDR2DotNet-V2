@@ -63,6 +63,16 @@ namespace RDR2
 		public abstract bool Exists();
 		public abstract void Delete();
 
-		public static implicit operator int(PoolObject e) => e.Handle;
+		public static implicit operator int(PoolObject e)
+		{
+			// If the PoolObject is not null, then we can safely return it's handle.
+			// Otherwise, return 0, which is NULL in C++
+			if (e != null)
+			{
+				return e.Handle;
+			}
+
+			return 0;
+		}
 	}
 }

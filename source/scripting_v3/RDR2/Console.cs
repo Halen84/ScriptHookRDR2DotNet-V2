@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 /*namespace RDR2.Console
 {
-	public class Console
+	public static class Console
 	{
 		static RDR2DN.Console _console;
 
