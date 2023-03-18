@@ -45,12 +45,13 @@ namespace RDR2
 			{
 				TASK.CLEAR_SEQUENCE_TASK(&handle);
 			}
+			Handle = handle;
 			GC.SuppressFinalize(this);
 		}
 
 		public int Handle
 		{
-			get;
+			get; private set;
 		}
 
 		public int Count
@@ -63,7 +64,7 @@ namespace RDR2
 			get; private set;
 		}
 
-		public Tasks AddTask
+		public TaskInvoker AddTask
 		{
 			get
 			{
