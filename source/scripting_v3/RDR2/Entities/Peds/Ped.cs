@@ -740,6 +740,11 @@ namespace RDR2
 		public bool IsFatallyInjured => PED.IS_PED_FATALLY_INJURED(Handle);
 
 		/// <summary>
+		/// Gets a value indicating whether this <see cref="Ped"/> was killed by a headshot.
+		/// </summary>
+		public bool WasKilledByHeadshot => PED._PED_WAS_KILLED_BY_HEADSHOT(Handle);
+
+		/// <summary>
 		/// Set this <see cref="Ped"/> is drop his weapons on death.
 		/// </summary>
 		public bool DropsWeaponsOnDeath
