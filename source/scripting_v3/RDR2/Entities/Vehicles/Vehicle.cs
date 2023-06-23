@@ -6,9 +6,6 @@
 using RDR2.Math;
 using RDR2.Native;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 
 namespace RDR2
 {
@@ -294,7 +291,7 @@ namespace RDR2
 		{
 			Vector3 pos = Position;
 
-			for (int i = 1; i < 40; i++)
+			for (int i = 0; i < 40; i++)
 			{
 				float heading;
 				ulong unk;
@@ -302,17 +299,13 @@ namespace RDR2
 				Vector3 newPos = outPos;
 				unsafe
 				{
-					if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos.X, pos.Y, pos.Z, i, &outPos, &heading, &unk, 1, 3.0f, 0.0f)) {
-						newPos = outPos;
+					if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(pos, i, &outPos, &heading, &unk, 1, 3.0f, 0.0f))
+					{
+						Position = newPos;
+						PlaceOnGround();
+						Heading = heading;
+						break;
 					}
-				}
-
-				if (true)
-				{
-					Position = newPos;
-					PlaceOnGround();
-					Heading = heading;
-					break;
 				}
 			}
 		}
