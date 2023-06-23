@@ -4,7 +4,10 @@
 //
 
 using RDR2.Native;
+using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace RDR2
@@ -12,9 +15,9 @@ namespace RDR2
 	public static class Game
 	{
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-		private static extern System.IntPtr GetForegroundWindow();
+		private static extern IntPtr GetForegroundWindow();
 		[DllImport("user32.dll")]
-		private static extern bool GetWindowRect(System.IntPtr hWnd, Rectangle rect);
+		private static extern bool GetWindowRect(IntPtr hWnd, Rectangle rect);
 
 		static private Player _cachedPlayer;
 
@@ -81,9 +84,26 @@ namespace RDR2
 		public static Blip PlayerBlip => new Blip(MAP.GET_MAIN_PLAYER_BLIP_ID());
 
 		/// <summary>
-		/// Gets the version of the game.
+		/// Gets the version of the game by checking the file version of RDR2.exe
 		/// </summary>
-		public static GameVersion Version => (GameVersion)RDR2DN.NativeMemory.GetGameVersion();
+		public static GameVersion Version
+		{
+			get
+			{
+				string path = Environment.CurrentDirectory + "\\RDR2.exe";
+				if (File.Exists(path))
+				{
+					string version = FileVersionInfo.GetVersionInfo(path).FileVersion;
+					version = 'v' + version.Replace('.', '_');
+					if (Enum.TryParse(version, true, out GameVersion result))
+					{
+						return result;
+					}
+				}
+				
+				return GameVersion.Unknown;
+			}
+		}
 
 		/// <summary>
 		/// Get the games script globals as a collection
@@ -104,7 +124,7 @@ namespace RDR2
 		/// <summary>
 		/// Gets a value indicating whether a cutscene is currently playing.
 		/// </summary>
-		public static bool IsCutsceneActive => ANIMSCENE.DOES_ANIM_SCENE_EXIST((int)RDR2DN.NativeMemory.GetGlobalPtr(43800)) && ANIMSCENE.IS_ANIM_SCENE_RUNNING((int)RDR2DN.NativeMemory.GetGlobalPtr(43800), false);
+		public static bool IsCutsceneActive => ANIMSCENE.DOES_ANIM_SCENE_EXIST(GetGlobalPtr(43800).As<int>()) && ANIMSCENE.IS_ANIM_SCENE_RUNNING(GetGlobalPtr(43800).As<int>(), false);
 
 		/// <summary>
 		/// Gets a value indicating whether a cutscene is currently playing.
@@ -213,7 +233,7 @@ namespace RDR2
 		/// </summary>
 		public static bool IsMissionActive
 		{
-			get => MISC.GET_MISSION_FLAG();
+			get => MISC.GET_MISSION_FLAG() || MISC.GET_RANDOM_EVENT_FLAG();
 			set => MISC.SET_MISSION_FLAG(value);
 		}
 
@@ -274,12 +294,12 @@ namespace RDR2
 
 		#endregion
 
-		#region PAD Namespace Wrappers
+		#region Controls
 
 		/// <summary>
-		/// Gets whether the last input was made with a GamePad or keyboard and mouse.
+		/// Gets the current registered <see cref="RDR2.InputMethod"/> by the game
 		/// </summary>
-		public static InputMethod LastInputMethod => PAD.IS_USING_KEYBOARD_AND_MOUSE(0) ? InputMethod.Keyboard : InputMethod.GamePad;
+		public static InputMethod InputMethod => PAD.IS_USING_KEYBOARD_AND_MOUSE(0) ? InputMethod.Keyboard : InputMethod.GamePad;
 
 		/// <summary>
 		/// Gets an analog value of a <see cref="eInputType"/> input.
