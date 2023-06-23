@@ -172,6 +172,10 @@ static void ScriptHookRDRDotNet_ManagedInit()
 			if (data->Length != 2)
 				continue;
 
+			// May fail to parse without trimming whitespaces
+			String^ keyStr = data[0]->Trim();
+			String^ valueStr = data[1]->Trim();
+
 			if (data[0] == "ReloadKey")
 				Enum::TryParse(data[1], true, ScriptHookRDRDotNet::reloadKey);
 			else if (data[0] == "ConsoleKey")
@@ -307,7 +311,8 @@ static void ScriptMain()
 		{
 			// ScriptHookRDR2 creates a new fiber only right after a "Started thread" message is written to the log
 			const PVOID currentFiber = GetCurrentFiber();
-			if (currentFiber != sGameFiber) {
+			if (currentFiber != sGameFiber)
+			{
 				sGameFiber = currentFiber;
 				sGameReloaded = true;
 				break;
