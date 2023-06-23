@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace RDR2.UI
 {
@@ -164,6 +163,13 @@ namespace RDR2.UI
 				}
 				_pinnedText.Clear();
 
+				//RDR2DN.NativeFunc.PushLongString(value, (string str) =>
+				//{
+				//	byte[] data = Encoding.UTF8.GetBytes(str + "\0");
+				//	IntPtr next = Marshal.AllocCoTaskMem(data.Length);
+				//	Marshal.Copy(data, 0, next, data.Length);
+				//	_pinnedText.Add(next);
+				//});
 			}
 		}
 

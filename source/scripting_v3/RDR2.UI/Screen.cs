@@ -5,9 +5,7 @@
 
 using RDR2.Math;
 using RDR2.Native;
-using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 
 namespace RDR2.UI
 {

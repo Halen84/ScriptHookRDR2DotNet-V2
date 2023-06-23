@@ -1,5 +1,4 @@
-﻿using System;
-using RDR2.Native;
+﻿using RDR2.Native;
 using RDR2.Math;
 
 namespace RDR2

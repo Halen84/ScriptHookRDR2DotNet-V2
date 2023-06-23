@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /*namespace RDR2.Console
 {
 	public static class Console

@@ -5,7 +5,6 @@
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -104,7 +103,7 @@ namespace RDR2.Native
 
 		// Types - Operator
 		public static implicit operator InputArgument([MarshalAs(UnmanagedType.U1)] bool value) { return value ? new InputArgument(1UL) : new InputArgument(0UL); }
-		public static implicit operator InputArgument(InputArgument[] value) { return new InputArgument(value); } // Template Natives
+		public static implicit operator InputArgument(InputArgument[] value) { return new InputArgument(value); } // Template Natives (e.g. VAR_STRING)
 		public static implicit operator InputArgument(byte value) { return new InputArgument((ulong)value); }
 		public static implicit operator InputArgument(sbyte value) { return new InputArgument((ulong)value); }
 		public static implicit operator InputArgument(short value) { return new InputArgument((ulong)value); }

@@ -5,7 +5,6 @@
 
 using RDR2.Math;
 using RDR2.Native;
-using System;
 
 namespace RDR2
 {
