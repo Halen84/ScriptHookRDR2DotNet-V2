@@ -142,8 +142,10 @@ namespace RDR2DN
 			ulong address = (ulong)startAddress.ToInt64();
 			ulong endAddress = address + size;
 
-			for (; address < endAddress; address++) {
-				for (int i = 0; i < pattern.Length; i++) {
+			for (; address < endAddress; address++)
+			{
+				for (int i = 0; i < pattern.Length; i++)
+				{
 					if (mask[i] != '?' && ((byte*)address)[i] != pattern[i])
 						break;
 					else if (i + 1 == pattern.Length)

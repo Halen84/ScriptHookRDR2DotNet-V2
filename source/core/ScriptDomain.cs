@@ -46,7 +46,7 @@ namespace RDR2DN
 		/// Gets the path to the directory containing scripts.
 		/// </summary>
 		public string ScriptPath => System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\scripts\\";
-		
+
 		/// <summary>
 		/// Gets the application domain that is associated with this script domain.
 		/// </summary>
@@ -166,7 +166,7 @@ namespace RDR2DN
 			try
 			{
 				scriptdomain = (ScriptDomain)appdomain.CreateInstanceFromAndUnwrap(typeof(ScriptDomain).Assembly.Location, typeof(ScriptDomain).FullName, false, BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { basePath }, null, null);
-				
+
 				//Log.Message(Log.Level.Debug, "Script domain created: ", "Name: ", name, " FullName: ", typeof(ScriptDomain).FullName, " Assembly Location: ", typeof(ScriptDomain).Assembly.Location);
 			}
 			catch (Exception ex)
@@ -291,7 +291,8 @@ namespace RDR2DN
 
 					// This function builds a composite key of all dependencies of a script
 					Func<Type, string, string> BuildComparisonString = null;
-					BuildComparisonString = (a, b) => {
+					BuildComparisonString = (a, b) =>
+					{
 						b = a.FullName + "%%" + b;
 						foreach (var attribute in a.GetCustomAttributesData().Where(x => x.AttributeType.FullName == "RDR2.RequireScript"))
 						{

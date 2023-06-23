@@ -82,24 +82,25 @@ namespace RDR2.Native
 		internal ulong data;
 		internal List<ulong> arData = new List<ulong>();
 
-		public InputArgument(ulong value)	{ data = value; }
-		public InputArgument(object value)	{ data = Function.ObjectToNative(value); }
+		public InputArgument(ulong value) { data = value; }
+		public InputArgument(object value) { data = Function.ObjectToNative(value); }
 		public InputArgument(InputArgument[] value)
 		{
 			// Copy the data over
-			for (int i = 0; i < value.Length; i++) {
+			for (int i = 0; i < value.Length; i++)
+			{
 				arData.Add(value[i].data);
 			}
 		}
 
 		// Types - ctor
 		public InputArgument([MarshalAs(UnmanagedType.U1)] bool value) : this(value ? 1UL : 0UL) { }
-		public InputArgument(int value)		: this((uint)value) { }
-		public InputArgument(uint value)	: this((ulong)value) { }
-		public InputArgument(double value)	: this((float)value) { }
-		public InputArgument(string value)	: this((object)value) { }
-		public InputArgument(float value)	{ unsafe { data = *(uint*)&value; } }
-		public InputArgument(Vector3 value)	: this((object)value) { }
+		public InputArgument(int value) : this((uint)value) { }
+		public InputArgument(uint value) : this((ulong)value) { }
+		public InputArgument(double value) : this((float)value) { }
+		public InputArgument(string value) : this((object)value) { }
+		public InputArgument(float value) { unsafe { data = *(uint*)&value; } }
+		public InputArgument(Vector3 value) : this((object)value) { }
 
 		// Types - Operator
 		public static implicit operator InputArgument([MarshalAs(UnmanagedType.U1)] bool value) { return value ? new InputArgument(1UL) : new InputArgument(0UL); }
@@ -123,7 +124,7 @@ namespace RDR2.Native
 		public static unsafe implicit operator InputArgument(float* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(Vector3* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(sbyte* value) { return new InputArgument(new string(value)); }
-		
+
 		public override string ToString() { return data.ToString(); }
 	}
 
@@ -135,11 +136,13 @@ namespace RDR2.Native
 			int argCount = arguments.Length;
 			int variadicArgsCount = 0;
 
-			if (argCount > 0) {
+			if (argCount > 0)
+			{
 				// Both template natives have their templated param as the last one
 				variadicArgsCount = arguments[arguments.Length - 1].arData.Count;
 				// Check if this is a templated native, and get number of params passed to it
-				if (variadicArgsCount > 0) {
+				if (variadicArgsCount > 0)
+				{
 					// -1 because the variadic param array counts as +1 param length
 					// which would end up making our array size 1 more than it should be
 					argCount += variadicArgsCount - 1;
@@ -150,13 +153,16 @@ namespace RDR2.Native
 
 			// Add InputArgument.Data
 			int len = (variadicArgsCount > 0 ? (arguments.Length - 1) : arguments.Length);
-			for (int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++)
+			{
 				args[i] = arguments[i].data;
 			}
 
 			// Add InputArgument.arData
-			if (variadicArgsCount > 0) {
-				for (int i = 0; i < variadicArgsCount; i++) {
+			if (variadicArgsCount > 0)
+			{
+				for (int i = 0; i < variadicArgsCount; i++)
+				{
 					args[i + (args.Length - variadicArgsCount)] = arguments[arguments.Length - 1].arData[i];
 				}
 			}
@@ -171,15 +177,18 @@ namespace RDR2.Native
 			var result = RDR2DN.NativeFunc.Invoke(hash, args);
 
 			// The result will be null when this method is called from a thread other than the main thread
-			if (result == null) {
+			if (result == null)
+			{
 				throw new InvalidOperationException("Native.Function.Call can only be called from the main thread.");
 			}
 
 			// Get native return value
-			if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2)) {
+			if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2))
+			{
 				return ObjectFromNative<T>(result);
 			}
-			else {
+			else
+			{
 				return (T)ObjectFromNative(typeof(T), result);
 			}
 		}
@@ -261,7 +270,7 @@ namespace RDR2.Native
 			{
 				return NativeHelper<T>.PtrToStructure(new IntPtr(value));
 			}
-			
+
 			if (typeof(T) == typeof(double))
 			{
 				return NativeHelper<T>.Convert(NativeHelper<T>.PtrToStructure(new IntPtr(value)));

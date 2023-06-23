@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using RDR2;				// Generic RDR2 related stuff
-using RDR2.UI;			// UI related stuff
-using RDR2.Native;		// RDR2 native functions (commands)
-using RDR2.Math;		// Vectors, Quaternions, Matrixes
+using RDR2;             // Generic RDR2 related stuff
+using RDR2.UI;          // UI related stuff
+using RDR2.Native;      // RDR2 native functions (commands)
+using RDR2.Math;        // Vectors, Quaternions, Matrixes
 
 namespace BasicSetupExample
 {

@@ -6,7 +6,8 @@ namespace RDR2
 {
 	public sealed class Blip : PoolObject, IEquatable<Blip>
 	{
-		public Blip( int handle ) : base( handle ) {
+		public Blip(int handle) : base(handle)
+		{
 
 		}
 
@@ -14,7 +15,7 @@ namespace RDR2
 		{
 			set => MAP.SET_BLIP_SPRITE(Handle, (uint)value, false);
 		}
-		
+
 		public void AddModifier(eBlipModifier modifier)
 		{
 			MAP.BLIP_ADD_MODIFIER(Handle, (uint)modifier);
@@ -24,7 +25,7 @@ namespace RDR2
 		{
 			MAP.BLIP_REMOVE_MODIFIER(Handle, (uint)modifier);
 		}
-		
+
 		public float Scale
 		{
 			set => MAP.SET_BLIP_SCALE(Handle, value);
@@ -51,14 +52,14 @@ namespace RDR2
 			}
 		}
 
-		public bool Equals( Blip other )
+		public bool Equals(Blip other)
 		{
-			return !ReferenceEquals( null, other ) && other.Handle == Handle;
+			return !ReferenceEquals(null, other) && other.Handle == Handle;
 		}
 
-		public override bool Equals( object obj )
+		public override bool Equals(object obj)
 		{
-			return ReferenceEquals( this, obj ) || obj is Blip other && Equals( other );
+			return ReferenceEquals(this, obj) || obj is Blip other && Equals(other);
 		}
 
 		public override int GetHashCode()
@@ -315,7 +316,7 @@ namespace RDR2
 		Herd = 0x193BD50E,
 		CaravanCamp = 0xA0417C98,
 		HomeRobbery = 0x1A7A040D,
-		
+
 		BLIP_AMBIENT_BOUNTY_HUNTER = 0xCCAAD634,
 		BLIP_AMBIENT_BOUNTY_TARGET = 0x5846C31D,
 		BLIP_AMBIENT_CHORE = 0x4ECB0761,
@@ -651,7 +652,7 @@ namespace RDR2
 		PosseCamp = 0x5D0509CC,
 		DestinationLarge = 0x1857A152,
 		DestinationDark = 0x64994D7C,
-        BLIP_STYLE_ACCURATE_AREA_BOUNDS_OVERLAY = 0xF4CB3AA9,
+		BLIP_STYLE_ACCURATE_AREA_BOUNDS_OVERLAY = 0xF4CB3AA9,
 		BLIP_STYLE_ACCURATE_AREA_BOUNDS_OVERLAY_WARNING = 0xE762FC29,
 		BLIP_STYLE_ADVERSARY = 0x83A81FBC,
 		BLIP_STYLE_AMBIENT_COACH = 0xAC524F01,
@@ -828,4 +829,5 @@ namespace RDR2
 		BLIP_STYLE_WANTED_RADIUS = 0x45757068,
 		BLIP_STYLE_WANTED_STATE = 0x7CB9547E,
 		BLIP_STYLE_WAYPOINT = 0x85C4987B,
-	}}
+	}
+}

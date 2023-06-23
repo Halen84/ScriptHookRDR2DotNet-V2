@@ -12,7 +12,8 @@ namespace RDR2.UI
 			width /= Game.ScreenResolution.Width;
 			height /= Game.ScreenResolution.Height;
 
-			if (!centered) {
+			if (!centered)
+			{
 				screenX += width * 0.5f;
 				screenY += height * 0.5f;
 			}
@@ -28,7 +29,8 @@ namespace RDR2.UI
 			width /= Game.ScreenResolution.Width;
 			height /= Game.ScreenResolution.Height;
 
-			if (!centered) {
+			if (!centered)
+			{
 				screenX += width * 0.5f;
 				screenY += height * 0.5f;
 			}

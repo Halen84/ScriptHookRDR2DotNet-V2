@@ -129,7 +129,8 @@ namespace RDR2
 			get
 			{
 				int ped = PLAYER.PLAYER_PED_ID();
-				if (_pedPlayer == null || ped != _pedPlayer.Handle) {
+				if (_pedPlayer == null || ped != _pedPlayer.Handle)
+				{
 					_pedPlayer = new Ped(ped);
 				}
 				return _pedPlayer;
@@ -152,9 +153,12 @@ namespace RDR2
 			{
 				var source = Money;
 				var target = value;
-				if (target < source) {
+				if (target < source)
+				{
 					MONEY._MONEY_DECREMENT_CASH_BALANCE(source - target);
-				} else {
+				}
+				else
+				{
 					MONEY._MONEY_INCREMENT_CASH_BALANCE(target - source, (uint)eAddItemReason.Default);
 				}
 			}
@@ -256,7 +260,8 @@ namespace RDR2
 		public unsafe Entity GetFreeAimEntity()
 		{
 			int entity = 0;
-			if (!PLAYER.GET_ENTITY_PLAYER_IS_FREE_AIMING_AT(Handle, &entity)) {
+			if (!PLAYER.GET_ENTITY_PLAYER_IS_FREE_AIMING_AT(Handle, &entity))
+			{
 				return null;
 			}
 			return Entity.FromHandle(entity);
@@ -268,7 +273,8 @@ namespace RDR2
 		public unsafe Entity GetInteractionLockonTargetEntity()
 		{
 			int entity = 0;
-			if (PLAYER.GET_PLAYER_INTERACTION_TARGET_ENTITY(Handle, &entity, false, false)) {
+			if (PLAYER.GET_PLAYER_INTERACTION_TARGET_ENTITY(Handle, &entity, false, false))
+			{
 				return null;
 			}
 			return Entity.FromHandle(entity);
@@ -328,19 +334,19 @@ namespace RDR2
 	[Flags]
 	public enum eSetPlayerControlFlags : int
 	{
-		SPC_NONE								= 0,
+		SPC_NONE = 0,
 		// Where's 1?
-		SPC_AMBIENT_SCRIPT						= (1 << 1),
-		SPC_CLEAR_TASKS							= (1 << 2),
-		SPC_REMOVE_FIRES						= (1 << 3),
-		SPC_REMOVE_EXPLOSIONS					= (1 << 4),
-		SPC_REMOVE_PROJECTILES					= (1 << 5),
-		SPC_DEACTIVATE_GADGETS					= (1 << 6),
-		SPC_REENABLE_CONTROL_ON_DEATH			= (1 << 7),
-		SPC_LEAVE_CAMERA_CONTROL_ON				= (1 << 8),
-		SPC_ALLOW_PLAYER_DAMAGE					= (1 << 9),
-		SPC_DONT_STOP_OTHER_CARS_AROUND_PLAYER	= (1 << 10),
-		SPC_PREVENT_EVERYBODY_BACKOFF			= (1 << 11),
-		SPC_ALLOW_PAD_SHAKE						= (1 << 12),
+		SPC_AMBIENT_SCRIPT = (1 << 1),
+		SPC_CLEAR_TASKS = (1 << 2),
+		SPC_REMOVE_FIRES = (1 << 3),
+		SPC_REMOVE_EXPLOSIONS = (1 << 4),
+		SPC_REMOVE_PROJECTILES = (1 << 5),
+		SPC_DEACTIVATE_GADGETS = (1 << 6),
+		SPC_REENABLE_CONTROL_ON_DEATH = (1 << 7),
+		SPC_LEAVE_CAMERA_CONTROL_ON = (1 << 8),
+		SPC_ALLOW_PLAYER_DAMAGE = (1 << 9),
+		SPC_DONT_STOP_OTHER_CARS_AROUND_PLAYER = (1 << 10),
+		SPC_PREVENT_EVERYBODY_BACKOFF = (1 << 11),
+		SPC_ALLOW_PAD_SHAKE = (1 << 12),
 	}
 }

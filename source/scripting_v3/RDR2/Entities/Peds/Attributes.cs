@@ -53,10 +53,12 @@ namespace RDR2
 
 		public void SetOverpowered(bool overpower, float value, bool makeOverpoweredSound = true)
 		{
-			if (overpower) {
+			if (overpower)
+			{
 				ATTRIBUTE.ENABLE_ATTRIBUTE_OVERPOWER(Ped, (int)AttribType, value, makeOverpoweredSound);
 			}
-			else {
+			else
+			{
 				ATTRIBUTE.DISABLE_ATTRIBUTE_OVERPOWER(Ped, (int)AttribType);
 			}
 		}

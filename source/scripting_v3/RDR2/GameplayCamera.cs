@@ -79,7 +79,7 @@ namespace RDR2
 				double rotX = rot.X / 57.295779513082320876798154814105;
 				double rotZ = rot.Z / 57.295779513082320876798154814105;
 				double multXY = System.Math.Abs(System.Math.Cos(rotX));
-				
+
 				return new Vector3((float)(-System.Math.Sin(rotZ) * multXY), (float)(System.Math.Cos(rotZ) * multXY), (float)System.Math.Sin(rotX));
 			}
 		}

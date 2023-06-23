@@ -151,18 +151,22 @@ namespace RDR2
 		/// </summary>
 		public unsafe int AmmoInClip
 		{
-			get {
+			get
+			{
 				int ammo;
 
-				if (WEAPON.GET_AMMO_IN_CLIP(Owner.Handle, &ammo, (uint)Hash)) {
+				if (WEAPON.GET_AMMO_IN_CLIP(Owner.Handle, &ammo, (uint)Hash))
+				{
 					return ammo;
 				}
 
 				return 0;
 			}
 
-			set {
-				if (PedHasThisWeapon) {
+			set
+			{
+				if (PedHasThisWeapon)
+				{
 					WEAPON.SET_AMMO_IN_CLIP(Owner.Handle, (uint)Hash, value);
 				}
 			}
@@ -173,10 +177,12 @@ namespace RDR2
 		/// </summary>
 		public unsafe int MaxAmmo
 		{
-			get {
+			get
+			{
 				int ammo;
 
-				if (WEAPON.GET_MAX_AMMO(Owner.Handle, &ammo, (uint)Hash)) {
+				if (WEAPON.GET_MAX_AMMO(Owner.Handle, &ammo, (uint)Hash))
+				{
 					return ammo;
 				}
 

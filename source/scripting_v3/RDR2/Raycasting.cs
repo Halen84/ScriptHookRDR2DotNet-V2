@@ -61,27 +61,27 @@ namespace RDR2
 	[Flags]
 	public enum RaycastLOSOptions
 	{
-		None		= 0,
-		Map			= (1 << 0),
-		Vehicles	= (1 << 1),
-		Peds		= (1 << 2),
-		Ragdoll		= (1 << 3),
-		Objects		= (1 << 4),
-		Pickups		= (1 << 5),
-		Glass		= (1 << 6),
-		Water		= (1 << 7),
-		Foilage		= (1 << 8),
+		None = 0,
+		Map = (1 << 0),
+		Vehicles = (1 << 1),
+		Peds = (1 << 2),
+		Ragdoll = (1 << 3),
+		Objects = (1 << 4),
+		Pickups = (1 << 5),
+		Glass = (1 << 6),
+		Water = (1 << 7),
+		Foilage = (1 << 8),
 		All = 511, // 511 is how it's defined in script header
-		// Add this in case "All" doesn't actually work
+				   // Add this in case "All" doesn't actually work
 		Everything = Map | Vehicles | Peds | Ragdoll | Objects | Pickups | Glass | Water | Foilage,
 	}
 
 	[Flags]
 	public enum RaycastOptions
 	{
-		IgnoreGlass			= (1 << 0),
-		IgnoreSeeThrough	= (1 << 1),
-		IgnoreNoCollision	= (1 << 2),
+		IgnoreGlass = (1 << 0),
+		IgnoreSeeThrough = (1 << 1),
+		IgnoreNoCollision = (1 << 2),
 		Default = IgnoreGlass | IgnoreSeeThrough | IgnoreNoCollision,
 	}
 }

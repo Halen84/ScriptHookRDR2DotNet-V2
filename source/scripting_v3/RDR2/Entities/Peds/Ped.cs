@@ -106,7 +106,8 @@ namespace RDR2
 		public void Kill()
 		{
 			Health = 0;
-			if (!IsDead) {
+			if (!IsDead)
+			{
 				PED._FORCE_PED_DEATH(Handle, 0, 0);
 			}
 		}
@@ -160,7 +161,8 @@ namespace RDR2
 		/// </summary>
 		public float Sweat
 		{
-			set {
+			set
+			{
 				if (value < 0)
 				{
 					value = 0;
@@ -184,9 +186,12 @@ namespace RDR2
 		{
 			set
 			{
-				if (value == 0.0f) {
+				if (value == 0.0f)
+				{
 					PED.CLEAR_PED_WETNESS(Handle);
-				} else {
+				}
+				else
+				{
 					PED.SET_PED_WETNESS_HEIGHT(Handle, value);
 				}
 			}
@@ -244,7 +249,7 @@ namespace RDR2
 		{
 			PED._SET_PED_PROMPT_NAME(Handle, MISC.VAR_STRING(10, "LITERAL_STRING", name));
 		}
-		
+
 		public bool GetConfigFlag(ePedScriptConfigFlags flagID)
 		{
 			return PED.GET_PED_CONFIG_FLAG(Handle, (int)flagID, true);
@@ -465,7 +470,8 @@ namespace RDR2
 		/// </summary>
 		public void StopRagdoll()
 		{
-			if (IsRagdoll) {
+			if (IsRagdoll)
+			{
 				// Incorrect native name
 				PED._SET_PED_TO_DISABLE_RAGDOLL(Handle, false);
 			}
@@ -519,7 +525,7 @@ namespace RDR2
 
 		public WeaponCollection Weapons => _weapons ??= new WeaponCollection(this);
 
-		
+
 		public void GiveWeapon(eWeapon weapon, int ammoCount, eWeaponAttachPoint attachPoint, bool bForceInHand = false, bool bForceInHolster = false, bool bAllowMultipleCopies = false)
 		{
 			WEAPON.GIVE_WEAPON_TO_PED(Handle, (uint)weapon, ammoCount, bForceInHand, bForceInHolster, (int)attachPoint, bAllowMultipleCopies, 0.0f, 0.0f, (uint)eAddItemReason.Default, true, 0.0f, false);
@@ -760,7 +766,8 @@ namespace RDR2
 		public unsafe Vector3 GetLastWeaponImpactCoords()
 		{
 			Vector3 outCoords;
-			if (WEAPON.GET_PED_LAST_WEAPON_IMPACT_COORD(Handle, &outCoords)) {
+			if (WEAPON.GET_PED_LAST_WEAPON_IMPACT_COORD(Handle, &outCoords))
+			{
 				return outCoords;
 			}
 			return Vector3.Zero;

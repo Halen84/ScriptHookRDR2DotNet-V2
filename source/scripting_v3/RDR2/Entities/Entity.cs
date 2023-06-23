@@ -118,7 +118,8 @@ namespace RDR2
 		/// </summary>
 		public bool RequestOwnership()
 		{
-			if (!IsOwnedByThisScript) {
+			if (!IsOwnedByThisScript)
+			{
 				IsMissionEntity = true;
 			}
 			return IsOwnedByThisScript;
@@ -396,10 +397,12 @@ namespace RDR2
 		internal void setProof(bool set, int bit)
 		{
 			int proofs = ENTITY._GET_ENTITY_PROOFS(Handle);
-			if (set && !isProofSet(bit)) {
+			if (set && !isProofSet(bit))
+			{
 				proofs |= 1 << bit;
 			}
-			else {
+			else
+			{
 				// remove only this bit
 				proofs -= (proofs & (1 << bit));
 			}
@@ -736,7 +739,8 @@ namespace RDR2
 			int handle = Handle;
 
 			// Request ownership of entity if we do not have it
-			if (!IsOwnedByThisScript) {
+			if (!IsOwnedByThisScript)
+			{
 				this.RequestOwnership();
 			}
 

@@ -117,7 +117,8 @@ namespace RDR2
 		/// </summary>
 		public void Load()
 		{
-			if (!IsLoaded && !IsLoading) {
+			if (!IsLoaded && !IsLoading)
+			{
 				ANIMSCENE.LOAD_ANIM_SCENE(Handle);
 			}
 		}
@@ -127,7 +128,8 @@ namespace RDR2
 		/// </summary>
 		public void Start()
 		{
-			if (IsLoaded && !IsRunning) {
+			if (IsLoaded && !IsRunning)
+			{
 				ANIMSCENE.START_ANIM_SCENE(Handle);
 			}
 		}
@@ -145,7 +147,8 @@ namespace RDR2
 		/// </summary>
 		public void Skip()
 		{
-			if (CanBeSkipped) {
+			if (CanBeSkipped)
+			{
 				ANIMSCENE.TRIGGER_ANIM_SCENE_SKIP(Handle);
 			}
 		}

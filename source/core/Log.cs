@@ -51,17 +51,17 @@ namespace RDR2DN
 						switch (level)
 						{
 							case Level.Info:
-								sw.Write("[INFO] ");
-								break;
+							sw.Write("[INFO] ");
+							break;
 							case Level.Error:
-								sw.Write("[ERROR] ");
-								break;
+							sw.Write("[ERROR] ");
+							break;
 							case Level.Warning:
-								sw.Write("[WARNING] ");
-								break;
+							sw.Write("[WARNING] ");
+							break;
 							case Level.Debug:
-								sw.Write("[DEBUG] ");
-								break;
+							sw.Write("[DEBUG] ");
+							break;
 						}
 
 						foreach (string str in message)
@@ -89,11 +89,11 @@ namespace RDR2DN
 			switch (level)
 			{
 				case Level.Error:
-					console.PrintError(string.Join(string.Empty, message));
-					break;
+				console.PrintError(string.Join(string.Empty, message));
+				break;
 				case Level.Warning:
-					console.PrintWarning(string.Join(string.Empty, message));
-					break;
+				console.PrintWarning(string.Join(string.Empty, message));
+				break;
 			}
 		}
 	}

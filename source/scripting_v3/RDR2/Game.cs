@@ -66,7 +66,8 @@ namespace RDR2
 		/// </summary>
 		public static Player Player
 		{
-			get {
+			get
+			{
 				int handle = PLAYER.PLAYER_ID();
 
 				if (_cachedPlayer == null || handle != _cachedPlayer.Handle)
@@ -100,7 +101,7 @@ namespace RDR2
 						return result;
 					}
 				}
-				
+
 				return GameVersion.Unknown;
 			}
 		}

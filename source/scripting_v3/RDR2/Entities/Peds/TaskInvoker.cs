@@ -201,17 +201,20 @@ namespace RDR2
 
 		public void PlayAnimation(string animDict, string animName, float blendInSpeed, float blendOutSpeed, int duration, eScriptedAnimFlags animFlags = eScriptedAnimFlags.None, eIkControlFlags ikFlags = eIkControlFlags.None, string filter = "")
 		{
-			if (!STREAMING.HAS_ANIM_DICT_LOADED(animDict)) {
+			if (!STREAMING.HAS_ANIM_DICT_LOADED(animDict))
+			{
 				STREAMING.REQUEST_ANIM_DICT(animDict);
 			}
 
 			var end = DateTime.UtcNow.AddMilliseconds(1000);
-			while (!STREAMING.HAS_ANIM_DICT_LOADED(animDict)) {
-				if (DateTime.UtcNow >= end) {
+			while (!STREAMING.HAS_ANIM_DICT_LOADED(animDict))
+			{
+				if (DateTime.UtcNow >= end)
+				{
 					return;
 				}
 			}
-			
+
 			TASK.TASK_PLAY_ANIM(_ped, animDict, animName, blendInSpeed, blendOutSpeed, duration, (int)animFlags, 0.0f, false, (int)ikFlags, false, filter, false);
 		}
 
@@ -219,7 +222,7 @@ namespace RDR2
 		{
 			PlayAnimation(animDict, animName, 8f, -8f, duration);
 		}
-		
+
 		public void PlayAnimation(string animDict, string animName, int duration, float speed = 8.0f)
 		{
 			PlayAnimation(animDict, animName, speed, -speed, duration);
@@ -262,7 +265,7 @@ namespace RDR2
 
 		public void UseRandomScenarioInGroup(uint scenarioGroupHash)
 		{
-			TASK.TASK_USE_RANDOM_SCENARIO_IN_GROUP(_ped, scenarioGroupHash, 0, 0 ,0);
+			TASK.TASK_USE_RANDOM_SCENARIO_IN_GROUP(_ped, scenarioGroupHash, 0, 0, 0);
 		}
 
 		public void AimAt(Entity entity, int duration)
@@ -292,10 +295,12 @@ namespace RDR2
 
 		public void ClearTasks(bool immediately)
 		{
-			if (immediately) {
+			if (immediately)
+			{
 				TASK.CLEAR_PED_TASKS_IMMEDIATELY(_ped, true, true);
 			}
-			else {
+			else
+			{
 				TASK.CLEAR_PED_TASKS(_ped, true, true);
 			}
 		}
@@ -422,7 +427,8 @@ namespace RDR2
 
 		public void PerformSequence(TaskSequence sequence)
 		{
-			if (!sequence.IsClosed) {
+			if (!sequence.IsClosed)
+			{
 				sequence.Close();
 			}
 

@@ -24,7 +24,7 @@ namespace RagdollExample
 			// Our current player ped
 			// Note: "Ped" is a class, not a type alias like it is in C++
 			Ped myPlayerPed = Game.Player.Character;
-			
+
 			// As long as "bRagdoll" is true, we will continue
 			// to ragdoll because were calling this every frame (tick)
 			if (bRagdoll)

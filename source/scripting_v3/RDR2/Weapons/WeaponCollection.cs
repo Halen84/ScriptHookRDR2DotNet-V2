@@ -156,7 +156,7 @@ namespace RDR2
 
 			if (weapons.ContainsKey((uint)hash))
 			{
-				weapons.Remove((uint) hash);
+				weapons.Remove((uint)hash);
 			}
 
 			Remove((uint)weapon.Hash);

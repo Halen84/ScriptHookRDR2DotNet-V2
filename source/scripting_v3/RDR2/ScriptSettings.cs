@@ -206,7 +206,8 @@ namespace RDR2
 			string lookup = $"[{section}]{name}//0".ToUpper();
 			string internalValue = value.ToString();
 
-			if (!_values.ContainsKey(lookup)) {
+			if (!_values.ContainsKey(lookup))
+			{
 				_values.Add(lookup, internalValue);
 			}
 
@@ -222,16 +223,21 @@ namespace RDR2
 		{
 			var values = new List<T>();
 
-			for (int i = 0; _values.TryGetValue($"[{section}]{name}//{i}".ToUpper(), out string internalValue); ++i) {
-				try {
-					if (typeof(T).IsEnum) {
+			for (int i = 0; _values.TryGetValue($"[{section}]{name}//{i}".ToUpper(), out string internalValue); ++i)
+			{
+				try
+				{
+					if (typeof(T).IsEnum)
+					{
 						values.Add((T)Enum.Parse(typeof(T), internalValue, true));
 					}
-					else {
+					else
+					{
 						values.Add((T)Convert.ChangeType(internalValue, typeof(T)));
 					}
 				}
-				catch {
+				catch
+				{
 					continue;
 				}
 			}

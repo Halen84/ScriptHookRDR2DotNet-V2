@@ -73,11 +73,13 @@ namespace RDR2
 			get => ENTITY.GET_ENTITY_SPEED(Handle);
 			set
 			{
-				if (Model.IsTrain) {
+				if (Model.IsTrain)
+				{
 					VEHICLE.SET_TRAIN_SPEED(Handle, value);
 					VEHICLE.SET_TRAIN_CRUISE_SPEED(Handle, value);
 				}
-				else {
+				else
+				{
 					VEHICLE.SET_VEHICLE_FORWARD_SPEED(Handle, value);
 				}
 			}
@@ -194,7 +196,8 @@ namespace RDR2
 			{
 				Ped driver = Driver;
 
-				if (PassengerCount == 0 && !Ped.Exists(driver)) {
+				if (PassengerCount == 0 && !Ped.Exists(driver))
+				{
 					return Array.Empty<Ped>();
 				}
 
@@ -211,7 +214,8 @@ namespace RDR2
 					peds[pedIndex] = ped;
 					pedIndex++;
 
-					if (pedIndex >= peds.Length) {
+					if (pedIndex >= peds.Length)
+					{
 						return peds;
 					}
 				}
@@ -227,7 +231,8 @@ namespace RDR2
 		{
 			get
 			{
-				if (PassengerCount == 0) {
+				if (PassengerCount == 0)
+				{
 					return Array.Empty<Ped>();
 				}
 
@@ -243,7 +248,8 @@ namespace RDR2
 					peds[pedIndex] = ped;
 					pedIndex++;
 
-					if (pedIndex >= peds.Length) {
+					if (pedIndex >= peds.Length)
+					{
 						return peds;
 					}
 				}
@@ -272,7 +278,7 @@ namespace RDR2
 			return (Ped)FromHandle(PED.CREATE_PED_INSIDE_VEHICLE(Handle, (uint)model.Hash, (int)seat, true, true, false));
 		}
 
-		
+
 		public bool IsSeatFree(eVehicleSeat seat)
 		{
 			return VEHICLE.IS_VEHICLE_SEAT_FREE(Handle, (int)seat);

@@ -19,16 +19,16 @@ using namespace System::Collections::Generic;
 using namespace System::Reflection;
 namespace WinForms = System::Windows::Forms;
 
-[assembly:AssemblyTitle("Script Hook RDR2 .NET")];
-[assembly:AssemblyDescription("An ASI plugin for Red Dead Redemption 2, which allows running scripts written in any .NET language in-game.")];
-[assembly:AssemblyCompany("Salty, SHVDN: crosire & contributors")];
-[assembly:AssemblyProduct("ScriptHookRDRDotNet")];
-[assembly:AssemblyCopyright("Copyright © 2015 crosire | Copyright © 2019 Salty")];
-[assembly:AssemblyVersion("1.5.5.4")];
-[assembly:AssemblyFileVersion("1.5.5.4")];
+[assembly:AssemblyTitle("Script Hook RDR2 .NET")] ;
+[assembly:AssemblyDescription("An ASI plugin for Red Dead Redemption 2, which allows running scripts written in any .NET language in-game.")] ;
+[assembly:AssemblyCompany("Salty, SHVDN: crosire & contributors")] ;
+[assembly:AssemblyProduct("ScriptHookRDRDotNet")] ;
+[assembly:AssemblyCopyright("Copyright © 2015 crosire | Copyright © 2019 Salty")] ;
+[assembly:AssemblyVersion("1.5.5.4")] ;
+[assembly:AssemblyFileVersion("1.5.5.4")] ;
 // Sign with a strong name to distinguish from older versions and cause .NET framework runtime to bind the correct assemblies
 // There is no version check performed for assemblies without strong names (https://docs.microsoft.com/en-us/dotnet/framework/deployment/how-the-runtime-locates-assemblies)
-[assembly:AssemblyKeyFileAttribute("PublicKeyToken.snk")];
+[assembly:AssemblyKeyFileAttribute("PublicKeyToken.snk")] ;
 
 
 public ref class ScriptHookRDRDotNet // This is not a static class, so that console scripts can inherit from it
@@ -150,7 +150,7 @@ static void ScriptHookRDRDotNet_ManagedInit()
 
 		RDR2DN::ScriptDomain::Unload(domain);
 	}
-		
+
 
 	// Clear log from previous runs
 	RDR2DN::Log::Clear();
@@ -184,7 +184,7 @@ static void ScriptHookRDRDotNet_ManagedInit()
 				scriptPath = data[1];
 		}
 	}
-	catch (Exception ^ ex)
+	catch (Exception^ ex)
 	{
 		RDR2DN::Log::Message(RDR2DN::Log::Level::Error, "Failed to load config: ", ex->ToString());
 	}
@@ -219,7 +219,7 @@ static void ScriptHookRDRDotNet_ManagedInit()
 		// Add default console commands
 		console->RegisterCommands(ScriptHookRDRDotNet::typeid);
 	}
-	catch (Exception ^ ex)
+	catch (Exception^ ex)
 	{
 		RDR2DN::Log::Message(RDR2DN::Log::Level::Error, "Failed to create console: ", ex->ToString());
 	}

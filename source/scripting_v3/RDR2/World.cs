@@ -22,7 +22,8 @@ namespace RDR2
 
 		public static DateTime CurrentDate
 		{
-			get {
+			get
+			{
 				int year = CLOCK.GET_CLOCK_YEAR();
 				int month = CLOCK.GET_CLOCK_MONTH();
 				int day = System.Math.Min(CLOCK.GET_CLOCK_DAY_OF_MONTH(), calendar.GetDaysInMonth(year, month));
@@ -32,7 +33,8 @@ namespace RDR2
 
 				return new DateTime(year, month, day, hour, minute, second);
 			}
-			set {
+			set
+			{
 				CLOCK.SET_CLOCK_DATE(value.Day, value.Month, value.Year);
 				CLOCK.SET_CLOCK_TIME(value.Hour, value.Minute, value.Second);
 			}
@@ -40,7 +42,8 @@ namespace RDR2
 
 		public static TimeSpan CurrentDayTime
 		{
-			get {
+			get
+			{
 				int hours = CLOCK.GET_CLOCK_HOURS();
 				int minutes = CLOCK.GET_CLOCK_MINUTES();
 				int seconds = CLOCK.GET_CLOCK_SECONDS();
@@ -59,7 +62,8 @@ namespace RDR2
 		public static WeatherType CurrentWeather
 		{
 			get => GetCurrentWeatherType();
-			set {
+			set
+			{
 				_currentWeather = value;
 				MISC.SET_CURR_WEATHER_STATE((uint)GetCurrentWeatherType(), (uint)value, 1f, true);
 			}
@@ -68,7 +72,8 @@ namespace RDR2
 		private static WeatherType _nextWeather;
 		public static WeatherType NextWeather
 		{
-			get {
+			get
+			{
 				GetCurrentWeatherType();
 				return _nextWeather;
 			}
@@ -92,7 +97,8 @@ namespace RDR2
 
 		public static float WeatherTransition
 		{
-			get {
+			get
+			{
 				uint currentWeatherHash, nextWeatherHash;
 				float weatherTransition;
 				unsafe
@@ -155,10 +161,12 @@ namespace RDR2
 			// So for some reason, ScriptHookRDR2 likes to error at random when accessing pools so
 			// we'll wrap this in a try catch and return empty if the call fails and prevent a crash.
 			// https://github.com/Halen84/ScriptHookRDR2DotNet-V2/issues/2
-			try {
+			try
+			{
 				count = RDR2DN.NativeMemory.worldGetAllPeds(peds, 1024);
 			}
-			catch {
+			catch
+			{
 				return Array.Empty<Ped>();
 			}
 
@@ -180,10 +188,12 @@ namespace RDR2
 			int[] vehs = new int[1024];
 			int count = 0;
 
-			try {
+			try
+			{
 				count = RDR2DN.NativeMemory.worldGetAllVehicles(vehs, 1024);
 			}
-			catch {
+			catch
+			{
 				return Array.Empty<Vehicle>();
 			}
 
@@ -205,10 +215,12 @@ namespace RDR2
 			int[] props = new int[1024];
 			int count = 0;
 
-			try {
+			try
+			{
 				count = RDR2DN.NativeMemory.worldGetAllObjects(props, 1024);
 			}
-			catch {
+			catch
+			{
 				return Array.Empty<Prop>();
 			}
 
@@ -290,8 +302,8 @@ namespace RDR2
 				}
 			}
 			return (T)closest;
-		}		
-		
+		}
+
 		public static Ped GetClosestPed(Vector3 position)
 		{
 			Ped[] peds = GetAllPeds();
@@ -309,7 +321,7 @@ namespace RDR2
 			Prop[] objects = GetAllObjects();
 			return GetClosest(position, objects);
 		}
-		
+
 		public static Ped CreatePed(PedHash hash, Vector3 position, float heading = 0f)
 		{
 			var model = new Model(hash);
@@ -322,7 +334,7 @@ namespace RDR2
 			PED._UPDATE_PED_VARIATION(ped, false, true, true, true, false);
 			return ped == 0 ? null : (Ped)Entity.FromHandle(ped);
 		}
-		
+
 		public static Vehicle CreateVehicle(VehicleHash hash, Vector3 position, float heading = 0f)
 		{
 			var model = new Model((uint)hash);
@@ -332,7 +344,7 @@ namespace RDR2
 			}
 			return new Vehicle(VEHICLE.CREATE_VEHICLE((uint)hash, position.X, position.Y, position.Z, heading, true, true, false, false));
 		}
-		
+
 		/// <summary>
 		/// Spawns a <see cref="Prop"/> of the given <see cref="Model"/> at the position specified.
 		/// </summary>
@@ -418,10 +430,12 @@ namespace RDR2
 
 		public static void SetAmbientRoadPopulationEnabled(bool enabled)
 		{
-			if (enabled) {
+			if (enabled)
+			{
 				POPULATION.ENABLE_AMBIENT_ROAD_POPULATION();
 			}
-			else {
+			else
+			{
 				POPULATION.DISABLE_AMBIENT_ROAD_POPULATION(true);
 			}
 		}
@@ -442,7 +456,8 @@ namespace RDR2
 		public static Camera RenderingCamera
 		{
 			get => new Camera(CAM.GET_RENDERING_CAM());
-			set {
+			set
+			{
 				if (value == null)
 				{
 					CAM.RENDER_SCRIPT_CAMS(false, false, 3000, true, false, 0);
@@ -523,7 +538,7 @@ namespace RDR2
 		{
 			GRAPHICS.DRAW_LIGHT_WITH_RANGE(position.X, position.Y, position.Z, color.R, color.G, color.B, range, brightness);
 		}
-		
+
 		/// <summary>
 		/// Draws a marker in the world, this needs to be done on a per frame basis
 		/// </summary>
@@ -595,7 +610,8 @@ namespace RDR2
 
 			unsafe
 			{
-				if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, onGround, &outPos, flags)) {
+				if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, onGround, &outPos, flags))
+				{
 					return outPos;
 				}
 			}
@@ -621,7 +637,8 @@ namespace RDR2
 				{
 					unsafe
 					{
-						if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE(position.X, position.Y, position.Z, i, &outPos, 1, 3.0f, 0)) {
+						if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE(position.X, position.Y, position.Z, i, &outPos, 1, 3.0f, 0))
+						{
 							return outPos;
 						}
 					}
@@ -631,7 +648,8 @@ namespace RDR2
 			{
 				unsafe
 				{
-					if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE(position.X, position.Y, position.Z, 1, &outPos, 1, 3.0f, 0)) {
+					if (PATHFIND.GET_NTH_CLOSEST_VEHICLE_NODE(position.X, position.Y, position.Z, 1, &outPos, 1, 3.0f, 0))
+					{
 						return outPos;
 					}
 				}
@@ -650,10 +668,12 @@ namespace RDR2
 
 			unsafe
 			{
-				if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, true, &outPos, 0)) {
+				if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, true, &outPos, 0))
+				{
 					return outPos;
 				}
-				else if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, false, &outPos, 0)) {
+				else if (PATHFIND.GET_SAFE_COORD_FOR_PED(position.X, position.Y, position.Z, false, &outPos, 0))
+				{
 					return outPos;
 				}
 			}
