@@ -26,9 +26,10 @@ namespace RDR2DN
 		string input = string.Empty;
 		List<string> lineHistory = new List<string>();
 		List<string> commandHistory = new List<string>(); // This must be set via CommandHistory property
-		ConcurrentQueue<string[]> outputQueue = new ConcurrentQueue<string[]>();
-		Dictionary<string, List<ConsoleCommand>> commands = new Dictionary<string, List<ConsoleCommand>>();
-		DateTime lastClosed;
+		ConcurrentQueue<string[]> outputQueue = new();
+		Dictionary<string, List<ConsoleCommand>> commands = new();
+		int lastClosedTickCount;
+		bool shouldBlockControls;
 		Task<MethodInfo> compilerTask;
 		const int BASE_WIDTH = 1280;
 		const int BASE_HEIGHT = 720;
@@ -59,8 +60,10 @@ namespace RDR2DN
 			{
 				isOpen = value;
 				DisableControlsThisFrame();
-				if (!isOpen)
-					lastClosed = DateTime.UtcNow.AddMilliseconds(200); // Hack so the input gets blocked long enough
+				if (isOpen) return;
+
+				lastClosedTickCount = Environment.TickCount + 200; // Hack so the input gets blocked long enough
+				shouldBlockControls = true;
 			}
 		}
 
@@ -115,15 +118,14 @@ namespace RDR2DN
 		{
 			foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public))
 			{
-				string space = method.DeclaringType.FullName;
+				var space = method.DeclaringType.FullName;
 
-				if (commands.ContainsKey(space))
-				{
-					commands[space].RemoveAll(x => x.MethodInfo == method);
+				if (!commands.TryGetValue(space, out var command)) continue;
 
-					if (commands[space].Count == 0)
-						commands.Remove(space);
-				}
+				command.RemoveAll(x => x.MethodInfo == method);
+
+				if (command.Count == 0)
+					commands.Remove(space);
 			}
 		}
 
@@ -272,7 +274,7 @@ namespace RDR2DN
 		/// </summary>
 		public void DoTick()
 		{
-			DateTime now = DateTime.UtcNow;
+			var nowTickCount = Environment.TickCount;
 
 			// Execute compiled input line script
 			if (compilerTask != null && compilerTask.IsCompleted)
@@ -298,15 +300,24 @@ namespace RDR2DN
 			}
 
 			// Add lines from concurrent queue to history
-			if (outputQueue.TryDequeue(out string[] lines))
-				foreach (string line in lines)
+			if (outputQueue.TryDequeue(out var lines))
+				foreach (var line in lines)
 					lineHistory.Add(line);
 
-			if (!IsOpen)
-			{
+			if (!IsOpen) {
 				// Hack so the input gets blocked long enough
-				if (lastClosed > now)
-					DisableControlsThisFrame();
+				if ((lastClosedTickCount - nowTickCount) > 0)
+				{
+					if (shouldBlockControls)
+					{
+						DisableControlsThisFrame();
+					}
+				}
+				// The console is not open for more than about 24.9 days, calculating the elapsed time with 2 int tick count vars doesn't do the job
+				else if (shouldBlockControls)
+				{
+					shouldBlockControls = false;
+				}
 				return; // Nothing more to do here when the console is not open
 			}
 
@@ -326,10 +337,10 @@ namespace RDR2DN
 			DrawText(5, CONSOLE_HEIGHT + INPUT_HEIGHT, "Page " + currentPage + "/" + System.Math.Max(1, ((lineHistory.Count + (LINES_PER_PAGE - 1)) / LINES_PER_PAGE)), InputColor);
 
 			// Draw blinking cursor
-			if (now.Millisecond < 500)
+			if (nowTickCount % 1000 < 500)
 			{
-				float length = GetTextLength(input.Substring(0, cursorPos));
-				DrawText(25 + (length * CONSOLE_WIDTH) - 4, CONSOLE_HEIGHT, "~w~~h~|~w~", InputColor);
+				var lengthBetweenInputStartAndCursor = GetTextLength(input.Substring(0, cursorPos)) - GetMarginLength();
+				DrawRect(26 + (lengthBetweenInputStartAndCursor * CONSOLE_WIDTH), CONSOLE_HEIGHT + 2, 2, INPUT_HEIGHT - 4, Color.White);
 			}
 
 			// Draw console history text
@@ -541,27 +552,31 @@ namespace RDR2DN
 		}
 		void RemoveCharLeft()
 		{
-			if (input.Length > 0 && cursorPos > 0) {
+			if (input.Length > 0 && cursorPos > 0)
+			{
 				input = input.Remove(cursorPos - 1, 1);
 				cursorPos--;
 			}
 		}
 		void RemoveCharRight()
 		{
-			if (input.Length > 0 && cursorPos < input.Length) {
+			if (input.Length > 0 && cursorPos < input.Length)
+			{
 				input = input.Remove(cursorPos, 1);
 			}
 		}
 		void RemoveAllCharsLeft()
 		{
-			if (input.Length > 0 && cursorPos > 0) {
+			if (input.Length > 0 && cursorPos > 0)
+			{
 				input = input.Remove(0, cursorPos);
 				cursorPos = 0;
 			}
 		}
 		void RemoveAllCharsRight()
 		{
-			if (input.Length > 0 && cursorPos < input.Length) {
+			if (input.Length > 0 && cursorPos < input.Length)
+			{
 				input = input.Remove(cursorPos, input.Length - cursorPos);
 			}
 		}
@@ -569,19 +584,23 @@ namespace RDR2DN
 		void TransposeTwoChars()
 		{
 			var inputLength = input.Length;
-			if (inputLength < 2) {
+			if (inputLength < 2)
+			{
 				return;
 			}
 
-			if (cursorPos == 0) {
+			if (cursorPos == 0)
+			{
 				SwapTwoCharacters(input, 0);
 				cursorPos = 2;
 			}
-			else if (cursorPos < inputLength) {
+			else if (cursorPos < inputLength)
+			{
 				SwapTwoCharacters(input, cursorPos - 1);
 				cursorPos += 1;
 			}
-			else {
+			else
+			{
 				SwapTwoCharacters(input, cursorPos - 2);
 			}
 
@@ -627,7 +646,8 @@ namespace RDR2DN
 			if (commandHistory.LastOrDefault() != input)
 				commandHistory.Add(input);
 
-			compilerTask = Task.Factory.StartNew(() => {
+			compilerTask = Task.Factory.StartNew(() =>
+			{
 				var compiler = new Microsoft.CSharp.CSharpCodeProvider();
 				var compilerOptions = new System.CodeDom.Compiler.CompilerParameters();
 				compilerOptions.GenerateInMemory = true;
@@ -647,9 +667,9 @@ namespace RDR2DN
 				const string template =
 					"using System; using System.Linq; using System.Drawing; using System.Windows.Forms; using RDR2; using RDR2.Math; using RDR2.Native; " +
 					// Define some shortcut variables to simplify commands
-					"public class ConsoleInput : ScriptHookRDRDotNet {{ public static object Execute() {{ var P = Game.Player.Character; var V = P.CurrentVehicle; {0}; return null; }} }}";
+					"public sealed class ConsoleInput : ScriptHookRDRDotNet {{ public static object Execute() {{ Ped P, p; P = p = Game.Player.Character; Vehicle V, v; V = v = P.CurrentVehicle; {0}; return null; }} }}";
 
-				System.CodeDom.Compiler.CompilerResults compilerResult = compiler.CompileAssemblyFromSource(compilerOptions, string.Format(template, input));
+				var compilerResult = compiler.CompileAssemblyFromSource(compilerOptions, string.Format(template, input));
 
 				if (!compilerResult.Errors.HasErrors)
 				{
@@ -708,10 +728,6 @@ namespace RDR2DN
 		static unsafe void DisableControlsThisFrame()
 		{
 			NativeFunc.InvokeInternal(0x5F4B6931816E599B  /*PAD::DISABLE_ALL_CONTROL_ACTIONS*/, 0);
-
-			// LookLeftRight .. LookRightOnly
-			for (ulong i = 1; i <= 6; i++)
-				NativeFunc.InvokeInternal(0x351220255D64C155  /*PAD::ENABLE_CONTROL_ACTION*/, 0, i, 0);
 		}
 
 		static unsafe float GetTextLength(string text)
@@ -719,6 +735,13 @@ namespace RDR2DN
 			NativeFunc.InvokeInternal(0xA1253A3C870B6843  /*UIDEBUG::_BG_SET_TEXT_SCALE*/, 0.35f, 0.35f);
 			NativeFunc.PushLongString(text);
 			return (float)text.Length;
+		}
+
+		static float GetMarginLength()
+		{
+			var len1 = GetTextLength("A");
+			var len2 = GetTextLength("AA");
+			return len1 - (len2 - len1); // [Margin][A] - [A] = [Margin]
 		}
 	}
 
