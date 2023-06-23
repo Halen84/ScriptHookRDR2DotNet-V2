@@ -35,7 +35,7 @@ namespace RDR2.UI
 		/// </summary>
 		public static void ShowCursorThisFrame()
 		{
-			_NAMESPACE30.SET_MOUSE_CURSOR_THIS_FRAME();
+			INTERACTION.SET_MOUSE_CURSOR_THIS_FRAME();
 		}
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace RDR2.UI
 		/// </summary>
 		public static eCursor CursorSprite
 		{
-			set => _NAMESPACE30.SET_MOUSE_CURSOR_STYLE((int)value);
+			set => INTERACTION.SET_MOUSE_CURSOR_STYLE((int)value);
 		}
 
 		/// <summary>
