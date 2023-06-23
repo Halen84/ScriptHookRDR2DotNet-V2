@@ -5,7 +5,6 @@
 
 using System;
 using RDR2.Native;
-using RDR2.Math;
 
 namespace RDR2
 {
@@ -107,6 +106,20 @@ namespace RDR2
 		/// </summary>
 		/// <remarks>Use <see cref="SetPlayerControl(bool, eSetPlayerControlFlags, bool)"/> to change this value.</remarks>
 		public bool IsControlOn => PLAYER.IS_PLAYER_CONTROL_ON(Handle);
+
+		/// <summary>
+		/// Gets the amount of time since last seen by the law / left the wanted radius
+		/// </summary>
+		public float TimeSinceLastSeenByLaw => LAW._GET_TIME_SINCE_LAST_SEEN_BY_LAW(Handle);
+
+		/// <summary>
+		/// Gets or sets the current mood of the player
+		/// </summary>
+		public ePedMood Mood
+		{
+			get => (ePedMood)PLAYER._GET_PLAYER_MOOD(Handle);
+			set => PLAYER._SET_PLAYER_MOOD(Handle, (int)value);
+		}
 
 		/// <summary>
 		/// Gets the <see cref="RDR2.Ped"/> this <see cref="RDR2.Player"/> is controlling.
