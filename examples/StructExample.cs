@@ -67,7 +67,7 @@ namespace RDR2
 			Marshal.FreeCoTaskMem(pVoiceName);
 		}
 
-		// Used for struct fields that are of type  const char*
+		// Used to convert a managed C# string to an unmanaged C string
 		private IntPtr MarshalManagedStrToNative(string str)
 		{
 			var bytes = Encoding.UTF8.GetBytes(str);
