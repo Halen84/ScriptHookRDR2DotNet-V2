@@ -378,134 +378,134 @@ namespace RDR2DN
 			switch (e.KeyCode)
 			{
 				case Keys.Back:
-				RemoveCharLeft();
-				break;
-				case Keys.Delete:
-				RemoveCharRight();
-				break;
-				case Keys.Left:
-				if (e.Control)
-					BackwardWord();
-				else
-					MoveCursorLeft();
-				break;
-				case Keys.Right:
-				if (e.Control)
-					ForwardWord();
-				else
-					MoveCursorRight();
-				break;
-				case Keys.Home:
-				MoveCursorToBegOfLine();
-				break;
-				case Keys.End:
-				MoveCursorToEndOfLine();
-				break;
-				case Keys.Up:
-				GoUpCommandList();
-				break;
-				case Keys.Down:
-				GoDownCommandList();
-				break;
-				case Keys.Enter:
-				CompileExpression();
-				break;
-				case Keys.Escape:
-				IsOpen = false;
-				break;
-				case Keys.B:
-				if (e.Control)
-					MoveCursorLeft();
-				else if (e.Alt)
-					BackwardWord();
-				else
-					goto default;
-				break;
-				case Keys.D:
-				if (e.Control)
-					RemoveCharRight();
-				else
-					goto default;
-				break;
-				case Keys.F:
-				if (e.Control)
-					MoveCursorRight();
-				else if (e.Alt)
-					ForwardWord();
-				else
-					goto default;
-				break;
-				case Keys.H:
-				if (e.Control)
 					RemoveCharLeft();
-				else
-					goto default;
-				break;
-				case Keys.A:
-				if (e.Control)
+					break;
+				case Keys.Delete:
+					RemoveCharRight();
+					break;
+				case Keys.Left:
+					if (e.Control)
+						BackwardWord();
+					else
+						MoveCursorLeft();
+					break;
+				case Keys.Right:
+					if (e.Control)
+						ForwardWord();
+					else
+						MoveCursorRight();
+					break;
+				case Keys.Home:
 					MoveCursorToBegOfLine();
-				else
-					goto default;
-				break;
-				case Keys.E:
-				if (e.Control)
+					break;
+				case Keys.End:
 					MoveCursorToEndOfLine();
-				else
-					goto default;
-				break;
-				case Keys.P:
-				if (e.Control)
+					break;
+				case Keys.Up:
 					GoUpCommandList();
-				else
-					goto default;
-				break;
-				case Keys.K:
-				if (e.Control)
-					RemoveAllCharsRight();
-				else
-					goto default;
-				break;
-				case Keys.N:
-				if (e.Control)
+					break;
+				case Keys.Down:
 					GoDownCommandList();
-				else
-					goto default;
-				break;
+					break;
+				case Keys.Enter:
+					CompileExpression();
+					break;
+				case Keys.Escape:
+					IsOpen = false;
+					break;
+				case Keys.B:
+					if (e.Control)
+						MoveCursorLeft();
+					else if (e.Alt)
+						BackwardWord();
+					else
+						goto default;
+					break;
+				case Keys.D:
+					if (e.Control)
+						RemoveCharRight();
+					else
+						goto default;
+					break;
+				case Keys.F:
+					if (e.Control)
+						MoveCursorRight();
+					else if (e.Alt)
+						ForwardWord();
+					else
+						goto default;
+					break;
+				case Keys.H:
+					if (e.Control)
+						RemoveCharLeft();
+					else
+						goto default;
+					break;
+				case Keys.A:
+					if (e.Control)
+						MoveCursorToBegOfLine();
+					else
+						goto default;
+					break;
+				case Keys.E:
+					if (e.Control)
+						MoveCursorToEndOfLine();
+					else
+						goto default;
+					break;
+				case Keys.P:
+					if (e.Control)
+						GoUpCommandList();
+					else
+						goto default;
+					break;
+				case Keys.K:
+					if (e.Control)
+						RemoveAllCharsRight();
+					else
+						goto default;
+					break;
+				case Keys.N:
+					if (e.Control)
+						GoDownCommandList();
+					else
+						goto default;
+					break;
 				case Keys.L:
-				if (e.Control)
-					Clear();
-				else
-					goto default;
-				break;
+					if (e.Control)
+						Clear();
+					else
+						goto default;
+					break;
 				case Keys.T:
-				if (e.Control)
-					TransposeTwoChars();
-				else
-					goto default;
-				break;
+					if (e.Control)
+						TransposeTwoChars();
+					else
+						goto default;
+					break;
 				case Keys.U:
-				if (e.Control)
-					RemoveAllCharsLeft();
-				else
-					goto default;
-				break;
+					if (e.Control)
+						RemoveAllCharsLeft();
+					else
+						goto default;
+					break;
 				case Keys.V:
-				if (e.Control)
-					AddClipboardContent();
-				else
-					goto default;
-				break;
+					if (e.Control)
+						AddClipboardContent();
+					else
+						goto default;
+					break;
 				default:
-				var buf = new StringBuilder(256);
-				var keyboardState = new byte[256];
-				keyboardState[(int)Keys.Menu] = e.Alt ? (byte)0xff : (byte)0;
-				keyboardState[(int)Keys.ShiftKey] = e.Shift ? (byte)0xff : (byte)0;
-				keyboardState[(int)Keys.ControlKey] = e.Control ? (byte)0xff : (byte)0;
+					var buf = new StringBuilder(256);
+					var keyboardState = new byte[256];
+					keyboardState[(int)Keys.Menu] = e.Alt ? (byte)0xff : (byte)0;
+					keyboardState[(int)Keys.ShiftKey] = e.Shift ? (byte)0xff : (byte)0;
+					keyboardState[(int)Keys.ControlKey] = e.Control ? (byte)0xff : (byte)0;
 
-				// Translate key event to character for text input
-				ToUnicode((uint)e.KeyCode, 0, keyboardState, buf, 256, 0);
-				AddToInput(buf.ToString());
-				break;
+					// Translate key event to character for text input
+					ToUnicode((uint)e.KeyCode, 0, keyboardState, buf, 256, 0);
+					AddToInput(buf.ToString());
+					break;
 			}
 		}
 
