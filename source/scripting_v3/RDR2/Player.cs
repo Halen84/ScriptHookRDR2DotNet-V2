@@ -223,7 +223,7 @@ namespace RDR2
 		/// <param name="bEnabled">Whether control is enabled or not.</param>
 		/// <param name="iFlags">Flags that affect how player control is handled</param>
 		/// <param name="bPreventHeadingChange">Whether the player can still rotate his <see cref="Character"/>.</param>
-		public void SetPlayerControl(bool bEnabled, eSetPlayerControlFlags iFlags = eSetPlayerControlFlags.SPC_NONE, bool bPreventHeadingChange = true)
+		public void SetPlayerControl(bool bEnabled, eSetPlayerControlFlags iFlags = eSetPlayerControlFlags.None, bool bPreventHeadingChange = true)
 		{
 			PLAYER.SET_PLAYER_CONTROL(Handle, bEnabled, (int)iFlags, bPreventHeadingChange);
 		}
@@ -334,19 +334,19 @@ namespace RDR2
 	[Flags]
 	public enum eSetPlayerControlFlags : int
 	{
-		SPC_NONE = 0,
+		None = 0,
 		// Where's 1?
-		SPC_AMBIENT_SCRIPT = (1 << 1),
-		SPC_CLEAR_TASKS = (1 << 2),
-		SPC_REMOVE_FIRES = (1 << 3),
-		SPC_REMOVE_EXPLOSIONS = (1 << 4),
-		SPC_REMOVE_PROJECTILES = (1 << 5),
-		SPC_DEACTIVATE_GADGETS = (1 << 6),
-		SPC_REENABLE_CONTROL_ON_DEATH = (1 << 7),
-		SPC_LEAVE_CAMERA_CONTROL_ON = (1 << 8),
-		SPC_ALLOW_PLAYER_DAMAGE = (1 << 9),
-		SPC_DONT_STOP_OTHER_CARS_AROUND_PLAYER = (1 << 10),
-		SPC_PREVENT_EVERYBODY_BACKOFF = (1 << 11),
-		SPC_ALLOW_PAD_SHAKE = (1 << 12),
+		AmbientScript= (1 << 1),
+		ClearTasks = (1 << 2),
+		RemoveFires = (1 << 3),
+		RemoveExplosives = (1 << 4),
+		RemoveProjectiles = (1 << 5),
+		DeactiveGadgets = (1 << 6),
+		ReenableControlOnDeath = (1 << 7),
+		LeaveCameraControlOn = (1 << 8),
+		AllowPlayerDamage = (1 << 9),
+		DontStopOtherCarsAroundPlayer= (1 << 10),
+		PreventEverybodyBackoff= (1 << 11),
+		AllowPadShake = (1 << 12),
 	}
 }
