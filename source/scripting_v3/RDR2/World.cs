@@ -445,7 +445,7 @@ namespace RDR2
 
 		public static void DestroyAllCameras()
 		{
-			CAM.DESTROY_ALL_CAMS(false);
+			CAM.DESTROY_ALL_CAMS(true);
 		}
 
 		public static Camera CreateCamera(Vector3 position, Vector3 rotation, float fov)
