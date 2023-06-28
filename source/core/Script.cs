@@ -10,13 +10,12 @@ using System.Windows.Forms;
 
 namespace RDR2DN
 {
-	public class Script
+	public sealed class Script
 	{
-		Thread thread; // The thread hosting the execution of the script
-		internal SemaphoreSlim waitEvent = new SemaphoreSlim(0);
-		internal SemaphoreSlim continueEvent = new SemaphoreSlim(0);
-		internal ConcurrentQueue<Tuple<bool, KeyEventArgs>> keyboardEvents = new ConcurrentQueue<Tuple<bool, KeyEventArgs>>();
-
+		private Thread _thread; // The thread hosting the execution of the script
+		internal SemaphoreSlim _waitEvent = new SemaphoreSlim(0);
+		internal SemaphoreSlim _continueEvent = new SemaphoreSlim(0);
+		internal readonly ConcurrentQueue<Tuple<bool, KeyEventArgs>> _keyboardEvents = new();
 		private bool firstTime = true;
 
 		/// <summary>
@@ -77,17 +76,17 @@ namespace RDR2DN
 		/// <summary>
 		/// The main execution logic of all scripts.
 		/// </summary>
-		void MainLoop()
+		private void MainLoop()
 		{
 			IsRunning = true;
 
 			// Wait for script domain to continue this script
-			continueEvent.Wait();
+			_continueEvent.Wait();
 
 			while (IsRunning)
 			{
 				// Process keyboard events
-				while (keyboardEvents.TryDequeue(out Tuple<bool, KeyEventArgs> ev))
+				while (_keyboardEvents.TryDequeue(out Tuple<bool, KeyEventArgs> ev))
 				{
 					try
 					{
@@ -135,11 +134,11 @@ namespace RDR2DN
 		{
 			if (firstTime)
 			{
-				for (float i = 0.0f; i < 10.24; i += 0.01f)
+				for (float i = 0.0f; i < 10.24f; i += 0.01f)
 				{
 					NativeFunc.Invoke(0xA1253A3C870B6843, 0.1f, 0.1f); // UIDEBUG::_BG_SET_TEXT_SCALE
 					NativeFunc.Invoke(0x16FA5CE47F184F1E, 255, 255, 255, 255); // UIDEBUG::_BG_SET_TEXT_COLOR
-					var res = NativeFunc.Invoke(0xFA925AC00EB830B9, 10, "LITERAL_STRING", " "); // MISC::VAR_STRING
+					var res = NativeFunc.Invoke(0xFA925AC00EB830B9, 10, "LITERAL_STRING", " \r\n\t "); // MISC::VAR_STRING
 					NativeFunc.Invoke(0x16794E044C9EFB58, *res, i, i); // UIDEBUG::_BG_DISPLAY_TEXT
 				}
 				firstTime = false;
@@ -151,8 +150,8 @@ namespace RDR2DN
 		/// </summary>
 		public void Start()
 		{
-			thread = new Thread(new ThreadStart(MainLoop));
-			thread.Start();
+			_thread = new Thread(new ThreadStart(MainLoop));
+			_thread.Start();
 
 			TextPoolInit();
 
@@ -174,13 +173,13 @@ namespace RDR2DN
 				ScriptDomain.HandleUnhandledException(this, new UnhandledExceptionEventArgs(ex, true));
 			}
 
-			waitEvent.Release();
+			_waitEvent.Release();
 
-			if (thread != null)
+			if (_thread != null)
 			{
 				Log.Message(Log.Level.Warning, "Aborted script ", Name, ".");
 
-				thread.Abort(); thread = null;
+				_thread.Abort(); _thread = null;
 			}
 		}
 
@@ -219,8 +218,8 @@ namespace RDR2DN
 
 			do
 			{
-				waitEvent.Release();
-				continueEvent.Wait();
+				_waitEvent.Release();
+				_continueEvent.Wait();
 			}
 			while (DateTime.UtcNow < resumeTime);
 		}
