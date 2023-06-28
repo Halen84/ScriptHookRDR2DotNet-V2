@@ -157,10 +157,25 @@ namespace RDR2DN
 		}
 
 		/// <summary>
+		/// Disposes unmanaged resources.
+		/// </summary>
+		internal static void DisposeUnmanagedResources()
+		{
+			Marshal.FreeCoTaskMem(String);
+			Marshal.FreeCoTaskMem(NullString);
+
+			String = IntPtr.Zero;
+			NullString = IntPtr.Zero;
+		}
+
+		/// <summary>
 		/// Initializes all known functions and offsets based on pattern searching.
 		/// </summary>
 		static NativeMemory()
 		{
+			String = StringToCoTaskMemUTF8("LITERAL_STRING"); // "~a~"
+			NullString = StringToCoTaskMemUTF8(string.Empty); // ""
+
 			/*byte* address;
 
 			address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
@@ -355,8 +370,9 @@ namespace RDR2DN
 			return (*data & (1 << bit)) != 0;
 		}
 
-		public static IntPtr String => StringToCoTaskMemUTF8("LITERAL_STRING");
-		public static IntPtr NullString => StringToCoTaskMemUTF8(string.Empty);
+		private static byte[] s_strBufferForStringToCoTaskMemUtf8 = new byte[100];
+		public static IntPtr String { get; private set; } // "~a~"
+		public static IntPtr NullString { get; private set; } // ""
 
 		public static string PtrToStringUTF8(IntPtr ptr)
 		{
