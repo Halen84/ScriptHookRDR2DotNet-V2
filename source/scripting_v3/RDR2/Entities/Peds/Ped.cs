@@ -595,7 +595,7 @@ namespace RDR2
 		/// <summary>
 		/// Gets the mount that this <see cref="Ped"/> is currently on.
 		/// </summary>
-		public Ped CurrentMount => (Ped)Ped.FromHandle(PED.GET_MOUNT(Handle));
+		public Ped CurrentMount => (Ped)FromHandle(PED.GET_MOUNT(Handle));
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Ped"/> is in a specific vehicle.
@@ -618,8 +618,14 @@ namespace RDR2
 			PED.SET_PED_INTO_VEHICLE(Handle, vehicle.Handle, (int)seat);
 		}
 
+		/// <summary>
+		/// Gets the last <see cref="Vehicle"/> this <see cref="Ped"/> entered.
+		/// </summary>
 		public Vehicle LastVehicle => (Vehicle)FromHandle(PED.GET_VEHICLE_PED_IS_IN(Handle, true));
 
+		/// <summary>
+		/// Gets the <see cref="Vehicle"/> this <see cref="Ped"/> is currently in.
+		/// </summary>
 		public Vehicle CurrentVehicle => (Vehicle)FromHandle(PED.GET_VEHICLE_PED_IS_IN(Handle, false));
 
 		public float DrivingSpeed
