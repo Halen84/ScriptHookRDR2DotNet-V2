@@ -148,9 +148,9 @@ namespace RDR2
 		#region Entities
 
 		/// <summary>
-		/// Gets all of the <see cref="Ped"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Ped"/>'s currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Ped"/>s found</returns>
+		/// <returns><see cref="Array"/> of all <see cref="Ped"/>'s found</returns>
 		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllPeds() failed</remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Ped[] GetAllPeds()
@@ -178,9 +178,9 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets all of the <see cref="Vehicle"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Vehicle"/>'s currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Vehicle"/>s found</returns>
+		/// <returns><see cref="Array"/> of all <see cref="Vehicle"/>'s found</returns>
 		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllVehicles() failed</remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Vehicle[] GetAllVehicles()
@@ -205,9 +205,9 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets all of the <see cref="Prop"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Prop"/>'s (objects) currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Prop"/>s found</returns>
+		/// <returns><see cref="Array"/> of all <see cref="Prop"/>'s found</returns>
 		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllObjects() failed</remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Prop[] GetAllObjects()
@@ -234,9 +234,9 @@ namespace RDR2
 #if CPP_SCRIPTHOOKRDR_V2
 
 		/// <summary>
-		/// Gets all of the <see cref="Blip"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Blip"/>'s currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Blips"/>s found</returns>
+		/// <returns>An <see cref="Array"/> of all <see cref="Blips"/>'s found</returns>
 		public static Blip[] GetAllBlips()
 		{
 			int[] blips = new int[1024];
@@ -252,9 +252,9 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets all of the <see cref="Camera"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Camera"/>'s currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Camera"/>s found</returns>
+		/// <returns>An <see cref="Array"/> of all <see cref="Camera"/>'s found</returns>
 		public static Camera[] GetAllCams()
 		{
 			int[] cams = new int[1024];
@@ -268,9 +268,9 @@ namespace RDR2
 		}
 
 		/// <summary>
-		/// Gets all of the <see cref="Volume"/>s currently spawned/loaded in the game world
+		/// Gets all <see cref="Volume"/>'s currently spawned/loaded in the game world
 		/// </summary>
-		/// <returns>An <see cref="Array"/> of all <see cref="Volume"/>s found</returns>
+		/// <returns>An <see cref="Array"/> of all <see cref="Volume"/>'s found</returns>
 		public static int[] GetAllVolumes()
 		{
 			int[] vols = new int[1024];
@@ -342,7 +342,8 @@ namespace RDR2
 			{
 				return null;
 			}
-			return new Vehicle(VEHICLE.CREATE_VEHICLE((uint)hash, position.X, position.Y, position.Z, heading, true, true, false, false));
+			int vehicle = VEHICLE.CREATE_VEHICLE((uint)hash, position.X, position.Y, position.Z, heading, true, true, false, false);
+			return vehicle == 0 ? null : (Vehicle)Entity.FromHandle(vehicle);
 		}
 
 		/// <summary>
@@ -365,7 +366,8 @@ namespace RDR2
 				position.Z = GetGroundZ(position);
 			}
 
-			return new Prop(OBJECT.CREATE_OBJECT((uint)model.Hash, position.X, position.Y, position.Z, true, true, dynamic, false, true));
+			int prop = OBJECT.CREATE_OBJECT((uint)model.Hash, position.X, position.Y, position.Z, true, true, dynamic, false, true);
+			return prop == 0 ? null : (Prop)Entity.FromHandle(prop);
 		}
 		/// <summary>
 		/// Spawns a <see cref="Prop"/> of the given <see cref="Model"/> at the position specified.
@@ -401,7 +403,8 @@ namespace RDR2
 				return null;
 			}
 
-			return new Prop(OBJECT.CREATE_OBJECT_NO_OFFSET((uint)model.Hash, position.X, position.Y, position.Z, true, true, dynamic, false));
+			int prop = OBJECT.CREATE_OBJECT_NO_OFFSET((uint)model.Hash, position.X, position.Y, position.Z, true, true, dynamic, false);
+			return prop == 0 ? null : (Prop)Entity.FromHandle(prop);
 		}
 		/// <summary>
 		/// Spawns a <see cref="Prop"/> of the given <see cref="Model"/> at the position specified without any offset.
