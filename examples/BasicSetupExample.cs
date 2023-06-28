@@ -14,26 +14,32 @@ namespace BasicSetupExample
 		{
 			// Hook script events. These functions are called automatically
 
-			// This function will be called every frame/tick/update
+			// OnTick() will be called every frame/tick/update
 			Tick += OnTick;
 
-			// This function will be called everytime a key is pressed
+			// OnKeyDown() will be called everytime a key is pressed
 			KeyDown += OnKeyDown;
 
-			// This function will be called everytime a key is released
+			// OnKeyUp() will be called everytime a key is released
 			KeyUp += OnKeyUp;
+
+			// Set how often this script should run each frame (tick)
+			Interval = 0;
 		}
 
 		private void OnTick(object sender, EventArgs e)
 		{
 			Ped playerPed = Game.Player.Character; // Get our player ped
 			Player player = Game.Player; // Get our player
+			Vehicle veh = playerPed.CurrentVehicle; // Get the vehicle we are currently in
 
 			// Instead of keyboard only on KeyUp and KeyDown, you use the Game.IsControl... functions (PAD namespace)
 			// which work on both controller and keyboard.
 			if (Game.IsControlJustPressed(eInputType.Reload))
 			{
 				// Do Stuff (Keyboard AND Controller)
+
+				RDR2.UI.Screen.PrintSubtitle("~COLOR_OBJECTIVE~Reload~s~ was pressed.");
 			}
 		}
 

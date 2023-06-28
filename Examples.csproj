@@ -42,10 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="examples\BasicSetupExample.cs" />
-    <Compile Include="examples\ReviveExample.cs" />
+    <Compile Include="examples\PoolsExample.cs" />
     <Compile Include="examples\RagdollExample.cs" />
     <Compile Include="examples\StructExample.cs" />
-    <Compile Include="examples\VehicleBoostExample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="source\scripting_v3\ScriptHookRDRDotNet_API.csproj">
