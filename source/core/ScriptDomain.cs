@@ -15,28 +15,31 @@ using System.Windows.Forms;
 
 namespace RDR2DN
 {
+	/// <summary>
+	/// The interface for tasks that must be run on the main thread (e.g. calling native functions) because of thread local storage (TLS).
+	/// </summary>
 	public interface IScriptTask
 	{
 		void Run();
 	}
 
-	public class ScriptDomain : MarshalByRefObject, IDisposable
+	public sealed class ScriptDomain : MarshalByRefObject, IDisposable
 	{
 		// Debugger.IsAttached does not detect a Visual Studio debugger
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport("Kernel32.dll")]
 		internal static extern bool IsDebuggerPresent();
 
-		int executingThreadId = Thread.CurrentThread.ManagedThreadId;
-		Script executingScript = null;
-		List<IntPtr> pinnedStrings = new List<IntPtr>();
-		List<Script> runningScripts = new List<Script>();
-		Queue<IScriptTask> taskQueue = new Queue<IScriptTask>();
-		Dictionary<string, int> scriptInstances = new Dictionary<string, int>();
-		SortedList<string, Tuple<string, Type>> scriptTypes = new SortedList<string, Tuple<string, Type>>();
-		bool recordKeyboardEvents = true;
-		bool[] keyboardState = new bool[256];
-		List<Assembly> scriptApis = new List<Assembly>();
+		private int _executingThreadId = Thread.CurrentThread.ManagedThreadId;
+		private Script _executingScript = null;
+		private List<IntPtr> _pinnedStrings = new();
+		private List<Script> _runningScripts = new();
+		private Queue<IScriptTask> _taskQueue = new();
+		private Dictionary<string, int> _scriptInstances = new();
+		private SortedList<string, Tuple<string, Type>> _scriptTypes = new();
+		private bool _recordKeyboardEvents = true;
+		private bool[] _keyboardState = new bool[256];
+		private List<Assembly> _scriptApis = new List<Assembly>();
 
 		/// <summary>
 		/// Gets the friendly name of this script domain.
@@ -60,11 +63,16 @@ namespace RDR2DN
 		/// <summary>
 		/// Gets the list of currently running scripts in this script domain. This is used by the console implementation.
 		/// </summary>
-		public Script[] RunningScripts => runningScripts.ToArray();
+		public Script[] RunningScripts => _runningScripts.ToArray();
 		/// <summary>
 		/// Gets the currently executing script or <c>null</c> if there is none.
 		/// </summary>
-		public static Script ExecutingScript => CurrentDomain != null ? CurrentDomain.executingScript : null;
+		public static Script ExecutingScript => CurrentDomain != null ? CurrentDomain._executingScript : null;
+
+		/// <summary>
+		/// Gets or sets the value how long script can execute in one tick without getting terminated after the tick ends.
+		/// </summary>
+		public uint ScriptTimeoutThreshold { get; set; }
 
 		/// <summary>
 		/// Initializes the script domain inside its application domain.
@@ -79,6 +87,9 @@ namespace RDR2DN
 			AppDomain.AssemblyResolve += HandleResolve;
 			AppDomain.UnhandledException += HandleUnhandledException;
 
+			// Initialize and scan memory at a predictable point
+			System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(NativeMemory).TypeHandle);
+
 			// Load API assemblies into this script domain
 			foreach (string apiPath in Directory.EnumerateFiles(apiBasePath, "ScriptHookRDRNetAPI.dll", SearchOption.TopDirectoryOnly))
 			{
@@ -86,7 +97,7 @@ namespace RDR2DN
 
 				try
 				{
-					scriptApis.Add(Assembly.LoadFrom(apiPath));
+					_scriptApis.Add(Assembly.LoadFrom(apiPath));
 				}
 				catch (Exception ex)
 				{
@@ -97,17 +108,20 @@ namespace RDR2DN
 
 		~ScriptDomain()
 		{
-			Dispose(false);
+			DisposeUnmanagedResource();
 		}
 		public void Dispose()
 		{
-			Dispose(true);
+			DisposeUnmanagedResource();
 			GC.SuppressFinalize(this);
 		}
-		protected virtual void Dispose(bool disposing)
+
+		private void DisposeUnmanagedResource()
 		{
 			// Need to free native strings when disposing the script domain
 			CleanupStrings();
+			// Need to free unmanaged resources in NativeMemory
+			NativeMemory.DisposeUnmanagedResources();
 		}
 
 		/// <summary>
@@ -187,7 +201,7 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="filename">The path to the code file to load.</param>
 		/// <returns><c>true</c> on success, <c>false</c> otherwise</returns>
-		bool LoadScriptsFromSource(string filename)
+		private bool LoadScriptsFromSource(string filename)
 		{
 			var compilerOptions = new System.CodeDom.Compiler.CompilerParameters();
 			compilerOptions.CompilerOptions = "/optimize";
@@ -200,7 +214,7 @@ namespace RDR2DN
 			compilerOptions.ReferencedAssemblies.Add("System.XML.dll");
 			compilerOptions.ReferencedAssemblies.Add("System.XML.Linq.dll");
 			// Reference the oldest scripting API to stay compatible with existing scripts
-			compilerOptions.ReferencedAssemblies.Add(scriptApis.First().Location);
+			compilerOptions.ReferencedAssemblies.Add(_scriptApis.First().Location);
 			compilerOptions.ReferencedAssemblies.Add(typeof(ScriptDomain).Assembly.Location);
 
 			string extension = Path.GetExtension(filename);
@@ -249,10 +263,12 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="filename">The path to the assembly file to load.</param>
 		/// <returns><c>true</c> on success, <c>false</c> otherwise</returns>
-		bool LoadScriptsFromAssembly(string filename)
+		private bool LoadScriptsFromAssembly(string filename)
 		{
 			if (!IsManagedAssembly(filename))
+			{
 				return false;
+			}
 
 			Log.Message(Log.Level.Debug, "Loading assembly ", Path.GetFileName(filename), " ...");
 
@@ -277,7 +293,7 @@ namespace RDR2DN
 		/// <param name="filename">The path to the file associated with this assembly.</param>
 		/// <param name="assembly">The assembly to load.</param>
 		/// <returns><c>true</c> on success, <c>false</c> otherwise</returns>
-		bool LoadScriptsFromAssembly(Assembly assembly, string filename)
+		private bool LoadScriptsFromAssembly(Assembly assembly, string filename)
 		{
 			int count = 0;
 			Version apiVersion = null;
@@ -307,16 +323,19 @@ namespace RDR2DN
 					var key = BuildComparisonString(type, string.Empty);
 					key = assembly.GetName().Name + "-" + assembly.GetName().Version + key;
 
-					if (scriptTypes.ContainsKey(key))
+					if (_scriptTypes.ContainsKey(key))
 					{
-						Log.Message(Log.Level.Warning, "The script name ", type.FullName, " already exists and was loaded from ", Path.GetFileName(scriptTypes[key].Item1), ". Ignoring occurrence loaded from ", Path.GetFileName(filename), ".");
+						Log.Message(Log.Level.Warning, "The script name ", type.FullName, " already exists and was loaded from ", Path.GetFileName(_scriptTypes[key].Item1), ". Ignoring occurrence loaded from ", Path.GetFileName(filename), ".");
 						continue; // Skip types that were already added previously are ignored
 					}
 
-					scriptTypes.Add(key, new Tuple<string, Type>(filename, type));
+					_scriptTypes.Add(key, new Tuple<string, Type>(filename, type));
 
-					if (apiVersion == null) // Check API version for one of the types (should be the same for all)
+					// Check API version for one of the types (should be the same for all)
+					if (apiVersion == null)
+					{
 						apiVersion = type.BaseType.Assembly.GetName().Version;
+					}
 				}
 			}
 			catch (ReflectionTypeLoadException ex)
@@ -344,27 +363,29 @@ namespace RDR2DN
 		public Script InstantiateScript(Type scriptType)
 		{
 			if (scriptType.IsAbstract || !IsSubclassOf(scriptType, "RDR2.Script"))
+			{
 				return null;
+			}
 
 			Log.Message(Log.Level.Debug, "Instantiating script ", scriptType.FullName, " ...");
 
 			Script script = new Script();
 			// Keep track of current script, so it can be restored down below
-			Script previousScript = executingScript;
+			Script previousScript = _executingScript;
 
-			executingScript = script;
+			_executingScript = script;
 
 			// Create a name for the new script instance
-			if (scriptInstances.ContainsKey(scriptType.FullName))
+			if (_scriptInstances.ContainsKey(scriptType.FullName))
 			{
-				int instanceIndex = scriptInstances[scriptType.FullName] + 1;
-				scriptInstances[scriptType.FullName] = instanceIndex;
+				int instanceIndex = _scriptInstances[scriptType.FullName] + 1;
+				_scriptInstances[scriptType.FullName] = instanceIndex;
 
 				script.Name = scriptType.FullName + instanceIndex.ToString();
 			}
 			else
 			{
-				scriptInstances.Add(scriptType.FullName, 0);
+				_scriptInstances.Add(scriptType.FullName, 0);
 
 				// Do not append instance index to the default instance name
 				script.Name = scriptType.FullName;
@@ -391,15 +412,17 @@ namespace RDR2DN
 				Log.Message(Log.Level.Error, "Failed to instantiate script ", scriptType.FullName, ": ", ex.ToString());
 
 				if (GetScriptAttribute(scriptType, "SupportURL") is string supportURL)
+				{
 					Log.Message(Log.Level.Error, "Please check the following site for support on the issue: ", supportURL);
+				}
 
 				return null;
 			}
 
-			runningScripts.Add(script);
+			_runningScripts.Add(script);
 
 			// Restore previously executing script
-			executingScript = previousScript;
+			_executingScript = previousScript;
 
 			return script;
 		}
@@ -409,7 +432,7 @@ namespace RDR2DN
 		/// </summary>
 		public void Start()
 		{
-			if (scriptTypes.Count != 0 || runningScripts.Count != 0)
+			if (_scriptTypes.Count != 0 || _runningScripts.Count != 0)
 			{
 				Log.Message(Log.Level.Error, "cannot start scriptdomain if scripts are already running");
 				return; // Cannot start script domain if scripts are already running
@@ -434,9 +457,6 @@ namespace RDR2DN
 
 				assemblyFiles.AddRange(Directory.GetFiles(ScriptPath, "*.dll", SearchOption.AllDirectories)
 					.Where(x => IsManagedAssembly(x)));
-				// Probably wont add this. User should not be renaming the extension to .asi anyway.
-				//assemblyFiles.AddRange(Directory.GetFiles(ScriptPath, "*.asi", SearchOption.AllDirectories)
-				//	.Where(x => IsManagedAssembly(x)));
 			}
 			catch (Exception ex)
 			{
@@ -467,16 +487,23 @@ namespace RDR2DN
 			}
 
 			foreach (var filename in sourceFiles)
+			{
 				LoadScriptsFromSource(filename);
+			}
+
 			foreach (var filename in assemblyFiles)
+			{
 				LoadScriptsFromAssembly(filename);
+			}
 
 			// Instantiate scripts after they were all loaded, so that dependencies are launched with the right ordering
-			foreach (var type in scriptTypes.Values.Select(x => x.Item2))
+			foreach (var type in _scriptTypes.Values.Select(x => x.Item2))
 			{
 				// Start the script unless script does not want a default instance
 				if (!(GetScriptAttribute(type, "NoDefaultInstance") is bool NoDefaultInstance) || !NoDefaultInstance)
+				{
 					InstantiateScript(type)?.Start();
+				}
 			}
 		}
 		/// <summary>
@@ -487,19 +514,23 @@ namespace RDR2DN
 		{
 			filename = Path.GetFullPath(filename);
 
-			if (Path.GetExtension(filename).Equals(".dll", StringComparison.OrdinalIgnoreCase) ?
-				!LoadScriptsFromAssembly(filename) : !LoadScriptsFromSource(filename))
+			bool isAssembly = Path.GetExtension(filename).Equals(".dll", StringComparison.OrdinalIgnoreCase);
+			if (isAssembly ? !LoadScriptsFromAssembly(filename) : !LoadScriptsFromSource(filename))
+			{
 				return;
+			}
 
 			// Instantiate only those scripts that are from the this assembly
-			foreach (var type in scriptTypes.Values.Where(x => x.Item1 == filename).Select(x => x.Item2))
+			foreach (var type in _scriptTypes.Values.Where(x => x.Item1 == filename).Select(x => x.Item2))
 			{
 				// Make sure there are no others instances of this script
-				runningScripts.RemoveAll(x => x.FileName == filename && x.ScriptInstance.GetType() == type);
+				_runningScripts.RemoveAll(x => x.FileName == filename && x.ScriptInstance.GetType() == type);
 
 				// Start the script unless script does not want a default instance
 				if (!(GetScriptAttribute(type, "NoDefaultInstance") is bool NoDefaultInstance) || !NoDefaultInstance)
+				{
 					InstantiateScript(type)?.Start();
+				}
 			}
 		}
 		/// <summary>
@@ -507,11 +538,13 @@ namespace RDR2DN
 		/// </summary>
 		public void Abort()
 		{
-			foreach (Script script in runningScripts)
+			foreach (Script script in _runningScripts)
+			{
 				script.Abort();
+			}
 
-			scriptTypes.Clear();
-			runningScripts.Clear();
+			_scriptTypes.Clear();
+			_runningScripts.Clear();
 		}
 		/// <summary>
 		/// Aborts all running scripts from the specified file.
@@ -521,8 +554,10 @@ namespace RDR2DN
 		{
 			filename = Path.GetFullPath(filename);
 
-			foreach (Script script in runningScripts.Where(x => filename.Equals(x.FileName, StringComparison.OrdinalIgnoreCase)))
+			foreach (Script script in _runningScripts.Where(x => filename.Equals(x.FileName, StringComparison.OrdinalIgnoreCase)))
+			{
 				script.Abort();
+			}
 		}
 
 		/// <summary>
@@ -531,7 +566,7 @@ namespace RDR2DN
 		/// <param name="task">The task to execute.</param>
 		public void ExecuteTask(IScriptTask task)
 		{
-			if (Thread.CurrentThread.ManagedThreadId == executingThreadId)
+			if (Thread.CurrentThread.ManagedThreadId == _executingThreadId)
 			{
 				// Request came from the main thread, so can just execute it right away
 				task.Run();
@@ -539,9 +574,9 @@ namespace RDR2DN
 			else
 			{
 				// Request came from the script thread, so need to pass it to the domain thread and execute there
-				taskQueue.Enqueue(task);
+				_taskQueue.Enqueue(task);
 
-				SignalAndWait(executingScript.waitEvent, executingScript.continueEvent);
+				SignalAndWait(_executingScript._waitEvent, _executingScript._continueEvent);
 			}
 		}
 
@@ -552,7 +587,7 @@ namespace RDR2DN
 		/// <returns><c>true</c> if the key is currently pressed or <c>false</c> otherwise</returns>
 		public bool IsKeyPressed(Keys key)
 		{
-			return keyboardState[(int)key];
+			return _keyboardState[(int)key];
 		}
 		/// <summary>
 		/// Pauses or resumes handling of keyboard events in this script domain.
@@ -560,7 +595,7 @@ namespace RDR2DN
 		/// <param name="pause"><c>true</c> to pause or <c>false</c> to resume</param>
 		public void PauseKeyEvents(bool pause)
 		{
-			recordKeyboardEvents = !pause;
+			_recordKeyboardEvents = !pause;
 		}
 
 		/// <summary>
@@ -569,23 +604,27 @@ namespace RDR2DN
 		public void DoTick()
 		{
 			// Execute running scripts
-			for (int i = 0; i < runningScripts.Count; i++)
+			for (int i = 0; i < _runningScripts.Count; i++)
 			{
-				Script script = runningScripts[i];
+				Script script = _runningScripts[i];
 
 				// Ignore terminated scripts
 				if (!script.IsRunning || script.IsPaused)
+				{
 					continue;
+				}
 
-				executingScript = script;
+				_executingScript = script;
 
 				bool finishedInTime = true;
 
 				try
 				{
 					// Resume script thread and execute any incoming tasks from it
-					while ((finishedInTime = SignalAndWait(script.continueEvent, script.waitEvent, 5000)) && taskQueue.Count > 0)
-						taskQueue.Dequeue().Run();
+					while ((finishedInTime = SignalAndWait(script._continueEvent, script._waitEvent, ScriptTimeoutThreshold)) && _taskQueue.Count > 0)
+					{
+						_taskQueue.Dequeue().Run();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -595,7 +634,7 @@ namespace RDR2DN
 					script.Abort();
 				}
 
-				executingScript = null;
+				_executingScript = null;
 
 				// Tolerate long execution time if a debugger is attached since some script may be debugged using breakpoints
 				if (!finishedInTime && !IsDebuggerPresent())
@@ -621,25 +660,30 @@ namespace RDR2DN
 			var e = new KeyEventArgs(keys);
 
 			// Only update state of the primary key (without modifiers) here
-			keyboardState[(int)e.KeyCode] = status;
+			_keyboardState[(int)e.KeyCode] = status;
 
-			if (recordKeyboardEvents)
+			if (_recordKeyboardEvents)
 			{
 				var eventinfo = new Tuple<bool, KeyEventArgs>(status, e);
 
-				foreach (Script script in runningScripts)
-					script.keyboardEvents.Enqueue(eventinfo);
+				foreach (Script script in _runningScripts)
+				{
+					script._keyboardEvents.Enqueue(eventinfo);
+				}
 			}
 		}
 
 		/// <summary>
 		/// Free memory for all pinned strings.
 		/// </summary>
-		void CleanupStrings()
+		private void CleanupStrings()
 		{
-			foreach (IntPtr handle in pinnedStrings)
+			foreach (IntPtr handle in _pinnedStrings)
+			{
 				Marshal.FreeCoTaskMem(handle);
-			pinnedStrings.Clear();
+			}
+
+			_pinnedStrings.Clear();
 		}
 		/// <summary>
 		/// Pins the memory of a string so that it can be used in native calls without worrying about the GC invalidating its pointer.
@@ -656,7 +700,7 @@ namespace RDR2DN
 			}
 			else
 			{
-				pinnedStrings.Add(handle);
+				_pinnedStrings.Add(handle);
 				return handle;
 			}
 		}
@@ -668,30 +712,32 @@ namespace RDR2DN
 		public Script LookupScript(object scriptInstance)
 		{
 			if (scriptInstance == null)
+			{
 				return null;
+			}
 
 			// Return matching script in running script list if one is found
-			var script = runningScripts.Where(x => x.ScriptInstance == scriptInstance).FirstOrDefault();
+			var script = _runningScripts.Where(x => x.ScriptInstance == scriptInstance).FirstOrDefault();
 
 			// Otherwise return the executing script, since during constructor execution the running script list was not yet updated
-			if (script == null && executingScript != null && executingScript.ScriptInstance == null)
+			if (script == null && _executingScript != null && _executingScript.ScriptInstance == null)
 			{
 				// Handle the case where a script creates a custom instance of a script class that is not managed by RDR2DN
 				// These may attempt to set events, but are not allowed to do so, since RDR2DN will never call them, so just return null
-				if (!executingScript.Name.Contains(scriptInstance.GetType().FullName))
+				if (!_executingScript.Name.Contains(scriptInstance.GetType().FullName))
 				{
 					Log.Message(Log.Level.Warning, "A script tried to use a custom script instance of type ", scriptInstance.GetType().FullName, " that was not instantiated by ScriptHookRDRDotNet.");
 					return null;
 				}
 
-				script = executingScript;
+				script = _executingScript;
 			}
 
 			return script;
 		}
 		public string LookupScriptFilename(Type scriptType)
 		{
-			return scriptTypes.Values.FirstOrDefault(x => x.Item2 == scriptType)?.Item1 ?? string.Empty;
+			return _scriptTypes.Values.FirstOrDefault(x => x.Item2 == scriptType)?.Item1 ?? string.Empty;
 		}
 
 		/// <summary>
@@ -699,7 +745,7 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="scriptType">The script type to check for the attribute.</param>
 		/// <param name="name">The named argument to search.</param>
-		static object GetScriptAttribute(Type scriptType, string name)
+		private static object GetScriptAttribute(Type scriptType, string name)
 		{
 			var attribute = scriptType.GetCustomAttributesData().Where(x => x.AttributeType.FullName == "RDR2.ScriptAttributes").FirstOrDefault();
 
@@ -708,7 +754,9 @@ namespace RDR2DN
 				foreach (var arg in attribute.NamedArguments)
 				{
 					if (arg.MemberName == name)
+					{
 						return arg.TypedValue.Value;
+					}
 				}
 			}
 
@@ -721,26 +769,31 @@ namespace RDR2DN
 			return null;
 		}
 
-		static void SignalAndWait(SemaphoreSlim toSignal, SemaphoreSlim toWaitOn)
+		private static void SignalAndWait(SemaphoreSlim toSignal, SemaphoreSlim toWaitOn)
 		{
 			toSignal.Release();
 			toWaitOn.Wait();
 		}
-		static bool SignalAndWait(SemaphoreSlim toSignal, SemaphoreSlim toWaitOn, int timeout)
+		private static bool SignalAndWait(SemaphoreSlim toSignal, SemaphoreSlim toWaitOn, uint timeout)
 		{
 			toSignal.Release();
-			return toWaitOn.Wait(timeout);
+			return toWaitOn.Wait((int)timeout);
 		}
 
-		static bool IsSubclassOf(Type type, string baseTypeName)
+		private static bool IsSubclassOf(Type type, string baseTypeName)
 		{
 			for (Type t = type.BaseType; t != null; t = t.BaseType)
+			{
 				if (t.FullName == baseTypeName)
+				{
 					return true;
+				}
+			}
+
 			return false;
 		}
 
-		static bool IsManagedAssembly(string filename)
+		private static bool IsManagedAssembly(string filename)
 		{
 			try
 			{
@@ -757,7 +810,7 @@ namespace RDR2DN
 			return false;
 		}
 
-		static Assembly HandleResolve(object sender, ResolveEventArgs args)
+		private static Assembly HandleResolve(object sender, ResolveEventArgs args)
 		{
 			var assemblyName = new AssemblyName(args.Name);
 
@@ -780,12 +833,12 @@ namespace RDR2DN
 					Log.Message(Log.Level.Warning, "Resolving API version 0.0.0",
 						args.RequestingAssembly != null ? " referenced in " + args.RequestingAssembly.GetName().Name : string.Empty, ".");
 
-					return CurrentDomain.scriptApis.Where(x => x.GetName().Version.Major == 1).FirstOrDefault();
+					return CurrentDomain._scriptApis.Where(x => x.GetName().Version.Major == 1).FirstOrDefault();
 				}
 
 				Assembly compatibleApi = null;
 
-				foreach (Assembly api in CurrentDomain.scriptApis)
+				foreach (Assembly api in CurrentDomain._scriptApis)
 				{
 					Version apiVersion = api.GetName().Version;
 
@@ -824,7 +877,7 @@ namespace RDR2DN
 			return null;
 		}
 
-		static public void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
+		public static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs args)
 		{
 			Log.Message(Log.Level.Error, args.IsTerminating ? "Caught fatal unhandled exception:" : "Caught unhandled exception:", Environment.NewLine, args.ExceptionObject.ToString());
 
@@ -833,11 +886,13 @@ namespace RDR2DN
 				Log.Message(Log.Level.Error, "The exception was thrown while executing the script ", script.Name, ".");
 
 				if (GetScriptAttribute(script.ScriptInstance.GetType(), "SupportURL") is string supportURL)
+				{
 					Log.Message(Log.Level.Error, "Please check the following site for support on the issue: ", supportURL);
+				}	
 
 				// Show a notification with the script crash information
 				var domain = ScriptDomain.CurrentDomain;
-				if (domain != null && domain.executingScript != null && !args.IsTerminating)
+				if (domain != null && domain._executingScript != null && !args.IsTerminating)
 				{
 					unsafe
 					{
