@@ -9,6 +9,7 @@
 
 #pragma managed(pop)
 
+// Has to be a managed variable since C++ exceptions will be ruined if this is unmanaged one
 bool sGameReloaded = false;
 
 // Import C# code base
@@ -31,7 +32,7 @@ namespace WinForms = System::Windows::Forms;
 [assembly:AssemblyKeyFileAttribute("PublicKeyToken.snk")] ;
 
 
-public ref class ScriptHookRDRDotNet // This is not a static class, so that console scripts can inherit from it
+public ref class ScriptHookRDRDotNet // This is not a static class, so that console scripts can inherit from it for ConsoleInput class
 {
 public:
 	[RDR2DN::ConsoleCommand("Print the default help")]
@@ -121,6 +122,7 @@ internal:
 	static RDR2DN::ScriptDomain^ domain = RDR2DN::ScriptDomain::CurrentDomain;
 	static WinForms::Keys reloadKey = WinForms::Keys::None;
 	static WinForms::Keys consoleKey = WinForms::Keys::F8;
+	static unsigned int scriptTimeoutThreshold = 5000;
 
 	static void SetConsole()
 	{
@@ -176,12 +178,18 @@ static void ScriptHookRDRDotNet_ManagedInit()
 			String^ keyStr = data[0]->Trim();
 			String^ valueStr = data[1]->Trim();
 
-			if (data[0] == "ReloadKey")
-				Enum::TryParse(data[1], true, ScriptHookRDRDotNet::reloadKey);
-			else if (data[0] == "ConsoleKey")
-				Enum::TryParse(data[1], true, ScriptHookRDRDotNet::consoleKey);
-			else if (data[0] == "ScriptsLocation")
-				scriptPath = data[1];
+			if (String::Equals(keyStr, "ReloadKey", StringComparison::OrdinalIgnoreCase))
+				Enum::TryParse(valueStr, true, ScriptHookRDRDotNet::reloadKey);
+			else if (String::Equals(keyStr, "ConsoleKey", StringComparison::OrdinalIgnoreCase))
+				Enum::TryParse(valueStr, true, ScriptHookRDRDotNet::consoleKey);
+			else if (String::Equals(keyStr, "ScriptTimeoutThreshold", StringComparison::OrdinalIgnoreCase))
+			{
+				unsigned int outVal;
+				if (UInt32::TryParse(valueStr, outVal))
+				{
+					ScriptHookRDRDotNet::scriptTimeoutThreshold = outVal;
+				}
+			}
 		}
 	}
 	catch (Exception^ ex)
@@ -197,6 +205,8 @@ static void ScriptHookRDRDotNet_ManagedInit()
 		RDR2DN::Log::Message(RDR2DN::Log::Level::Error, "ScriptDomain::Load() returned null in ", scriptPath);
 		return;
 	}
+
+	domain->ScriptTimeoutThreshold = ScriptHookRDRDotNet::scriptTimeoutThreshold;
 
 	// Console Stuff
 	try
@@ -251,13 +261,6 @@ static void ScriptHookRDRDotNet_ManagedKeyboardMessage(unsigned long keycode, bo
 	if (shift) keys = keys | WinForms::Keys::Shift;
 	if (alt)   keys = keys | WinForms::Keys::Alt;
 
-	if (keydown && keys == ScriptHookRDRDotNet::reloadKey)
-	{
-		// Force a reload
-		ScriptHookRDRDotNet::Reload();
-		return;
-	}
-
 	RDR2DN::Console^ console = ScriptHookRDRDotNet::console;
 	if (console != nullptr)
 	{
@@ -282,11 +285,11 @@ static void ScriptHookRDRDotNet_ManagedKeyboardMessage(unsigned long keycode, bo
 			return;
 	}
 
-	RDR2DN::ScriptDomain^ scriptdomain = ScriptHookRDRDotNet::domain;
-	if (scriptdomain != nullptr)
+	RDR2DN::ScriptDomain ^scriptDomain = ScriptHookRDRDotNet::domain;
+	if (scriptDomain != nullptr)
 	{
 		// Send key events to all scripts
-		scriptdomain->DoKeyEvent(keys, keydown);
+		scriptDomain->DoKeyEvent(keys, keydown);
 	}
 }
 
