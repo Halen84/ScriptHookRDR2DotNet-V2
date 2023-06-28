@@ -153,35 +153,17 @@ namespace RDR2
 		/// <summary>
 		/// Checks if this <see cref="Script"/> is paused.
 		/// </summary>
-		public bool IsPaused
-		{
-			get
-			{
-				return RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsPaused;
-			}
-		}
+		public bool IsPaused => RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsPaused;
 
 		/// <summary>
 		/// Checks if this <see cref="Script"/> is running.
 		/// </summary>
-		public bool IsRunning
-		{
-			get
-			{
-				return RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsRunning;
-			}
-		}
+		public bool IsRunning => RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsRunning;
 
 		/// <summary>
 		/// Checks if this <see cref="Script"/> is executing.
 		/// </summary>
-		public bool IsExecuting
-		{
-			get
-			{
-				return RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsExecuting;
-			}
-		}
+		public bool IsExecuting => RDR2DN.ScriptDomain.CurrentDomain.LookupScript(this).IsExecuting;
 
 		/// <summary>
 		/// Gets an INI file associated with this <see cref="Script"/>.

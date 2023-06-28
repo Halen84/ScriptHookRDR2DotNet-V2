@@ -16,7 +16,7 @@ namespace RDR2.UI
 	{
 		#region Fields
 		private static readonly string[] _effects = new string[] {
-			
+
 		};
 		#endregion
 
@@ -145,11 +145,13 @@ namespace RDR2.UI
 		/// <param name="effectName">The effect to play</param>
 		public static void PlayEffect(string effectName)
 		{
-			if (!GRAPHICS._ANIMPOSTFX_HAS_LOADED(effectName)) {
+			if (!GRAPHICS._ANIMPOSTFX_HAS_LOADED(effectName))
+			{
 				GRAPHICS._ANIMPOSTFX_PRELOAD_POSTFX(effectName);
 			}
 
-			if (GRAPHICS._ANIMPOSTFX_HAS_LOADED(effectName)) {
+			if (GRAPHICS._ANIMPOSTFX_HAS_LOADED(effectName))
+			{
 				GRAPHICS.ANIMPOSTFX_PLAY(effectName);
 			}
 
@@ -162,7 +164,8 @@ namespace RDR2.UI
 		/// <param name="effectName">The effect to stop</param>
 		public static void StopEffect(string effectName)
 		{
-			if (GRAPHICS.ANIMPOSTFX_IS_RUNNING(effectName)) {
+			if (GRAPHICS.ANIMPOSTFX_IS_RUNNING(effectName))
+			{
 				GRAPHICS.ANIMPOSTFX_STOP(effectName);
 			}
 		}
@@ -173,7 +176,8 @@ namespace RDR2.UI
 		/// <param name="effectName">The effect to stop</param>
 		public static void ClearEffect(string effectName)
 		{
-			if (GRAPHICS.ANIMPOSTFX_IS_RUNNING(effectName)) {
+			if (GRAPHICS.ANIMPOSTFX_IS_RUNNING(effectName))
+			{
 				GRAPHICS._ANIMPOSTFX_CLEAR_EFFECT(effectName);
 			}
 		}
@@ -207,7 +211,8 @@ namespace RDR2.UI
 		public static void PrintSubtitle(params string[] message)
 		{
 			string actualMessage = string.Empty;
-			foreach (string str in message) {
+			foreach (string str in message)
+			{
 				actualMessage = string.Concat(actualMessage, str);
 			}
 
@@ -250,7 +255,8 @@ namespace RDR2.UI
 
 			unsafe
 			{
-				if (!GRAPHICS.GET_SCREEN_COORD_FROM_WORLD_COORD(position.X, position.Y, position.Z, &pointX, &pointY)) {
+				if (!GRAPHICS.GET_SCREEN_COORD_FROM_WORLD_COORD(position.X, position.Y, position.Z, &pointX, &pointY))
+				{
 					return PointF.Empty;
 				}
 			}

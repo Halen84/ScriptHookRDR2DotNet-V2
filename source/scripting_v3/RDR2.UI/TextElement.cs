@@ -278,7 +278,7 @@ namespace RDR2.UI
 			float y = (Position.Y + offset.Height) / screenHeight;
 			float w = WrapWidth / screenWidth;
 
-			
+
 			UIDEBUG._BG_SET_TEXT_SCALE(Scale, Scale);
 			UIDEBUG._BG_SET_TEXT_COLOR(Color.R, Color.G, Color.B, Color.A);
 			string varString = MISC.VAR_STRING(10, "LITERAL_STRING", _caption);

@@ -38,7 +38,7 @@ namespace RDR2DN
 			WriteToConsole(level, message);
 		}
 
-		static void WriteToFile(Level level, params string[] message)
+		private static void WriteToFile(Level level, params string[] message)
 		{
 			try
 			{
@@ -79,21 +79,23 @@ namespace RDR2DN
 			}
 		}
 
-		static void WriteToConsole(Level level, params string[] message)
+		private static void WriteToConsole(Level level, params string[] message)
 		{
 			var console = AppDomain.CurrentDomain.GetData("Console") as Console;
 
 			if (console == null)
+			{
 				return;
+			}
 
 			switch (level)
 			{
 				case Level.Error:
-				console.PrintError(string.Join(string.Empty, message));
-				break;
+					console.PrintError(string.Join(string.Empty, message));
+					break;
 				case Level.Warning:
-				console.PrintWarning(string.Join(string.Empty, message));
-				break;
+					console.PrintWarning(string.Join(string.Empty, message));
+					break;
 			}
 		}
 	}
