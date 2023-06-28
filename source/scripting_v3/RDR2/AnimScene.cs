@@ -3,7 +3,7 @@ using RDR2.Native;
 
 namespace RDR2
 {
-	public class AnimScene : INativeValue
+	public sealed class AnimScene : INativeValue
 	{
 		public AnimScene(int handle)
 		{
