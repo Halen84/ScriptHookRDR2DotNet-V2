@@ -44,15 +44,31 @@ namespace RDR2DN
 		/// <summary>
 		/// Internal script task which holds all data necessary for a script function call.
 		/// </summary>
-		class NativeTask : IScriptTask
+		private class NativeTask : IScriptTask
 		{
-			internal ulong Hash;
-			internal ulong[] Arguments;
-			internal unsafe ulong* Result;
+			internal ulong _hash;
+			internal ulong[] _arguments;
+			internal ulong* _result;
 
 			public void Run()
 			{
-				Result = InvokeInternal(Hash, Arguments);
+				_result = InvokeInternal(_hash, _arguments);
+			}
+		}
+
+		/// <summary>
+		/// Internal script task which holds all data necessary for a script function call.
+		/// </summary>
+		private class NativeTaskPtrArgs : IScriptTask
+		{
+			internal ulong _hash;
+			internal ulong* _argumentPtr;
+			internal int _argumentCount;
+			internal ulong* _result;
+
+			public void Run()
+			{
+				_result = InvokeInternal(_hash, _argumentPtr, _argumentCount);
 			}
 		}
 
@@ -60,19 +76,22 @@ namespace RDR2DN
 		/// Pushes a single string component on the text stack.
 		/// </summary>
 		/// <param name="str">The string to push.</param>
-		static void PushString(string str)
+		private static void PushString(string str)
 		{
-			var domain = RDR2DN.ScriptDomain.CurrentDomain;
+			ScriptDomain domain = RDR2DN.ScriptDomain.CurrentDomain;
 			if (domain == null)
 			{
 				throw new InvalidOperationException("Illegal scripting call outside script domain.");
 			}
 
+			//IntPtr strUtf8 = domain.PinString(str);
+			//ulong strArg = (ulong)strUtf8.ToInt64();
+
 			ulong[] conargs = ConvertPrimitiveArguments(new object[] { 10, "LITERAL_STRING", str });
 			domain.ExecuteTask(new NativeTask
 			{
-				Hash = 0xFA925AC00EB830B9, /*MISC::VAR_STRING*/
-				Arguments = conargs
+				_hash = 0xFA925AC00EB830B9, /*MISC::VAR_STRING*/
+				_arguments = conargs
 			});
 		}
 
@@ -91,10 +110,8 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="str">The string to split up.</param>
 		/// <param name="action">The action to perform on the component.</param>
-		public static void PushLongString(string str, Action<string> action)
+		public static void PushLongString(string str, Action<string> action, int maxLengthUtf8 = 99)
 		{
-			const int maxLengthUtf8 = 99;
-
 			if (str == null || Encoding.UTF8.GetByteCount(str) <= maxLengthUtf8)
 			{
 				action(str);
@@ -166,14 +183,14 @@ namespace RDR2DN
 				}
 			}
 
-			/*
 			if (startPos == 0)
+			{
 				action(str);
+			}
 			else
+			{
 				action(str.Substring(startPos, str.Length - startPos));
-			*/
-
-			action(str.Substring(startPos, str.Length - startPos));
+			}
 		}
 
 		/// <summary>
@@ -181,53 +198,63 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		static ulong[] ConvertPrimitiveArguments(object[] args)
+		private static ulong[] ConvertPrimitiveArguments(object[] args)
 		{
-			var result = new ulong[args.Length];
+			ulong[] result = new ulong[args.Length];
 			for (int i = 0; i < args.Length; ++i)
 			{
-				if (args[i] is bool valueBool)
+				switch (args[i])
 				{
-					result[i] = valueBool ? 1ul : 0ul;
-					continue;
+					case bool valueBool:
+						result[i] = valueBool ? 1ul : 0ul;
+						continue;
+					case byte valueByte:
+						result[i] = (ulong)valueByte;
+						continue;
+					case int valueInt32:
+						result[i] = (ulong)valueInt32;
+						continue;
+					case ulong valueUInt64:
+						result[i] = valueUInt64;
+						continue;
+					case float valueFloat:
+						result[i] = *(ulong*)&valueFloat;
+						continue;
+					case IntPtr valueIntPtr:
+						result[i] = (ulong)valueIntPtr.ToInt64();
+						continue;
+					case string valueString:
+						result[i] = (ulong)ScriptDomain.CurrentDomain.PinString(valueString).ToInt64();
+						continue;
+					default:
+						throw new ArgumentException("Unknown primitive type in native argument list", nameof(args));
 				}
-				if (args[i] is byte valueByte)
-				{
-					result[i] = (ulong)valueByte;
-					continue;
-				}
-				if (args[i] is int valueInt32)
-				{
-					result[i] = (ulong)valueInt32;
-					continue;
-				}
-				if (args[i] is ulong valueUInt64)
-				{
-					result[i] = valueUInt64;
-					continue;
-				}
-				if (args[i] is float valueFloat)
-				{
-					result[i] = *(ulong*)&valueFloat;
-					continue;
-				}
-				if (args[i] is IntPtr valueIntPtr)
-				{
-					result[i] = (ulong)valueIntPtr.ToInt64();
-					continue;
-				}
-				if (args[i] is string valueString)
-				{
-					result[i] = (ulong)ScriptDomain.CurrentDomain.PinString(valueString).ToInt64();
-					continue;
-				}
-
-				throw new ArgumentException("Unknown primitive type in native argument list", nameof(args));
 			}
 
 			return result;
 		}
 
+
+		/// <summary>
+		/// Executes a script function inside the current script domain.
+		/// </summary>
+		/// <param name="hash">The function has to call.</param>
+		/// <param name="argPtr">A pointer of function arguments.</param>
+		/// <param name="argCount">The length of <paramref name="argPtr" />.</param>
+		/// <returns>A pointer to the return value of the call.</returns>
+		public static ulong* Invoke(ulong hash, ulong* argPtr, int argCount)
+		{
+			ScriptDomain domain = ScriptDomain.CurrentDomain;
+			if (domain == null)
+			{
+				throw new InvalidOperationException("Illegal scripting call outside script domain.");
+			}
+
+			var task = new NativeTaskPtrArgs { _hash = hash, _argumentPtr = argPtr, _argumentCount = argCount };
+			domain.ExecuteTask(task);
+
+			return task._result;
+		}
 		/// <summary>
 		/// Executes a script function inside the current script domain.
 		/// </summary>
@@ -236,16 +263,16 @@ namespace RDR2DN
 		/// <returns>A pointer to the return value of the call.</returns>
 		public static ulong* Invoke(ulong hash, params ulong[] args)
 		{
-			var domain = ScriptDomain.CurrentDomain;
+			ScriptDomain domain = ScriptDomain.CurrentDomain;
 			if (domain == null)
 			{
 				throw new InvalidOperationException("Illegal scripting call outside script domain.");
 			}
 
-			var task = new NativeTask { Hash = hash, Arguments = args };
+			var task = new NativeTask { _hash = hash, _arguments = args };
 			domain.ExecuteTask(task);
 
-			return task.Result;
+			return task._result;
 		}
 		public static ulong* Invoke(ulong hash, params object[] args)
 		{
@@ -256,13 +283,33 @@ namespace RDR2DN
 		/// Executes a script function immediately. This may only be called from the main script domain thread.
 		/// </summary>
 		/// <param name="hash">The function has to call.</param>
+		/// <param name="argPtr">A pointer of function arguments.</param>
+		/// <param name="argCount">The length of <paramref name="argPtr" />.</param>
+		/// <returns>A pointer to the return value of the call.</returns>
+		public static ulong* InvokeInternal(ulong hash, ulong* argPtr, int argCount)
+		{
+			NativeInit(hash);
+			for (int i = 0; i < argCount; i++)
+			{
+				NativePush64(argPtr[i]);
+			}
+
+			return NativeCall();
+		}
+		/// <summary>
+		/// Executes a script function immediately. This may only be called from the main script domain thread.
+		/// </summary>
+		/// <param name="hash">The function has to call.</param>
 		/// <param name="args">A list of function arguments.</param>
 		/// <returns>A pointer to the return value of the call.</returns>
 		public static ulong* InvokeInternal(ulong hash, params ulong[] args)
 		{
 			NativeInit(hash);
-			foreach (var arg in args)
+			foreach (ulong arg in args)
+			{
 				NativePush64(arg);
+			}
+
 			return NativeCall();
 		}
 		public static ulong* InvokeInternal(ulong hash, params object[] args)
