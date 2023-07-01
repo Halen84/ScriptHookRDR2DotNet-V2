@@ -115,6 +115,47 @@ namespace RDR2.Native
 		public static implicit operator InputArgument(string value) { return new InputArgument(value); }
 		public static implicit operator InputArgument(double value) { return new InputArgument((float)value); }
 		public static implicit operator InputArgument(Vector3 value) { return new InputArgument(value); }
+		public static implicit operator InputArgument(Enum value)
+		{
+			// Note: The value will be boxed if the original value is a concrete enum
+			Type enumDataType = Enum.GetUnderlyingType(value.GetType());
+			ulong ulongValue = 0;
+
+			if (enumDataType == typeof(int))
+			{
+				ulongValue = (ulong)Convert.ToInt32(value);
+			}
+			else if (enumDataType == typeof(uint))
+			{
+				ulongValue = Convert.ToUInt32(value);
+			}
+			else if (enumDataType == typeof(long))
+			{
+				ulongValue = (ulong)Convert.ToInt64(value);
+			}
+			else if (enumDataType == typeof(ulong))
+			{
+				ulongValue = Convert.ToUInt64(value);
+			}
+			else if (enumDataType == typeof(short))
+			{
+				ulongValue = (ulong)Convert.ToInt16(value);
+			}
+			else if (enumDataType == typeof(ushort))
+			{
+				ulongValue = Convert.ToUInt16(value);
+			}
+			else if (enumDataType == typeof(byte))
+			{
+				ulongValue = Convert.ToByte(value);
+			}
+			else if (enumDataType == typeof(sbyte))
+			{
+				ulongValue = (ulong)Convert.ToSByte(value);
+			}
+
+			return new InputArgument(ulongValue);
+		}
 
 		// Pointer Types - Operator
 		public static unsafe implicit operator InputArgument(bool* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
@@ -133,14 +174,16 @@ namespace RDR2.Native
 	{
 		internal static ulong[] FillArgsArray(InputArgument[] arguments)
 		{
+			// The total number of args passed to the native
 			int argCount = arguments.Length;
+			// The number of var args passed to the native
 			int variadicArgsCount = 0;
 
 			if (argCount > 0)
 			{
-				// Both template natives have their templated param as the last one
+				// Templated natives have their var args param as the last one
 				variadicArgsCount = arguments[arguments.Length - 1].arData.Count;
-				// Check if this is a templated native, and get number of params passed to it
+				// Check if this is a templated native, and get number of var args passed to it
 				if (variadicArgsCount > 0)
 				{
 					// -1 because the variadic param array counts as +1 param length
@@ -235,7 +278,11 @@ namespace RDR2.Native
 			if (value is string valueString)
 			{
 				// A C# null/empty string is different from a C++ null/empty string, which is 0.
-				if (string.IsNullOrEmpty(valueString)) { return 0; }
+				if (string.IsNullOrEmpty(valueString))
+				{
+					return 0;
+				}
+
 				return (ulong)RDR2DN.ScriptDomain.CurrentDomain.PinString(valueString).ToInt64();
 			}
 
