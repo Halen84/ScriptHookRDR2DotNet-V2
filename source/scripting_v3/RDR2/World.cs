@@ -151,7 +151,7 @@ namespace RDR2
 		/// Gets all <see cref="Ped"/>'s currently spawned/loaded in the game world
 		/// </summary>
 		/// <returns><see cref="Array"/> of all <see cref="Ped"/>'s found</returns>
-		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllPeds() failed</remarks>
+		/// <remarks><u>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllPeds() fails</u></remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Ped[] GetAllPeds()
 		{
@@ -181,7 +181,7 @@ namespace RDR2
 		/// Gets all <see cref="Vehicle"/>'s currently spawned/loaded in the game world
 		/// </summary>
 		/// <returns><see cref="Array"/> of all <see cref="Vehicle"/>'s found</returns>
-		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllVehicles() failed</remarks>
+		/// <remarks><u>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllVehicles() fails</u></remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Vehicle[] GetAllVehicles()
 		{
@@ -208,7 +208,7 @@ namespace RDR2
 		/// Gets all <see cref="Prop"/>'s (objects) currently spawned/loaded in the game world
 		/// </summary>
 		/// <returns><see cref="Array"/> of all <see cref="Prop"/>'s found</returns>
-		/// <remarks>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllObjects() failed</remarks>
+		/// <remarks><u>Note: This function can return <see cref="Array.Empty{T}"/> if the internal call to worldGetAllObjects() fails</u></remarks>
 		[HandleProcessCorruptedStateExceptions]
 		public static Prop[] GetAllObjects()
 		{
