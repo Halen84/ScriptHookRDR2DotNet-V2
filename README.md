@@ -8,7 +8,7 @@ An improved version of Saltyq's ScriptHookRDR2DotNet implementation.
 
 This is an *ASI plugin for Red Dead Redemption 2*, ported from [**ScriptHookVDotNet**](https://github.com/crosire/scripthookvdotnet/), based on the C++ ScriptHook by Alexander Blade, which allows running scripts written in any .NET language in-game.
 
-The issues page should be primarily used for bug reports and enhancement ideas. Questions related to RDR2 scripting in general are better off in forums dedicated to this purpose, like [nexusmods.com](https://www.nexusmods.com/reddeadredemption2),  [gtaforums.com](https://gtaforums.com/forum/459-modding/), or [rdr2mods.com](https://www.rdr2mods.com/)
+The issues page should be primarily used for bug reports and focused enhancement ideas. Questions related to RDR2 scripting in general are better off in [Discussions page](https://github.com/Halen84/ScriptHookRDR2DotNet-V2/discussions) or forums dedicated to this purpose, like [rdr2mods.com](https://www.rdr2mods.com/)
 
 All credits go to [Saltyq](https://github.com/Saltyq) for the [original ScriptHookRDR2DotNet](https://github.com/Saltyq/ScriptHookRDR2DotNet) implementation.
 
@@ -20,7 +20,7 @@ All credits go to [Saltyq](https://github.com/Saltyq) for the [original ScriptHo
 
 ## Downloads
 
-- Pre-built binaries can be found on the [releases](https://github.com/halen84/scripthookrdr2dotnet/releases) page.
+- Pre-built binaries can be found on the [releases](https://github.com/Halen84/ScriptHookRDR2DotNet-V2/releases) page.
 
 ## Contributing
 
