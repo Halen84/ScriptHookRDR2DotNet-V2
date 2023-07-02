@@ -443,6 +443,14 @@ namespace RDR2
 		}
 
 		/// <summary>
+		/// Create a (case-insensitive) Jenkins-One-at-a-Time hash key
+		/// </summary>
+		public static uint GenerateHash(string key)
+		{
+			return MISC.GET_HASH_KEY(key);
+		}
+
+		/// <summary>
 		/// Get a GXT label entry
 		/// </summary>
 		public static string GetGXTEntry(string entry)
