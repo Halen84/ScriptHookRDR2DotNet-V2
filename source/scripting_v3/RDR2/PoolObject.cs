@@ -65,14 +65,14 @@ namespace RDR2
 
 		public static implicit operator int(PoolObject e)
 		{
-			// If the PoolObject is not null, then we can safely return it's handle.
-			// Otherwise, return 0, which is NULL in C++
-			if (e != null)
+			// If the PoolObject is null, then we return 0 which indicates a invalid/null handle to the RAGE engine
+			if (e is null)
 			{
-				return e.Handle;
+				return 0;
 			}
 
-			return 0;
+			// If the PoolObject is NOT null, then we can safely return it's handle
+			return e.Handle;
 		}
 	}
 }
