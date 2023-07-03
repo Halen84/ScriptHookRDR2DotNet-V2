@@ -3,12 +3,12 @@
 // License: https://github.com/crosire/scripthookvdotnet#license
 //
 
+using RDR2.Math;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using RDR2.Math;
 
 namespace RDR2.Native
 {
@@ -95,26 +95,38 @@ namespace RDR2.Native
 
 		// Types - ctor
 		public InputArgument([MarshalAs(UnmanagedType.U1)] bool value) : this(value ? 1UL : 0UL) { }
-		public InputArgument(int value) : this((uint)value) { }
-		public InputArgument(uint value) : this((ulong)value) { }
-		public InputArgument(double value) : this((float)value) { }
-		public InputArgument(string value) : this((object)value) { }
-		public InputArgument(float value) { unsafe { data = *(uint*)&value; } }
+		public InputArgument(int value)     : this((uint)value) { }
+		public InputArgument(uint value)    : this((ulong)value) { }
+		public InputArgument(double value)  : this((float)value) { }
+		public InputArgument(string value)  : this((object)value) { }
+		public InputArgument(float value)   { unsafe { data = *(uint*)&value; } }
 		public InputArgument(Vector3 value) : this((object)value) { }
 
 		// Types - Operator
 		public static implicit operator InputArgument([MarshalAs(UnmanagedType.U1)] bool value) { return value ? new InputArgument(1UL) : new InputArgument(0UL); }
 		public static implicit operator InputArgument(InputArgument[] value) { return new InputArgument(value); } // Template Natives (e.g. VAR_STRING)
-		public static implicit operator InputArgument(byte value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(sbyte value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(short value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(ushort value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(int value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(uint value) { return new InputArgument((ulong)value); }
-		public static implicit operator InputArgument(float value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(string value) { return new InputArgument(value); }
-		public static implicit operator InputArgument(double value) { return new InputArgument((float)value); }
-		public static implicit operator InputArgument(Vector3 value) { return new InputArgument(value); }
+		public static implicit operator InputArgument(byte value)      { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(sbyte value)     { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(short value)     { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(ushort value)    { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(int value)       { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(uint value)      { return new InputArgument((ulong)value); }
+		public static implicit operator InputArgument(float value)     { return new InputArgument(value); }
+		public static implicit operator InputArgument(string value)    { return new InputArgument(value); }
+		public static implicit operator InputArgument(double value)    { return new InputArgument((float)value); }
+		public static implicit operator InputArgument(Vector3 value)   { return new InputArgument(value); }
+		public static implicit operator InputArgument(Model value)     { return new InputArgument(value); }
+		public static implicit operator InputArgument(AnimScene value) { return new InputArgument(value); }
+		public static implicit operator InputArgument(Blip value)      { return new InputArgument(value); }
+		public static implicit operator InputArgument(Camera value)    { return new InputArgument(value); }
+		public static implicit operator InputArgument(Entity value)    { return new InputArgument(value); }
+		public static implicit operator InputArgument(Ped value)       { return new InputArgument(value); }
+		public static implicit operator InputArgument(Player value)    { return new InputArgument(value); }
+		public static implicit operator InputArgument(Pickup value)    { return new InputArgument(value); }
+		public static implicit operator InputArgument(Prop value)      { return new InputArgument(value); }
+		public static implicit operator InputArgument(Rope value)      { return new InputArgument(value); }
+		public static implicit operator InputArgument(Vehicle value)   { return new InputArgument(value); }
+		public static implicit operator InputArgument(Volume value)    { return new InputArgument(value); }
 		public static implicit operator InputArgument(Enum value)
 		{
 			// Note: The value will be boxed if the original value is a concrete enum
@@ -158,13 +170,13 @@ namespace RDR2.Native
 		}
 
 		// Pointer Types - Operator
-		public static unsafe implicit operator InputArgument(bool* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
-		public static unsafe implicit operator InputArgument(int* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
-		public static unsafe implicit operator InputArgument(uint* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
-		public static unsafe implicit operator InputArgument(ulong* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
-		public static unsafe implicit operator InputArgument(float* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
+		public static unsafe implicit operator InputArgument(bool* value)    { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
+		public static unsafe implicit operator InputArgument(int* value)     { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
+		public static unsafe implicit operator InputArgument(uint* value)    { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
+		public static unsafe implicit operator InputArgument(ulong* value)   { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
+		public static unsafe implicit operator InputArgument(float* value)   { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
 		public static unsafe implicit operator InputArgument(Vector3* value) { return new InputArgument((ulong)new IntPtr(value).ToInt64()); }
-		public static unsafe implicit operator InputArgument(sbyte* value) { return new InputArgument(new string(value)); }
+		public static unsafe implicit operator InputArgument(sbyte* value)   { return new InputArgument(new string(value)); }
 
 		public override string ToString() { return data.ToString(); }
 	}
@@ -341,6 +353,48 @@ namespace RDR2.Native
 			if (type == typeof(string))
 			{
 				return RDR2DN.NativeMemory.PtrToStringUTF8(new IntPtr((byte*)*value));
+			}
+
+			// Scripting types
+			if (type == typeof(AnimScene))
+			{
+				return new AnimScene(*(int*)value);
+			}
+			if (type == typeof(Blip))
+			{
+				return new Blip(*(int*)value);
+			}
+			if (type == typeof(Camera))
+			{
+				return new Camera(*(int*)value);
+			}
+			if (type == typeof(Entity))
+			{
+				return Entity.FromHandle(*(int*)value);
+			}
+			if (type == typeof(Ped))
+			{
+				return new Ped(*(int*)value);
+			}
+			if (type == typeof(Player))
+			{
+				return new Player(*(int*)value);
+			}
+			if (type == typeof(Prop))
+			{
+				return new Prop(*(int*)value);
+			}
+			if (type == typeof(Rope))
+			{
+				return new Rope(*(int*)value);
+			}
+			if (type == typeof(Vehicle))
+			{
+				return new Vehicle(*(int*)value);
+			}
+			if (type == typeof(Volume))
+			{
+				return new Volume(*(int*)value);
 			}
 
 			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", type, "'"));
