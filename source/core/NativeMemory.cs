@@ -176,7 +176,8 @@ namespace RDR2DN
 			String = StringToCoTaskMemUTF8("LITERAL_STRING"); // "~a~"
 			NullString = StringToCoTaskMemUTF8(string.Empty); // ""
 
-			/*byte* address;
+			/*
+			byte* address;
 
 			address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
 			GetPlayerAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
@@ -187,7 +188,9 @@ namespace RDR2DN
 				new IntPtr(*(int*)address));
 
 			address = FindPattern("\x48\x83\xEC\x28\x45\x33\xC0\x44\x8B\xC9", "xxxxxxxxxx");
-			GameplayCameraAddress = (ulong*)(*(int*)address);*/
+			GetCameraAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
+				new IntPtr(*(int*)address));
+			*/
 		}
 
 		/// <summary>
@@ -413,6 +416,7 @@ namespace RDR2DN
 		delegate ulong GetHandleAddressFuncDelegate(int handle);
 		static GetHandleAddressFuncDelegate GetEntityAddressFunc;
 		static GetHandleAddressFuncDelegate GetPlayerAddressFunc;
+		static GetHandleAddressFuncDelegate GetCameraAddressFunc;
 
 		/*public static IntPtr GetEntityAddress(int handle)
 		{
@@ -421,13 +425,18 @@ namespace RDR2DN
 		public static IntPtr GetPlayerAddress(int handle)
 		{
 			return new IntPtr((long)GetPlayerAddressFunc(handle));
-		}*/
+		}
+		public static IntPtr GetCameraAddress(int handle)
+		{
+			return new IntPtr((long)*GetCameraAddressFunc(handle));
+		}
+		*/
 
-		#endregion
+#endregion
 
-		#region -- Game Data --
+			#region -- Game Data --
 
-		delegate uint GetHashKeyDelegate(IntPtr stringPtr, uint initialHash);
+			delegate uint GetHashKeyDelegate(IntPtr stringPtr, uint initialHash);
 		static GetHashKeyDelegate GetHashKeyFunc;
 
 		public static uint GetHashKey(string key)
@@ -443,14 +452,6 @@ namespace RDR2DN
 
 
 		#endregion
-
-
-		// temp
-		/*static ulong* GameplayCameraAddress;
-		public static IntPtr GetGameplayCameraAddress()
-		{
-			return new IntPtr((long)*GameplayCameraAddress);
-		}*/
 
 		enum ModelInfoClassType
 		{
