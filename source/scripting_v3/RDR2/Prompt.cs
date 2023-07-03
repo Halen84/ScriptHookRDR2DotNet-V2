@@ -1,15 +1,20 @@
-﻿using System;
-using RDR2.Native;
+﻿using RDR2.Native;
 
 namespace RDR2.UI
 {
-	internal sealed class Prompt : IHandleable
+	internal sealed class Prompt : INativeValue
 	{
 		public int Handle { get; private set; }
 
 		public Prompt(int handle)
 		{
 			Handle = handle;
+		}
+
+		public ulong NativeValue
+		{
+			get => (ulong)Handle;
+			set => Handle = unchecked((int)value);
 		}
 
 		/// <summary>
@@ -83,19 +88,33 @@ namespace RDR2.UI
 			return prompt;
 		}
 
-		private string _text;
+		private eInputType _controlAction = eInputType.UndefinedInput;
+		/// <summary>
+		/// Gets or sets the control action (<see cref="eInputType"/>) of this <see cref="Prompt"/>.
+		/// </summary>
+		public eInputType ControlAction
+		{
+			get => _controlAction;
+			set
+			{
+				_controlAction = value;
+				HUD._UI_PROMPT_SET_CONTROL_ACTION(Handle, (uint)_controlAction);
+			}
+		}
 
+		private string _text = string.Empty;
 		/// <summary>
 		/// Gets or sets the text on this <see cref="Prompt"/>.
 		/// </summary>
 		public string Text
 		{
 			// TODO: Fix this. Only works with strings already registered in the database.
-			// VAR_STRING does not work with this.
+			// VAR_STRING does not work with this. Why?
 			get => _text;
-			set {
-				_text = value;
-				HUD._UI_PROMPT_SET_TEXT(Handle, value);
+			set
+			{
+				_text = MISC.VAR_STRING(10, "LITERAL_STRING", value);
+				HUD._UI_PROMPT_SET_TEXT(Handle, _text);
 			}
 		}
 
@@ -138,32 +157,32 @@ namespace RDR2.UI
 		public bool IsJustReleased => HUD._UI_PROMPT_IS_JUST_RELEASED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s hold mode has complete.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s hold mode has completed.
 		/// </summary>
 		public bool HasHoldModeCompleted => HUD._UI_PROMPT_HAS_HOLD_MODE_COMPLETED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s mash mode has completed.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s mash mode has completed.
 		/// </summary>
 		public bool HasMashModeCompleted => HUD._UI_PROMPT_HAS_MASH_MODE_COMPLETED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s mash mode has failed.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s mash mode has failed.
 		/// </summary>
 		public bool HasMashModeFailed => HUD._UI_PROMPT_HAS_MASH_MODE_FAILED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s timed event completed.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s timed event completed.
 		/// </summary>
 		public bool HasTimedEventCompleted => HUD._UI_PROMPT_HAS_PRESSED_TIMED_MODE_COMPLETED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s timed event failed.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s timed event failed.
 		/// </summary>
 		public bool HasTimedEventFailed => HUD._UI_PROMPT_HAS_PRESSED_TIMED_MODE_FAILED(Handle);
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Prompt"/>s <see cref="eUseContextMode.Press"/> or <see cref="eUseContextMode.Release"/> mode has been completed.
+		/// Gets a value indicating whether this <see cref="Prompt"/>'s <see cref="eUseContextMode.Press"/> or <see cref="eUseContextMode.Release"/> mode has been completed.
 		/// </summary>
 		public bool HasCompleted => HUD._UI_PROMPT_HAS_STANDARD_MODE_COMPLETED(Handle, 0);
 
@@ -182,6 +201,22 @@ namespace RDR2.UI
 		{
 			get => HUD._UI_PROMPT_GET_URGENT_PULSING_ENABLED(Handle);
 			set => HUD._UI_PROMPT_SET_URGENT_PULSING_ENABLED(Handle, value);
+		}
+
+		/// <summary>
+		/// Set whether this <see cref="Prompt"/> should activate when the <see cref="ControlAction"/> has been released
+		/// </summary>
+		public bool ActivateOnRelease
+		{
+			set => HUD._UI_PROMPT_SET_STANDARD_MODE(Handle, value);
+		}
+
+		/// <summary>
+		/// Set whether this <see cref="Prompt"/> should activate when the <see cref="ControlAction"/> was just pressed
+		/// </summary>
+		public bool ActivateOnPress
+		{
+			set => HUD._UI_PROMPT_SET_STANDARD_MODE(Handle, !value);
 		}
 
 		public bool Exists()
