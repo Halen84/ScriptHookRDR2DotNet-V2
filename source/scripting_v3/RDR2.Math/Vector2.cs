@@ -1,19 +1,19 @@
 //
 // Copyright (C) 2007-2010 SlimDX Group
 //
-// Permission is hereby granted, free  of charge, to any person obtaining a copy of this software  and
-// associated  documentation  files (the  "Software"), to deal  in the Software  without  restriction,
-// including  without  limitation  the  rights  to use,  copy,  modify,  merge,  publish,  distribute,
-// sublicense, and/or sell  copies of the  Software,  and to permit  persons to whom  the Software  is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The  above  copyright  notice  and this  permission  notice shall  be included  in  all  copies  or
+// The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS",  WITHOUT WARRANTY OF  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS  FOR  A   PARTICULAR  PURPOSE  AND
-// NONINFRINGEMENT.  IN  NO  EVENT SHALL THE  AUTHORS  OR COPYRIGHT HOLDERS  BE LIABLE FOR  ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  OUT
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
@@ -61,6 +61,16 @@ namespace RDR2.Math
 		public static Vector2 Zero => new Vector2(0.0f, 0.0f);
 
 		/// <summary>
+		/// The X unit <see cref="Vector2"/> (1, 0).
+		/// </summary>
+		public static Vector2 UnitX => new Vector2(1.0f, 0.0f);
+
+		/// <summary>
+		/// The Y unit <see cref="Vector2"/> (0, 1).
+		/// </summary>
+		public static Vector2 UnitY => new Vector2(0.0f, 1.0f);
+
+		/// <summary>
 		/// Returns the up vector. (0,1)
 		/// </summary>
 		public static Vector2 Up => new Vector2(0.0f, 1.0f);
@@ -97,7 +107,7 @@ namespace RDR2.Math
 					case 1: return Y;
 				}
 
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
+				throw new ArgumentOutOfRangeException(nameof(index), "Indices for Vector2 run from 0 to 1, inclusive.");
 			}
 
 			set
@@ -106,7 +116,7 @@ namespace RDR2.Math
 				{
 					case 0: X = value; break;
 					case 1: Y = value; break;
-					default: throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
+					default: throw new ArgumentOutOfRangeException(nameof(index), "Indices for Vector2 run from 0 to 1, inclusive.");
 				}
 			}
 		}
@@ -135,7 +145,10 @@ namespace RDR2.Math
 		public void Normalize()
 		{
 			float length = Length();
-			if (length == 0) return;
+			if (length == 0)
+			{
+				return;
+			}
 
 			float num = 1 / length;
 			X *= num;
@@ -247,12 +260,12 @@ namespace RDR2.Math
 		public static Vector2 Multiply(Vector2 value, float scale) => new Vector2(value.X * scale, value.Y * scale);
 
 		/// <summary>
-		/// Modulates a vector by another.
+		/// Multiplies a vector with another by performing component-wise multiplication.
 		/// </summary>
-		/// <param name="left">The first vector to modulate.</param>
-		/// <param name="right">The second vector to modulate.</param>
-		/// <returns>The modulated vector.</returns>
-		public static Vector2 Modulate(Vector2 left, Vector2 right) => new Vector2(left.X * right.X, left.Y * right.Y);
+		/// <param name="left">The first vector to multiply.</param>
+		/// <param name="right">The second vector to multiply.</param>
+		/// <returns>The multiplied vector.</returns>
+		public static Vector2 Multiply(Vector2 left, Vector2 right) => new Vector2(left.X * right.X, left.Y * right.Y);
 
 		/// <summary>
 		/// Scales a vector by the given value.
@@ -352,28 +365,27 @@ namespace RDR2.Math
 		/// <summary>
 		/// Returns a vector containing the smallest components of the specified vectors.
 		/// </summary>
-		/// <param name="value1">The first source vector.</param>
-		/// <param name="value2">The second source vector.</param>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
 		/// <returns>A vector containing the smallest components of the source vectors.</returns>
-		public static Vector2 Minimize(Vector2 value1, Vector2 value2)
+		public static Vector2 Minimize(Vector2 left, Vector2 right)
 		{
 			Vector2 vector;
-			vector.X = (value1.X < value2.X) ? value1.X : value2.X;
-			vector.Y = (value1.Y < value2.Y) ? value1.Y : value2.Y;
+			vector.X = (left.X < right.X) ? left.X : right.X;
+			vector.Y = (left.Y < right.Y) ? left.Y : right.Y;
 			return vector;
 		}
-
 		/// <summary>
 		/// Returns a vector containing the largest components of the specified vectors.
 		/// </summary>
-		/// <param name="value1">The first source vector.</param>
-		/// <param name="value2">The second source vector.</param>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
 		/// <returns>A vector containing the largest components of the source vectors.</returns>
-		public static Vector2 Maximize(Vector2 value1, Vector2 value2)
+		public static Vector2 Maximize(Vector2 left, Vector2 right)
 		{
 			Vector2 vector;
-			vector.X = (value1.X > value2.X) ? value1.X : value2.X;
-			vector.Y = (value1.Y > value2.Y) ? value1.Y : value2.Y;
+			vector.X = (left.X > right.X) ? left.X : right.X;
+			vector.Y = (left.Y > right.Y) ? left.Y : right.Y;
 			return vector;
 		}
 
@@ -429,16 +441,16 @@ namespace RDR2.Math
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(Vector2 left, Vector2 right) => Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator ==(Vector2 left, Vector2 right) => left.Equals(right);
 
 		/// <summary>
 		/// Tests for inequality between two objects.
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(Vector2 left, Vector2 right) => !Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator !=(Vector2 left, Vector2 right) => !left.Equals(right);
 
 		/// <summary>
 		/// Converts a Vector2 to a Vector3 implicitly.
@@ -451,7 +463,7 @@ namespace RDR2.Math
 		/// <returns>The string representation of the value of this instance.</returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
+			return $"X:{X.ToString()} Y:{Y.ToString()}";
 		}
 
 		/// <summary>
@@ -462,9 +474,11 @@ namespace RDR2.Math
 		public string ToString(string format)
 		{
 			if (format == null)
+			{
 				return ToString();
+			}
 
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
+			return $"X:{X.ToString(format)} Y:{Y.ToString(format)}";
 		}
 
 		/// <summary>
@@ -483,29 +497,22 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to a specified object.
 		/// </summary>
 		/// <param name="obj">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; otherwise, <c>false</c>.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; otherwise, <see langword="false" />.</returns>
 		public override bool Equals(object obj)
 		{
 			if (obj == null || obj.GetType() != GetType())
+			{
 				return false;
+			}
 
-			return Equals((Vector2)(obj));
+			return Equals((Vector2)obj);
 		}
 
 		/// <summary>
 		/// Returns a value that indicates whether the current instance is equal to the specified object.
 		/// </summary>
 		/// <param name="other">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public bool Equals(Vector2 other) => (X == other.X && Y == other.Y);
-
-		/// <summary>
-		/// Determines whether the specified object instances are considered equal.
-		/// </summary>
-		/// <param name="value1">The first value to compare.</param>
-		/// <param name="value2">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="value1"/> is the same instance as <paramref name="value2"/> or
-		/// if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-		public static bool Equals(ref Vector2 value1, ref Vector2 value2) => value1.Equals(value1);
 	}
 }

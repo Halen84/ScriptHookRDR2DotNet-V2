@@ -19,23 +19,6 @@ namespace RDR2.Native
 			get; set;
 		}
 	}
-	[StructLayout(LayoutKind.Explicit, Size = 0x18)]
-	internal struct scrVector3
-	{
-		[FieldOffset(0x00)] internal float X;
-		[FieldOffset(0x08)] internal float Y;
-		[FieldOffset(0x10)] internal float Z;
-
-		internal scrVector3(float x, float y, float z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-		}
-
-		public static implicit operator Vector3(scrVector3 value) => new Vector3(value.X, value.Y, value.Z);
-		public static implicit operator scrVector3(Vector3 value) => new scrVector3(value.X, value.Y, value.Z);
-	}
 
 	internal unsafe static class NativeHelper<T>
 	{
@@ -337,7 +320,7 @@ namespace RDR2.Native
 
 			if (typeof(T) == typeof(Vector2) || typeof(T) == typeof(Vector3))
 			{
-				return NativeHelper<T>.Convert(*(scrVector3*)value);
+				return NativeHelper<T>.Convert(*(NativeVector3*)value);
 			}
 
 			if (typeof(T) == typeof(IntPtr))

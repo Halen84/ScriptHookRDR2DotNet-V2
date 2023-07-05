@@ -1,19 +1,19 @@
 //
 // Copyright (C) 2007-2010 SlimDX Group
 //
-// Permission is hereby granted, free  of charge, to any person obtaining a copy of this software  and
-// associated  documentation  files (the  "Software"), to deal  in the Software  without  restriction,
-// including  without  limitation  the  rights  to use,  copy,  modify,  merge,  publish,  distribute,
-// sublicense, and/or sell  copies of the  Software,  and to permit  persons to whom  the Software  is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The  above  copyright  notice  and this  permission  notice shall  be included  in  all  copies  or
+// The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS",  WITHOUT WARRANTY OF  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS  FOR  A   PARTICULAR  PURPOSE  AND
-// NONINFRINGEMENT.  IN  NO  EVENT SHALL THE  AUTHORS  OR COPYRIGHT HOLDERS  BE LIABLE FOR  ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  OUT
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
@@ -23,35 +23,38 @@ using System.Runtime.InteropServices;
 
 namespace RDR2.Math
 {
-	internal class Random
+	internal sealed class Random
 	{
 		internal static System.Random Instance = new System.Random();
 	}
 
 	[Serializable]
-	[StructLayout(LayoutKind.Explicit, Size = 0x18)]
+	[StructLayout(LayoutKind.Explicit, Pack = 4)]
 	public struct Vector3 : IEquatable<Vector3>
 	{
 		/// <summary>
 		/// Gets or sets the X component of the vector.
 		/// </summary>
 		/// <value>The X component of the vector.</value>
-		[FieldOffset(0x0)]
+		[FieldOffset(0)]
 		public float X;
 
 		/// <summary>
 		/// Gets or sets the Y component of the vector.
 		/// </summary>
 		/// <value>The Y component of the vector.</value>
-		[FieldOffset(0x8)]
+		[FieldOffset(4)]
 		public float Y;
 
 		/// <summary>
 		/// Gets or sets the Z component of the vector.
 		/// </summary>
 		/// <value>The Z component of the vector.</value>
-		[FieldOffset(0x10)]
+		[FieldOffset(8)]
 		public float Z;
+
+		[FieldOffset(12)]
+		float _padding;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Vector3"/> class.
@@ -64,17 +67,26 @@ namespace RDR2.Math
 			X = x;
 			Y = y;
 			Z = z;
+			_padding = 0;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Vector3"/> class.
 		/// </summary>
-		/// <param name="value">Initial value for the X, Y, and Z component of the vector.</param>
+		/// <param name="value">Value for the X, Y, and Z component of the vector.</param>
 		public Vector3(float value)
 		{
 			X = value;
 			Y = value;
 			Z = value;
+			_padding = 0;
+		}
+
+		internal Vector3(float[] values) : this(values[0], values[1], values[2])
+		{
+		}
+		internal Vector3(RDR2DN.NativeMemory.FVector3 value) : this(value.X, value.Y, value.Z)
+		{
 		}
 
 		/// <summary>
@@ -86,6 +98,21 @@ namespace RDR2.Math
 		/// Returns a null vector. (0,0,0)
 		/// </summary>
 		public static Vector3 Zero => new Vector3(0.0f, 0.0f, 0.0f);
+
+		/// <summary>
+		/// The X unit <see cref="Vector3"/> (1, 0, 0).
+		/// </summary>
+		public static Vector3 UnitX => new Vector3(1.0f, 0.0f, 0.0f);
+
+		/// <summary>
+		/// The Y unit <see cref="Vector3"/> (0, 1, 0).
+		/// </summary>
+		public static Vector3 UnitY => new Vector3(0.0f, 1.0f, 0.0f);
+
+		/// <summary>
+		/// The Z unit <see cref="Vector3"/> (0, 0, 1).
+		/// </summary>
+		public static Vector3 UnitZ => new Vector3(0.0f, 0.0f, 1.0f);
 
 		/// <summary>
 		/// Returns the world Up vector. (0,0,1)
@@ -165,7 +192,7 @@ namespace RDR2.Math
 					case 2: return Z;
 				}
 
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector3 run from 0 to 2, inclusive.");
+				throw new ArgumentOutOfRangeException(nameof(index), "Indices for Vector3 run from 0 to 2, inclusive.");
 			}
 
 			set
@@ -175,7 +202,7 @@ namespace RDR2.Math
 					case 0: X = value; break;
 					case 1: Y = value; break;
 					case 2: Z = value; break;
-					default: throw new ArgumentOutOfRangeException("index", "Indices for Vector3 run from 0 to 2, inclusive.");
+					default: throw new ArgumentOutOfRangeException(nameof(index), "Indices for Vector3 run from 0 to 2, inclusive.");
 				}
 			}
 		}
@@ -198,9 +225,12 @@ namespace RDR2.Math
 		public void Normalize()
 		{
 			float length = Length();
-			if (length == 0) return;
+			if (length == 0)
+			{
+				return;
+			}
 
-			float num = 1 / length;
+			float num = 1.0f / length;
 			X *= num;
 			Y *= num;
 			Z *= num;
@@ -328,6 +358,16 @@ namespace RDR2.Math
 		public Vector3 Around(float distance) => this + (RandomXY() * distance);
 
 		/// <summary>
+		/// Rounds each float inside the vector to a select amount of decimal places (2 by default).
+		/// </summary>
+		/// <param name="decimalPlaces">Number of decimal places to round to</param>
+		/// <returns>The vector containing rounded values</returns>
+		public Vector3 Round(int decimalPlaces = 2)
+		{
+			return new Vector3((float)System.Math.Round(X, decimalPlaces), (float)System.Math.Round(Y, decimalPlaces), (float)System.Math.Round(Z, decimalPlaces));
+		}
+
+		/// <summary>
 		/// Returns a new normalized vector with random X and Y components.
 		/// </summary>
 		public static Vector3 RandomXY()
@@ -383,12 +423,12 @@ namespace RDR2.Math
 		public static Vector3 Multiply(Vector3 value, float scale) => new Vector3(value.X * scale, value.Y * scale, value.Z * scale);
 
 		/// <summary>
-		/// Modulates a vector by another.
+		/// Multiply a vector with another by performing component-wise multiplication.
 		/// </summary>
-		/// <param name="left">The first vector to modulate.</param>
-		/// <param name="right">The second vector to modulate.</param>
+		/// <param name="left">The first vector to multiply.</param>
+		/// <param name="right">The second vector to multiply.</param>
 		/// <returns>The multiplied vector.</returns>
-		public static Vector3 Modulate(Vector3 left, Vector3 right) => new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+		public static Vector3 Multiply(Vector3 left, Vector3 right) => new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
 
 		/// <summary>
 		/// Scales a vector by the given value.
@@ -524,30 +564,30 @@ namespace RDR2.Math
 		/// <summary>
 		/// Returns a vector containing the smallest components of the specified vectors.
 		/// </summary>
-		/// <param name="value1">The first source vector.</param>
-		/// <param name="value2">The second source vector.</param>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
 		/// <returns>A vector containing the smallest components of the source vectors.</returns>
-		public static Vector3 Minimize(Vector3 value1, Vector3 value2)
+		public static Vector3 Minimize(Vector3 left, Vector3 right)
 		{
 			Vector3 vector = Zero;
-			vector.X = (value1.X < value2.X) ? value1.X : value2.X;
-			vector.Y = (value1.Y < value2.Y) ? value1.Y : value2.Y;
-			vector.Z = (value1.Z < value2.Z) ? value1.Z : value2.Z;
+			vector.X = (left.X < right.X) ? left.X : right.X;
+			vector.Y = (left.Y < right.Y) ? left.Y : right.Y;
+			vector.Z = (left.Z < right.Z) ? left.Z : right.Z;
 			return vector;
 		}
 
 		/// <summary>
 		/// Returns a vector containing the largest components of the specified vectors.
 		/// </summary>
-		/// <param name="value1">The first source vector.</param>
-		/// <param name="value2">The second source vector.</param>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
 		/// <returns>A vector containing the largest components of the source vectors.</returns>
-		public static Vector3 Maximize(Vector3 value1, Vector3 value2)
+		public static Vector3 Maximize(Vector3 left, Vector3 right)
 		{
 			Vector3 vector = Zero;
-			vector.X = (value1.X > value2.X) ? value1.X : value2.X;
-			vector.Y = (value1.Y > value2.Y) ? value1.Y : value2.Y;
-			vector.Z = (value1.Z > value2.Z) ? value1.Z : value2.Z;
+			vector.X = (left.X > right.X) ? left.X : right.X;
+			vector.Y = (left.Y > right.Y) ? left.Y : right.Y;
+			vector.Z = (left.Z > right.Z) ? left.Z : right.Z;
 			return vector;
 		}
 
@@ -607,16 +647,16 @@ namespace RDR2.Math
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(Vector3 left, Vector3 right) => Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator ==(Vector3 left, Vector3 right) => left.Equals(right);
 
 		/// <summary>
 		/// Tests for inequality between two objects.
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(Vector3 left, Vector3 right) => !Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator !=(Vector3 left, Vector3 right) => !left.Equals(right);
 
 		/// <summary>
 		/// Converts a Vector3 to a Vector2 implicitly.
@@ -626,13 +666,28 @@ namespace RDR2.Math
 		/// <summary>
 		/// Converts the matrix to an array of floats.
 		/// </summary>
-		internal float[] ToArray() => new[] { X, Y, Z };
+		public float[] ToArray() => new[] { X, Y, Z };
 
 		/// <summary>
 		/// Converts the value of the object to its equivalent string representation.
 		/// </summary>
 		/// <returns>The string representation of the value of this instance.</returns>
-		public override string ToString() => string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+		public override string ToString() => $"X:{X.ToString()} Y:{Y.ToString()} Z:{Z.ToString()}";
+
+		/// <summary>
+		/// Converts the value of the object to its equivalent string representation.
+		/// </summary>
+		/// <param name="format">The number format.</param>
+		/// <returns>The string representation of the value of this instance.</returns>
+		public string ToString(string format)
+		{
+			if (format == null)
+			{
+				return ToString();
+			}
+
+			return $"X:{X.ToString(format)} Y:{Y.ToString(format)} Z:{Z.ToString(format)}";
+		}
 
 		/// <summary>
 		/// Returns the hash code for this instance.
@@ -642,7 +697,7 @@ namespace RDR2.Math
 		{
 			unchecked
 			{
-				var hashCode = X.GetHashCode();
+				int hashCode = X.GetHashCode();
 				hashCode = (hashCode * 397) ^ Y.GetHashCode();
 				hashCode = (hashCode * 397) ^ Z.GetHashCode();
 				return hashCode;
@@ -653,11 +708,13 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to a specified object.
 		/// </summary>
 		/// <param name="obj">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public override bool Equals(object obj)
 		{
 			if (obj == null || obj.GetType() != GetType())
+			{
 				return false;
+			}
 
 			return Equals((Vector3)obj);
 		}
@@ -666,16 +723,31 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to the specified object.
 		/// </summary>
 		/// <param name="other">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public bool Equals(Vector3 other) => (X == other.X && Y == other.Y && Z == other.Z);
 
-		/// <summary>
-		/// Determines whether the specified object instances are considered equal.
-		/// </summary>
-		/// <param name="value1">The first value to compare.</param>
-		/// <param name="value2">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="value1"/> is the same instance as <paramref name="value2"/> or
-		/// if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-		public static bool Equals(ref Vector3 value1, ref Vector3 value2) => value1.Equals(value2);
+		internal RDR2DN.NativeMemory.FVector3 ToInternalFVector3() => new RDR2DN.NativeMemory.FVector3(X, Y, Z);
+	}
+
+	// For natives that require pointers to vectors and are called internally in the scripting section.
+	[StructLayout(LayoutKind.Explicit, Size = 0x18)]
+	internal struct NativeVector3
+	{
+		[FieldOffset(0x00)]
+		internal float X;
+		[FieldOffset(0x08)]
+		internal float Y;
+		[FieldOffset(0x10)]
+		internal float Z;
+
+		internal NativeVector3(float x, float y, float z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
+
+		public static implicit operator Vector3(NativeVector3 value) => new Vector3(value.X, value.Y, value.Z);
+		public static implicit operator NativeVector3(Vector3 value) => new NativeVector3(value.X, value.Y, value.Z);
 	}
 }

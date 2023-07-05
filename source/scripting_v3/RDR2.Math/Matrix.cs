@@ -1,25 +1,26 @@
 //
 // Copyright (C) 2007-2010 SlimDX Group
 //
-// Permission is hereby granted, free  of charge, to any person obtaining a copy of this software  and
-// associated  documentation  files (the  "Software"), to deal  in the Software  without  restriction,
-// including  without  limitation  the  rights  to use,  copy,  modify,  merge,  publish,  distribute,
-// sublicense, and/or sell  copies of the  Software,  and to permit  persons to whom  the Software  is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The  above  copyright  notice  and this  permission  notice shall  be included  in  all  copies  or
+// The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS",  WITHOUT WARRANTY OF  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS  FOR  A   PARTICULAR  PURPOSE  AND
-// NONINFRINGEMENT.  IN  NO  EVENT SHALL THE  AUTHORS  OR COPYRIGHT HOLDERS  BE LIABLE FOR  ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  OUT
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using static System.Windows.Forms.DataFormats;
 
 namespace RDR2.Math
 {
@@ -114,14 +115,19 @@ namespace RDR2.Math
 		/// Initializes a new instance of the <see cref="Matrix"/> structure.
 		/// </summary>
 		/// <param name="values">The values to assign to the components of the matrix. This must be an array with sixteen elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <see langword="null" />.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than sixteen elements.</exception>
 		public Matrix(float[] values)
 		{
 			if (values == null)
-				throw new ArgumentNullException("values");
+			{
+				throw new ArgumentNullException(nameof(values));
+			}
+
 			if (values.Length != 16)
-				throw new ArgumentOutOfRangeException("values", "There must be sixteen and only sixteen input values for Matrix.");
+			{
+				throw new ArgumentOutOfRangeException(nameof(values), "There must be sixteen and only sixteen input values for Matrix.");
+			}
 
 			M11 = values[0];
 			M12 = values[1];
@@ -145,9 +151,122 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
+		/// A <see cref="Matrix"/> with all of its components set to zero.
+		/// </summary>
+		public static Matrix Zero => new Matrix();
+
+		/// <summary>
 		/// The identity <see cref="Matrix"/>.
 		/// </summary>
 		public static Matrix Identity => new Matrix() { M11 = 1.0f, M22 = 1.0f, M33 = 1.0f, M44 = 1.0f };
+
+		/// <summary>
+		/// Gets or sets the component at the specified index.
+		/// </summary>
+		/// <value>The value of the matrix component, depending on the index.</value>
+		/// <param name="index">The zero-based index of the component to access.</param>
+		/// <returns>The value of the component at the specified index.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 15].</exception>
+		public float this[int index]
+		{
+			get
+			{
+				switch (index)
+				{
+					case 0:
+					return M11;
+					case 1:
+					return M12;
+					case 2:
+					return M13;
+					case 3:
+					return M14;
+					case 4:
+					return M21;
+					case 5:
+					return M22;
+					case 6:
+					return M23;
+					case 7:
+					return M24;
+					case 8:
+					return M31;
+					case 9:
+					return M32;
+					case 10:
+					return M33;
+					case 11:
+					return M34;
+					case 12:
+					return M41;
+					case 13:
+					return M42;
+					case 14:
+					return M43;
+					case 15:
+					return M44;
+				}
+
+				throw new ArgumentOutOfRangeException(nameof(index), "Indices for Matrix run from 0 to 15, inclusive.");
+			}
+
+			set
+			{
+				switch (index)
+				{
+					case 0:
+					M11 = value;
+					break;
+					case 1:
+					M12 = value;
+					break;
+					case 2:
+					M13 = value;
+					break;
+					case 3:
+					M14 = value;
+					break;
+					case 4:
+					M21 = value;
+					break;
+					case 5:
+					M22 = value;
+					break;
+					case 6:
+					M23 = value;
+					break;
+					case 7:
+					M24 = value;
+					break;
+					case 8:
+					M31 = value;
+					break;
+					case 9:
+					M32 = value;
+					break;
+					case 10:
+					M33 = value;
+					break;
+					case 11:
+					M34 = value;
+					break;
+					case 12:
+					M41 = value;
+					break;
+					case 13:
+					M42 = value;
+					break;
+					case 14:
+					M43 = value;
+					break;
+					case 15:
+					M44 = value;
+					break;
+					default:
+					throw new ArgumentOutOfRangeException(nameof(index), "Indices for Matrix run from 0 to 15, inclusive.");
+				}
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the component at the specified index.
@@ -162,75 +281,77 @@ namespace RDR2.Math
 			get
 			{
 				if (row < 0 || row > 3)
-					throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
-				if (column < 0 || column > 3)
-					throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
-
-				int index = row * 4 + column;
-
-				switch (index)
 				{
-					case 0: return M11;
-					case 1: return M12;
-					case 2: return M13;
-					case 3: return M14;
-					case 4: return M21;
-					case 5: return M22;
-					case 6: return M23;
-					case 7: return M24;
-					case 8: return M31;
-					case 9: return M32;
-					case 10: return M33;
-					case 11: return M34;
-					case 12: return M41;
-					case 13: return M42;
-					case 14: return M43;
-					case 15: return M44;
+					throw new ArgumentOutOfRangeException(nameof(row), "Rows and columns for matrices run from 0 to 3, inclusive.");
 				}
 
-				return 0.0f;
+				if (column < 0 || column > 3)
+				{
+					throw new ArgumentOutOfRangeException(nameof(column), "Rows and columns for matrices run from 0 to 3, inclusive.");
+				}
+
+				return this[(row * 4) + column];
 			}
 
 			set
 			{
 				if (row < 0 || row > 3)
-					throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
-				if (column < 0 || column > 3)
-					throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
-
-				int index = row * 4 + column;
-				switch (index)
 				{
-					case 0: M11 = value; break;
-					case 1: M12 = value; break;
-					case 2: M13 = value; break;
-					case 3: M14 = value; break;
-					case 4: M21 = value; break;
-					case 5: M22 = value; break;
-					case 6: M23 = value; break;
-					case 7: M24 = value; break;
-					case 8: M31 = value; break;
-					case 9: M32 = value; break;
-					case 10: M33 = value; break;
-					case 11: M34 = value; break;
-					case 12: M41 = value; break;
-					case 13: M42 = value; break;
-					case 14: M43 = value; break;
-					case 15: M44 = value; break;
+					throw new ArgumentOutOfRangeException(nameof(row), "Rows and columns for matrices run from 0 to 3, inclusive.");
 				}
+
+				if (column < 0 || column > 3)
+				{
+					throw new ArgumentOutOfRangeException(nameof(column), "Rows and columns for matrices run from 0 to 3, inclusive.");
+				}
+
+				this[(row * 4) + column] = value;
 			}
 		}
 
-		/// <summary>
-		/// Converts the matrix to an array of floats.
-		/// </summary>
-		public static Matrix FromArray(float[] floatArray) => new Matrix(floatArray);
+		const float FLT_EPSILON = 1.19209e-07f;
+
+		/// <summary>Gets the origin of the coordinate system.</summary>
+		/// <returns>The origin of the coordinate system.</returns>
+		public Vector3 GetOrigin() => new Vector3(M41, M42, M43);
+
+		/// <summary>Sets the origin of the coordinate system to the given vector.</summary>
+		/// <param name="newOrigin">The new origin of the coordinate system.</param>
+		public void SetOrigin(Vector3 newOrigin)
+		{
+			M41 = newOrigin.X;
+			M42 = newOrigin.Y;
+			M43 = newOrigin.Z;
+		}
+
+		public Vector3 GetScaleVector() => GetScaleVector(FLT_EPSILON);
+
+		/// <summary>Returns a 3D scale vector calculated from this matrix (where each component is the magnitude of a row vector) with error tolerance.</summary>
+		public Vector3 GetScaleVector(float tolerance)
+		{
+			Vector3 scale = default;
+
+			for (int i = 0; i < 3; i++)
+			{
+				float squareSum = (this[i, 0] * this[i, 0]) + (this[i, 1] * this[i, 1]) + (this[i, 2] * this[i, 2]);
+				if (squareSum > tolerance)
+				{
+					scale[i] = (float)System.Math.Sqrt(squareSum);
+				}
+				else
+				{
+					scale[i] = 0f;
+				}
+			}
+
+			return scale;
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this instance is an identity matrix.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this instance is an identity matrix; otherwise, <c>false</c>.
+		/// <see langword="true" /> if this instance is an identity matrix; otherwise, <see langword="false" />.
 		/// </value>
 		public bool IsIdentity => Equals(Identity);
 
@@ -265,12 +386,14 @@ namespace RDR2.Math
 		/// <summary>
 		/// Inverts the matrix.
 		/// </summary>
-		public void Inverse()
+		public void Invert()
 		{
 			float Det = Determinant();
 
 			if (Det == 0.0f)
+			{
 				return;
+			}
 
 			float invDet = 1.0f / Det;
 			float tM11 = Det3x3(M22, M23, M24, M32, M33, M34, M42, M43, M44) * invDet;
@@ -312,6 +435,177 @@ namespace RDR2.Math
 			M42 = tM42;
 			M43 = tM43;
 			M44 = tM44;
+		}
+
+		/// <summary>
+		/// Apply the transformation matrix to a point in world space
+		/// </summary>
+		/// <param name="point">The original vertex location</param>
+		/// <returns>The vertex location transformed by the given <see cref="Matrix"/></returns>
+		public Vector3 TransformPoint(Vector3 point)
+		{
+			unsafe
+			{
+				float[,] vectorFloat = new float[4, 4];
+				float* vTempX = stackalloc float[4];
+				float* vTempY = stackalloc float[4];
+				float* vTempZ = stackalloc float[4];
+
+				fixed (float* vectorFloatPtr = &vectorFloat[0, 0])
+				{
+					// Splat x,y and z
+					for (int i = 0; i < 4; i++)
+					{
+						vTempX[i] = point.X;
+						vTempY[i] = point.Y;
+						vTempZ[i] = point.Z;
+					}
+
+					// Multiply by the matrix
+					for (int i = 0; i < 4; i++)
+					{
+						vTempX[i] *= this[0, i];
+						vTempY[i] *= this[1, i];
+						vTempZ[i] *= this[2, i];
+					}
+
+					// Add them all together
+					for (int i = 0; i < 4; i++)
+					{
+						vTempX[i] = vTempX[i] + vTempY[i] + vTempZ[i] + this[3, i];
+					}
+
+					return new Vector3(vTempX[0], vTempX[1], vTempX[2]);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Calculates the position of a point before this transformation matrix gets applied
+		/// </summary>
+		/// <param name="point">The transformed vertex location</param>
+		/// <returns>The original vertex location before being transformed by the given <see cref="Matrix"/></returns>
+		public Vector3 InverseTransformPoint(Vector3 point) => InverseTransformVector(point - new Vector3(M41, M42, M43));
+
+		/// <summary>
+		/// Transform a vector with this transformation <see cref="Matrix"/>.
+		/// Will not take into account translation part of the <see cref="Matrix"/>.
+		/// </summary>
+		/// <param name="vector">The vector.</param>
+		/// <returns>The vector transformed by the given <see cref="Matrix"/>.</returns>
+		public Vector3 TransformVector(Vector3 vector)
+		{
+			unsafe
+			{
+				float* vTempX = stackalloc float[3];
+				float* vTempY = stackalloc float[3];
+				float* vTempZ = stackalloc float[3];
+
+				for (int i = 0; i < 3; i++)
+				{
+					vTempX[i] = vector.X * this[0, i];
+					vTempY[i] = vector.Y * this[1, i];
+					vTempZ[i] = vector.Z * this[2, i];
+				}
+
+				// Add them all together
+				for (int i = 0; i < 3; i++)
+				{
+					vTempX[i] = vTempX[i] + vTempY[i] + vTempZ[i];
+				}
+
+				return new Vector3(vTempX[0], vTempX[1], vTempX[2]);
+			}
+		}
+
+		/// <summary>
+		/// Calculates the vector before this transformation matrix gets applied.
+		/// This operation is not affected by position of the transform.
+		/// </summary>
+		/// <param name="vector">The vector.</param>
+		/// <returns>The vector transformed by the inverse of the given <see cref="Matrix"/>.</returns>
+		public Vector3 InverseTransformVector(Vector3 vector)
+		{
+			float scaleXSquared = (new Vector3(M11, M12, M13)).LengthSquared();
+			float scaleYSquared = (new Vector3(M21, M22, M23)).LengthSquared();
+			float scaleZSquared = (new Vector3(M31, M32, M33)).LengthSquared();
+
+			if (System.Math.Abs(1f - scaleXSquared) > FLT_EPSILON || System.Math.Abs(1f - scaleYSquared) > FLT_EPSILON || System.Math.Abs(1f - scaleZSquared) > FLT_EPSILON)
+			{
+				// This path is an edge case
+				// In GTA V, entity matrices expect to have no scaling
+				return InverseTransformVectorWithScale(vector, scaleXSquared, scaleYSquared, scaleZSquared);
+			}
+
+			var inverseRotation = Quaternion.RotationMatrix(this);
+			inverseRotation.Invert();
+			Vector3 vectorUnrotated = inverseRotation * vector;
+
+			return new Vector3(vectorUnrotated.X, vectorUnrotated.Y, vectorUnrotated.Z);
+		}
+
+		private Vector3 InverseTransformVectorWithScale(Vector3 vector, float squaredScaleX, float squaredScaleY, float squaredScaleZ)
+		{
+			float safeScaleX = GetSafeScaleReciprocal((float)System.Math.Sqrt(squaredScaleX));
+			float safeScaleY = GetSafeScaleReciprocal((float)System.Math.Sqrt(squaredScaleY));
+			float safeScaleZ = GetSafeScaleReciprocal((float)System.Math.Sqrt(squaredScaleZ));
+
+			Matrix matrixNoScaling = GetMatrixWithoutScale();
+			var inverseRotation = Quaternion.RotationMatrix(matrixNoScaling);
+			inverseRotation.Invert();
+			inverseRotation.Normalize();
+			Vector3 vectorUnrotated = inverseRotation * vector;
+
+			return new Vector3(vectorUnrotated.X * safeScaleX, vectorUnrotated.Y * safeScaleY, vectorUnrotated.Z * safeScaleZ);
+		}
+
+		/// <summary>
+		/// Transform a direction vector with this transformation <see cref="Matrix"/>.
+		/// Will not take into account scale or translation part of the <see cref="Matrix"/>.
+		/// The returned vector has the same length as <paramref name="direction"/>.
+		/// </summary>
+		/// <param name="direction">The direction vector.</param>
+		/// <returns>The direction vector transformed by the given <see cref="Matrix"/>.</returns>
+		/// <remarks>You should use <see cref="TransformPoint(Vector3)"/> for the conversion if the vector represents a position rather than a direction.</remarks>
+		public Vector3 TransformDirection(Vector3 direction)
+		{
+			Matrix matrixNoScaling = GetMatrixWithoutScale();
+			var inverseRotation = Quaternion.RotationMatrix(matrixNoScaling);
+			Vector3 vectorUnrotated = inverseRotation * direction;
+
+			return new Vector3(vectorUnrotated.X, vectorUnrotated.Y, vectorUnrotated.Z);
+		}
+
+		/// <summary>
+		/// Calculates the direction vector before this transformation matrix gets applied.
+		/// This operation is not affected by scale or position of the transform.
+		/// The returned vector has the same length as <paramref name="direction"/>.
+		/// </summary>
+		/// <param name="direction">The direction vector.</param>
+		/// <returns>The vector transformed by the inverse of the given <see cref="Matrix"/>.</returns>
+		/// <remarks>You should use <see cref="InverseTransformPoint(Vector3)"/> for the conversion if the vector represents a position rather than a direction.</remarks>
+		public Vector3 InverseTransformDirection(Vector3 direction)
+		{
+			Matrix matrixNoScaling = GetMatrixWithoutScale();
+			var inverseRotation = Quaternion.RotationMatrix(matrixNoScaling);
+			inverseRotation.Invert();
+			Vector3 vectorUnrotated = inverseRotation * direction;
+
+			return new Vector3(vectorUnrotated.X, vectorUnrotated.Y, vectorUnrotated.Z);
+		}
+
+		// In practice if you have 0 scale, and relative transform doesn't make much sense anymore
+		// because you should be instead of showing gigantic infinite mesh
+		// also returning a big number like 3.4e+38f causes sequential NaN issues by multiplying
+		// so we hardcode as 0
+		private float GetSafeScaleReciprocal(float scale, float tolerance = FLT_EPSILON)
+		{
+			if (System.Math.Abs(scale) <= tolerance)
+			{
+				return 0f;
+			}
+
+			return 1f / scale;
 		}
 
 		/// <summary>
@@ -515,9 +809,9 @@ namespace RDR2.Math
 		/// Calculates the inverse of a matrix if it exists.
 		/// </summary>
 		/// <returns>The inverse of the matrix.</returns>
-		public static Matrix Inverse(Matrix matrix)
+		public static Matrix Invert(Matrix matrix)
 		{
-			matrix.Inverse();
+			matrix.Invert();
 			return matrix;
 		}
 
@@ -657,7 +951,9 @@ namespace RDR2.Math
 		public static Matrix RotationAxis(Vector3 axis, float angle)
 		{
 			if (axis.LengthSquared() != 1.0f)
+			{
 				axis.Normalize();
+			}
 
 			Matrix result;
 			float x = axis.X;
@@ -739,7 +1035,7 @@ namespace RDR2.Math
 		/// <returns>The created rotation matrix.</returns>
 		public static Matrix RotationYawPitchRoll(float yaw, float pitch, float roll)
 		{
-			Quaternion quaternion = Quaternion.RotationYawPitchRoll(yaw, pitch, roll);
+			var quaternion = Quaternion.RotationYawPitchRoll(yaw, pitch, roll);
 			return RotationQuaternion(quaternion);
 		}
 
@@ -880,6 +1176,119 @@ namespace RDR2.Math
 			result.M43 = matrix.M34;
 			result.M44 = matrix.M44;
 			return result;
+		}
+
+		/// <summary>
+		/// Applies scale to this matrix.
+		/// </summary>
+		/// <param name="scale">The scale.</param>
+		/// <returns>The matrix applied the scale.</returns>
+		public Matrix ApplyScale(float scale) => Scaling(new Vector3(scale, scale, scale)) * this;
+
+		/// <summary>
+		/// Applies scale to this matrix.
+		/// </summary>
+		/// <param name="scale">The scale vector.</param>
+		/// <returns>The matrix applied the scale.</returns>
+		public Matrix ApplyScale(Vector3 scale) => Scaling(scale) * this;
+
+		/// <summary>
+		/// Returns matrix after RemoveScaling.
+		/// </summary>
+		/// <returns>The matrix without scale information.</returns>
+		public Matrix GetMatrixWithoutScale()
+		{
+			Matrix result = this;
+			result.RemoveScaling(FLT_EPSILON);
+			return result;
+		}
+
+		/// <summary>
+		/// Returns the same matrix but without translation.
+		/// </summary>
+		/// <returns>The matrix without translation information.</returns>
+		public Matrix RemoveTranslation()
+		{
+			Matrix result = this;
+			result.M41 = 0f;
+			result.M42 = 0f;
+			result.M43 = 0f;
+			return result;
+		}
+
+		/// <summary>
+		/// Returns matrix after RemoveScaling with error tolerance.
+		/// </summary>
+		/// <param name="tolerance">The error tolerance.</param>
+		/// <returns>The matrix without scale information.</returns>
+		public void GetMatrixWithoutScale(float tolerance)
+		{
+			float scaleXSquared = (new Vector3(M11, M12, M13)).LengthSquared();
+			float scaleYSquared = (new Vector3(M21, M22, M23)).LengthSquared();
+			float scaleZSquared = (new Vector3(M31, M32, M33)).LengthSquared();
+
+			if (System.Math.Abs(1f - scaleXSquared) > tolerance)
+			{
+				float scaleX = 1f / (float)System.Math.Sqrt(scaleXSquared);
+				M11 *= scaleX;
+				M12 *= scaleX;
+				M13 *= scaleX;
+			}
+			if (System.Math.Abs(1f - scaleYSquared) > tolerance)
+			{
+				float scaleY = 1f / (float)System.Math.Sqrt(scaleYSquared);
+				M21 *= scaleY;
+				M22 *= scaleY;
+				M23 *= scaleY;
+			}
+			if (System.Math.Abs(1f - scaleZSquared) > tolerance)
+			{
+				float scaleZ = 1f / (float)System.Math.Sqrt(scaleZSquared);
+				M31 *= scaleZ;
+				M32 *= scaleZ;
+				M33 *= scaleZ;
+			}
+		}
+
+		/// <summary>
+		/// Remove any scaling from this matrix (ie magnitude of each row is 1).
+		/// </summary>
+		public void RemoveScaling()
+		{
+			RemoveScaling(FLT_EPSILON);
+		}
+
+		/// <summary>
+		/// Remove any scaling from this matrix (ie magnitude of each row is 1) with error tolerance.
+		/// </summary>
+		/// <param name="tolerance">The error tolerance.</param>
+		public void RemoveScaling(float tolerance)
+		{
+			float scaleXSquared = (new Vector3(M11, M12, M13)).LengthSquared();
+			float scaleYSquared = (new Vector3(M21, M22, M23)).LengthSquared();
+			float scaleZSquared = (new Vector3(M31, M32, M33)).LengthSquared();
+
+			if (System.Math.Abs(1f - scaleXSquared) > tolerance)
+			{
+				float scaleX = 1f / (float)System.Math.Sqrt(scaleXSquared);
+				M11 *= scaleX;
+				M12 *= scaleX;
+				M13 *= scaleX;
+			}
+			if (System.Math.Abs(1f - scaleYSquared) > tolerance)
+			{
+				float scaleY = 1f / (float)System.Math.Sqrt(scaleYSquared);
+				M21 *= scaleY;
+				M22 *= scaleY;
+				M23 *= scaleY;
+			}
+			if (System.Math.Abs(1f - scaleZSquared) > tolerance)
+			{
+				float scaleZ = 1f / (float)System.Math.Sqrt(scaleZSquared);
+				M31 *= scaleZ;
+				M32 *= scaleZ;
+				M33 *= scaleZ;
+			}
 		}
 
 		/// <summary>
@@ -1091,16 +1500,16 @@ namespace RDR2.Math
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(Matrix left, Matrix right) => Matrix.Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator ==(Matrix left, Matrix right) => left.Equals(right);
 
 		/// <summary>
 		/// Tests for inequality between two objects.
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(Matrix left, Matrix right) => !Matrix.Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator !=(Matrix left, Matrix right) => !left.Equals(right);
 
 		/// <summary>
 		/// Converts the matrix to an array of floats.
@@ -1113,8 +1522,64 @@ namespace RDR2.Math
 		/// <returns>The string representation of the value of this instance.</returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.CurrentCulture, "[M11:{0} M12:{1} M13:{2} M14:{3}] [M21:{4} M22:{5} M23:{6} M24:{7}] [M31:{8} M32:{9} M33:{10} M34:{11}] [M41:{12} M42:{13} M43:{14} M44:{15}]",
-				M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44);
+			CultureInfo currentCulture = CultureInfo.CurrentCulture;
+			string m11Str = M11.ToString(currentCulture);
+			string m12Str = M12.ToString(currentCulture);
+			string m13Str = M13.ToString(currentCulture);
+			string m14Str = M14.ToString(currentCulture);
+
+			string m21Str = M21.ToString(currentCulture);
+			string m22Str = M22.ToString(currentCulture);
+			string m23Str = M23.ToString(currentCulture);
+			string m24Str = M24.ToString(currentCulture);
+
+			string m31Str = M31.ToString(currentCulture);
+			string m32Str = M32.ToString(currentCulture);
+			string m33Str = M33.ToString(currentCulture);
+			string m34Str = M34.ToString(currentCulture);
+
+			string m41Str = M41.ToString(currentCulture);
+			string m42Str = M42.ToString(currentCulture);
+			string m43Str = M43.ToString(currentCulture);
+			string m44Str = M44.ToString(currentCulture);
+
+			return $"[M11:{m11Str} M12:{m12Str} M13:{m13Str} M14:{m14Str}] [M21:{m21Str} M22:{m22Str} M23:{m23Str} M24:{m24Str}] [M31:{m31Str} M32:{m32Str} M33:{m33Str} M34:{m34Str}] [M41:{m41Str} M42:{m42Str} M43:{m43Str} M44:{m44Str}]";
+		}
+
+		/// <summary>
+		/// Converts the value of the object to its equivalent string representation.
+		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <returns>The string representation of the value of this instance.</returns>
+		public string ToString(string format)
+		{
+			if (format == null)
+			{
+				return ToString();
+			}
+
+			CultureInfo currentCulture = CultureInfo.CurrentCulture;
+			string m11Str = M11.ToString(format, currentCulture);
+			string m12Str = M12.ToString(format, currentCulture);
+			string m13Str = M13.ToString(format, currentCulture);
+			string m14Str = M14.ToString(format, currentCulture);
+
+			string m21Str = M21.ToString(format, currentCulture);
+			string m22Str = M22.ToString(format, currentCulture);
+			string m23Str = M23.ToString(format, currentCulture);
+			string m24Str = M24.ToString(format, currentCulture);
+
+			string m31Str = M31.ToString(format, currentCulture);
+			string m32Str = M32.ToString(format, currentCulture);
+			string m33Str = M33.ToString(format, currentCulture);
+			string m34Str = M34.ToString(format, currentCulture);
+
+			string m41Str = M41.ToString(format, currentCulture);
+			string m42Str = M42.ToString(format, currentCulture);
+			string m43Str = M43.ToString(format, currentCulture);
+			string m44Str = M44.ToString(format, currentCulture);
+
+			return $"[M11:{m11Str} M12:{m12Str} M13:{m13Str} M14:{m14Str}] [M21:{m21Str} M22:{m22Str} M23:{m23Str} M24:{m24Str}] [M31:{m31Str} M32:{m32Str} M33:{m33Str} M34:{m34Str}] [M41:{m41Str} M42:{m42Str} M43:{m43Str} M44:{m44Str}]";
 		}
 
 		/// <summary>
@@ -1125,7 +1590,7 @@ namespace RDR2.Math
 		{
 			unchecked
 			{
-				var hashCode = M11.GetHashCode();
+				int hashCode = M11.GetHashCode();
 				hashCode = (hashCode * 397) ^ M12.GetHashCode();
 				hashCode = (hashCode * 397) ^ M13.GetHashCode();
 				hashCode = (hashCode * 397) ^ M14.GetHashCode();
@@ -1149,11 +1614,13 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to a specified object.
 		/// </summary>
 		/// <param name="obj">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public override bool Equals(object obj)
 		{
 			if (obj == null || obj.GetType() != GetType())
+			{
 				return false;
+			}
 
 			return Equals((Matrix)obj);
 		}
@@ -1162,7 +1629,7 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to the specified object.
 		/// </summary>
 		/// <param name="other">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public bool Equals(Matrix other)
 		{
 			return (M11 == other.M11 && M12 == other.M12 && M13 == other.M13 && M14 == other.M14 &&
@@ -1170,14 +1637,5 @@ namespace RDR2.Math
 				M31 == other.M31 && M32 == other.M32 && M33 == other.M33 && M34 == other.M34 &&
 				M41 == other.M41 && M42 == other.M42 && M43 == other.M43 && M44 == other.M44);
 		}
-
-		/// <summary>
-		/// Determines whether the specified object instances are considered equal.
-		/// </summary>
-		/// <param name="value1"></param>
-		/// <param name="value2"></param>
-		/// <returns><c>true</c> if <paramref name="value1"/> is the same instance as <paramref name="value2"/> or
-		/// if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-		public static bool Equals(ref Matrix value1, ref Matrix value2) => value1.Equals(value2);
 	}
 }

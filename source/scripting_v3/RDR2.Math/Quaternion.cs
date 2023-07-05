@@ -1,19 +1,19 @@
 //
 // Copyright (C) 2007-2010 SlimDX Group
 //
-// Permission is hereby granted, free  of charge, to any person obtaining a copy of this software  and
-// associated  documentation  files (the  "Software"), to deal  in the Software  without  restriction,
-// including  without  limitation  the  rights  to use,  copy,  modify,  merge,  publish,  distribute,
-// sublicense, and/or sell  copies of the  Software,  and to permit  persons to whom  the Software  is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The  above  copyright  notice  and this  permission  notice shall  be included  in  all  copies  or
+// The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS",  WITHOUT WARRANTY OF  ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS  FOR  A   PARTICULAR  PURPOSE  AND
-// NONINFRINGEMENT.  IN  NO  EVENT SHALL THE  AUTHORS  OR COPYRIGHT HOLDERS  BE LIABLE FOR  ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  OUT
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
@@ -86,6 +86,16 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
+		/// A <see cref="Quaternion"/> with all of its components set to zero.
+		/// </summary>
+		public static Quaternion Zero => new Quaternion();
+
+		/// <summary>
+		/// A <see cref="Quaternion"/> with all of its components set to one.
+		/// </summary>
+		public static Quaternion One => new Quaternion(1.0f, 1.0f, 1.0f, 1.0f);
+
+		/// <summary>
 		/// The identity <see cref="Quaternion"/> (0, 0, 0, 1).
 		/// </summary>
 		public static Quaternion Identity => new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
@@ -97,23 +107,19 @@ namespace RDR2.Math
 		{
 			get
 			{
-				Vector3 axis = new Vector3();
-				float length = Length();
-
-				if (length != 0.0f)
+				if (Length() != 1.0f)
 				{
-					axis.X = X / length;
-					axis.Y = Y / length;
-					axis.Z = Z / length;
-				}
-				else
-				{
-					axis.X = 1.0f;
-					axis.Y = 0.0f;
-					axis.Z = 0.0f;
+					return Vector3.Zero;
 				}
 
-				return axis;
+				float length = 1.0f - (W * W);
+				if (length == 0f)
+				{
+					return Vector3.UnitX;
+				}
+
+				float inv = 1.0f / (float)System.Math.Sqrt(length);
+				return new Vector3(X * inv, Y * inv, Z * inv);
 			}
 		}
 
@@ -139,11 +145,17 @@ namespace RDR2.Math
 		/// </summary>
 		public void Normalize()
 		{
-			float length = 1.0f / Length();
-			X *= length;
-			Y *= length;
-			Z *= length;
-			W *= length;
+			float length = Length();
+			if (length == 0f)
+			{
+				return;
+			}
+
+			float inverse = 1.0f / length;
+			X *= inverse;
+			Y *= inverse;
+			Z *= inverse;
+			W *= inverse;
 		}
 
 		/// <summary>
@@ -161,7 +173,14 @@ namespace RDR2.Math
 		/// </summary>
 		public void Invert()
 		{
-			float lengthSq = 1.0f / LengthSquared();
+			float lengthSq = LengthSquared();
+			if (lengthSq == 0f)
+			{
+				return;
+			}
+
+			lengthSq = 1.0f / lengthSq;
+
 			X = -X * lengthSq;
 			Y = -Y * lengthSq;
 			Z = -Z * lengthSq;
@@ -175,7 +194,7 @@ namespace RDR2.Math
 		/// <returns>A quaternion facing in the opposite direction.</returns>
 		public static Quaternion Negate(Quaternion quaternion)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = -quaternion.X;
 			result.Y = -quaternion.Y;
 			result.Z = -quaternion.Z;
@@ -191,7 +210,7 @@ namespace RDR2.Math
 		/// <returns>The sum of the two quaternions.</returns>
 		public static Quaternion Add(Quaternion left, Quaternion right)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = left.X + right.X;
 			result.Y = left.Y + right.Y;
 			result.Z = left.Z + right.Z;
@@ -207,7 +226,7 @@ namespace RDR2.Math
 		/// <returns>The difference of the two quaternions.</returns>
 		public static Quaternion Subtract(Quaternion left, Quaternion right)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = left.X - right.X;
 			result.Y = left.Y - right.Y;
 			result.Z = left.Z - right.Z;
@@ -216,11 +235,11 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
-		/// Modulates a quaternion by another.
+		/// Multiplies two Quaternions together.
 		/// </summary>
-		/// <param name="left">The first quaternion to modulate.</param>
-		/// <param name="right">The second quaternion to modulate.</param>
-		/// <returns>The modulated quaternion.</returns>
+		/// <param name="left">The Quaternion on the left side of the multiplication.</param>
+		/// <param name="right">The Quaternion on the right side of the multiplication.</param>
+		/// <returns>The result of the multiplication.</returns>
 		public static Quaternion Multiply(Quaternion left, Quaternion right)
 		{
 			Quaternion quaternion;
@@ -249,7 +268,7 @@ namespace RDR2.Math
 		/// <returns>The scaled quaternion.</returns>
 		public static Quaternion Multiply(Quaternion quaternion, float scale)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = quaternion.X * scale;
 			result.Y = quaternion.Y * scale;
 			result.Z = quaternion.Z * scale;
@@ -303,7 +322,7 @@ namespace RDR2.Math
 		/// <returns>The conjugated and renormalized quaternion.</returns>
 		public static Quaternion Invert(Quaternion quaternion)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			float lengthSq = 1.0f / ((quaternion.X * quaternion.X) + (quaternion.Y * quaternion.Y) + (quaternion.Z * quaternion.Z) + (quaternion.W * quaternion.W));
 
 			result.X = -quaternion.X * lengthSq;
@@ -336,7 +355,7 @@ namespace RDR2.Math
 		/// </remarks>
 		public static Quaternion Lerp(Quaternion start, Quaternion end, float amount)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			float inverse = 1.0f - amount;
 			float dot = (start.X * end.X) + (start.Y * end.Y) + (start.Z * end.Z) + (start.W * end.W);
 
@@ -366,7 +385,7 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
-		/// Interpolates between two quaternions, using spherical linear interpolation..
+		/// Interpolates between two quaternions, using spherical linear interpolation.
 		/// </summary>
 		/// <param name="start">Start quaternion.</param>
 		/// <param name="end">End quaternion.</param>
@@ -374,7 +393,7 @@ namespace RDR2.Math
 		/// <returns>The spherical linear interpolation of the two quaternions.</returns>
 		public static Quaternion Slerp(Quaternion start, Quaternion end, float amount)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			float kEpsilon = (float)(1.192093E-07);
 			float opposite;
 			float inverse;
@@ -387,11 +406,11 @@ namespace RDR2.Math
 			}
 			else
 			{
-				float acos = (float)System.Math.Acos(System.Math.Abs(dot));
-				float invSin = (float)(1.0 / System.Math.Sin(acos));
+				float aCos = (float)System.Math.Acos(System.Math.Abs(dot));
+				float invSin = (float)(1.0 / System.Math.Sin(aCos));
 
-				inverse = (float)(System.Math.Sin((1.0f - amount) * acos) * invSin);
-				opposite = (float)(System.Math.Sin(amount * acos) * invSin * System.Math.Sign(dot));
+				inverse = (float)(System.Math.Sin((1.0f - amount) * aCos) * invSin);
+				opposite = (float)(System.Math.Sin(amount * aCos) * invSin * System.Math.Sign(dot));
 			}
 
 			result.X = (inverse * start.X) + (opposite * end.X);
@@ -418,11 +437,11 @@ namespace RDR2.Math
 				}
 				return b;
 			}
-			else if (b.LengthSquared() == 0.0f)
+
+			if (b.LengthSquared() == 0.0f)
 			{
 				return a;
 			}
-
 
 			float cosHalfAngle = a.W * b.W + Vector3.Dot(a.Axis, b.Axis);
 
@@ -430,7 +449,8 @@ namespace RDR2.Math
 			{
 				return a;
 			}
-			else if (cosHalfAngle < 0.0f)
+
+			if (cosHalfAngle < 0.0f)
 			{
 				b.X = -b.X;
 				b.Y = -b.Y;
@@ -455,12 +475,23 @@ namespace RDR2.Math
 				blendB = t;
 			}
 
-			Quaternion result = new Quaternion(blendA * a.Axis + blendB * b.Axis, blendA * a.W + blendB * b.W);
+			var result = new Quaternion(blendA * a.Axis + blendB * b.Axis, blendA * a.W + blendB * b.W);
 			if (result.LengthSquared() > 0.0f)
+			{
 				return Normalize(result);
-			else
-				return Identity;
+			}
+
+			return Identity;
 		}
+
+		/// <summary>
+		/// Creates a rotation with the specified <paramref name="forward"/> and <see cref="Vector3.WorldUp"/> directions.
+		/// </summary>
+		public static Quaternion LookRotation(Vector3 forward) => LookRotation(forward, Vector3.WorldUp);
+		/// <summary>
+		/// Creates a rotation with the specified <paramref name="forward"/> and <paramref name="up"/> directions.
+		/// </summary>
+		public static Quaternion LookRotation(Vector3 forward, Vector3 up) => DirectionVectors(Vector3.Cross(forward, up), forward, up);
 
 		/// <summary>
 		/// Creates a rotation which rotates from fromDirection to toDirection.
@@ -517,27 +548,380 @@ namespace RDR2.Math
 			return (float)((System.Math.Acos(System.Math.Min(System.Math.Abs(dot), 1.0f)) * 2.0 * (180.0f / System.Math.PI)));
 		}
 
+		const float DEG_2_RAD = (float)((System.Math.PI / 180.0));
+		const float RAD_2_DEG = (float)((180.0 / System.Math.PI));
+
 		/// <summary>
-		/// Returns a rotation that rotates z degrees around the z axis, x degrees around the x axis, and y degrees around the y axis (in that order).
+		/// <para>Returns a rotation that rotates z degrees around the z axis, x degrees around the x axis, and y degrees around the y axis (in that order).</para>
+		/// <para>
+		/// For example, <c>Quaternion.Euler(60f, 30f, 45f)</c> will yield (almost) the same result as <c>Quaternion.RotationAxis(Vector3.UnitY, 45f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitX, 30f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitZ, 60f * deg2Rad)</c>
+		/// provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>.
+		/// </para>
 		/// </summary>
 		/// <param name="zaxis">Z degrees.</param>
 		/// <param name ="xaxis">X degrees.</param>
 		/// <param name ="yaxis">Y degrees.</param>
-		public static Quaternion Euler(float zaxis, float xaxis, float yaxis)
+		/// <remarks>
+		/// <para>You should aware the parameter order are z degrees, x degrees, and then y degrees, not x degrees, y degrees, and then z degrees.</para>
+		/// <para>
+		/// For compatibility with scripts built against v3.6.0 or earlier, this overload does the same as <see cref="Euler(float, float, float, eEulerRotationOrder)"/>
+		/// where <see cref="eEulerRotationOrder.ZXY"/> is passed as the rotation order.
+		/// In most cases, you should use the other overload <see cref="Euler(float, float, float, eEulerRotationOrder)"/> and pass <see cref="eEulerRotationOrder.YXZ"/> as the rotation order.
+		/// </para>
+		/// </remarks>
+		public static Quaternion Euler(float zaxis, float xaxis, float yaxis) => RotationYawPitchRoll(zaxis * DEG_2_RAD, xaxis * DEG_2_RAD, yaxis * DEG_2_RAD);
+
+		/// <summary>
+		/// <para>Returns a rotation that rotates degrees in the specified order in world space.</para>
+		/// <para>
+		/// For example, <c>Quaternion.Euler(60f, 30f, 45f, eEulerRotationOrder.YXZ)</c> will yield (almost) the same result as
+		/// <c>Quaternion.RotationAxis(Vector3.UnitZ, 60f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitX, 30f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitY, 45f * deg2Rad)</c>
+		/// provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>.
+		/// </para>
+		/// </summary>
+		/// <param name="z">Z degrees.</param>
+		/// <param name ="x">X degrees.</param>
+		/// <param name ="y">Y degrees.</param>
+		/// <param name="rotationOrder">
+		/// The order in which to apply rotations in world space.
+		/// For most methods for the game and native functions, you would like to use <see cref="eEulerRotationOrder.YXZ"/>.
+		/// </param>
+		/// <remarks>
+		/// <para>You should aware the parameter order are z degrees, x degrees, and then y degrees, not x degrees, y degrees, and then z degrees.</para>
+		/// </remarks>
+		public static Quaternion Euler(float z, float x, float y, eEulerRotationOrder rotationOrder) => FromEulerInternal(x, y, z, rotationOrder);
+
+		/// <summary>
+		/// <para>
+		/// Returns a rotation that rotates z degrees around the z axis, x degrees around the x axis, and y degrees around the y axis (in that order).
+		/// </para>
+		/// <para>
+		/// For example, <c>Quaternion.Euler(new Vector3(30f, 45f, 60f))</c> will yield (almost) the same result as <c>Quaternion.RotationAxis(Vector3.UnitY, 45f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitX, 30f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitZ, 60f * deg2Rad)</c>
+		/// provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>.
+		/// </para>
+		/// </summary>
+		/// <param name="euler">Euler angles in degrees. euler.X = around X axis, euler.Y = around Y axis, euler.Z = around Z axis</param>
+		/// <remarks>
+		/// For compatibility with scripts built against v3.6.0 or earlier, this overload does the same as <see cref="Euler(Vector3, eEulerRotationOrder)"/>
+		/// where <see cref="eEulerRotationOrder.ZXY"/> is passed as the rotation order.
+		/// In most cases, you should use the other overload <see cref="Euler(Vector3, eEulerRotationOrder)"/> and pass <see cref="eEulerRotationOrder.YXZ"/> as the rotation order.
+		/// </remarks>
+		public static Quaternion Euler(Vector3 euler) => RotationYawPitchRoll(euler.Z * DEG_2_RAD, euler.X * DEG_2_RAD, euler.Y * DEG_2_RAD);
+
+		/// <summary>
+		/// <para>Returns a rotation that rotates degrees in the specified order in world space.</para>
+		/// <para>
+		/// For example, <c>Quaternion.Euler(new Vector3(30f, 45f, 60f), eEulerRotationOrder.YXZ)</c> will yield (almost) the same result as <c>Quaternion.RotationAxis(Vector3.UnitZ, 60f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitX, 30f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitY, 45f * deg2Rad)</c>
+		/// provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>.
+		/// </para>
+		/// <para>
+		/// <c>entity.Quaternion = Quaternion.Euler(new Vector3(30f, 45f, 60f), eEulerRotationOrder.YXZ)</c> does the same as
+		/// <c>entity.Quaternion = new Vector3(30f, 45f, 60f)</c> provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>..
+		/// </para>
+		/// </summary>
+		/// <param name="euler">Euler angles in degrees. euler.X = around X axis, euler.Y = around Y axis, euler.Z = around Z axis</param>
+		/// <param name="rotationOrder">
+		/// The order in which to apply rotations in world space.
+		/// For most methods for the game and native functions, you would like to use <see cref="eEulerRotationOrder.YXZ"/>.
+		/// </param>
+		public static Quaternion Euler(Vector3 euler, eEulerRotationOrder rotationOrder) => FromEulerInternal(euler.X, euler.Y, euler.Z, rotationOrder);
+
+		private static Quaternion FromEulerInternal(float x, float y, float z, eEulerRotationOrder rotationOrder)
 		{
-			float Deg2Rad = (float)((System.Math.PI / 180.0));
-			return RotationYawPitchRoll(zaxis * Deg2Rad, xaxis * Deg2Rad, yaxis * Deg2Rad);
+			Quaternion result = Zero;
+
+			float halfX = x * 0.5f * DEG_2_RAD;
+			float sinX = (float)(System.Math.Sin((double)(halfX)));
+			float cosX = (float)(System.Math.Cos((double)(halfX)));
+			float halfY = y * 0.5f * DEG_2_RAD;
+			float sinY = (float)(System.Math.Sin((double)(halfY)));
+			float cosY = (float)(System.Math.Cos((double)(halfY)));
+			float halfZ = z * 0.5f * DEG_2_RAD;
+			float sinZ = (float)(System.Math.Sin((double)(halfZ)));
+			float cosZ = (float)(System.Math.Cos((double)(halfZ)));
+
+			switch (rotationOrder)
+			{
+				case eEulerRotationOrder.XYZ:
+				result.X = (sinX * cosY * cosZ) - (cosX * sinY * sinZ);
+				result.Y = (cosX * sinY * cosZ) + (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) - (sinX * sinY * cosZ);
+				result.W = (cosY * cosX * cosZ) + (sinY * sinX * sinZ);
+				break;
+				case eEulerRotationOrder.XZY:
+				result.X = (cosX * sinY * sinZ) + (sinX * cosY * cosZ);
+				result.Y = (cosX * sinY * cosZ) + (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) - (sinX * sinY * cosZ);
+				result.W = (cosX * cosY * cosZ) - (sinX * sinY * sinZ);
+				break;
+				case eEulerRotationOrder.YXZ:
+				result.X = (sinX * cosY * cosZ) - (cosX * sinY * sinZ);
+				result.Y = (cosX * sinY * cosZ) + (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) + (sinX * sinY * cosZ);
+				result.W = (cosY * cosX * cosZ) - (sinY * sinX * sinZ);
+				break;
+				case eEulerRotationOrder.YZX:
+				result.X = (sinX * cosY * cosZ) - (cosX * sinY * sinZ);
+				result.Y = (cosX * sinY * cosZ) - (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) + (sinX * sinY * cosZ);
+				result.W = (cosY * cosX * cosZ) + (sinY * sinX * sinZ);
+				break;
+				case eEulerRotationOrder.ZXY:
+				result.X = (cosX * sinY * sinZ) + (sinX * cosY * cosZ);
+				result.Y = (cosX * sinY * cosZ) - (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) - (sinX * sinY * cosZ);
+				result.W = (cosY * cosX * cosZ) + (sinY * sinX * sinZ);
+				break;
+				case eEulerRotationOrder.ZYX:
+				result.X = (cosX * sinY * sinZ) + (sinX * cosY * cosZ);
+				result.Y = (cosX * sinY * cosZ) - (sinX * cosY * sinZ);
+				result.Z = (cosX * cosY * sinZ) + (sinX * sinY * cosZ);
+				result.W = (cosY * cosX * cosZ) - (sinY * sinX * sinZ);
+				break;
+				default:
+				throw new ArgumentException(nameof(rotationOrder));
+			}
+
+			return result;
 		}
 
 		/// <summary>
-		/// Returns a rotation that rotates z degrees around the z axis, x degrees around the x axis, and y degrees around the y axis (in that order).
+		/// Returns a <see cref="Vector3"/> that represents euler angles in degrees.
+		/// Each component is in the range of [-180, 180].
 		/// </summary>
-		/// <param name="euler">Euler angles in degrees. euler.X = around X axis, euler.Y = around Y axis, euler.Z = around Z axis</param>
-		public static Quaternion Euler(Vector3 euler)
+		/// <param name="rotationOrder">
+		/// The order in which to apply rotations in world space.
+		/// For most methods for the game and native functions, you would like to use <see cref="eEulerRotationOrder.YXZ"/>.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// May return the other value that represents the same rotation if the rotation has no singularities.
+		/// For instance, <c>Quaternion.Euler(new Vector3(-170f, 45f, 60f), eEulerRotationOrder.YXZ).ToEuler(eEulerRotationOrder.YXZ)</c>
+		/// will return <c>Vector3(10f, -135f, -120f)</c>
+		/// </para>
+		/// <para>
+		///	If the rotation has singularities, the value for the third axis will be zero just like <see cref="Entity.Rotation"/> does.
+		/// For instance, the return <see cref="Vector3"/> value will have zero as the z value if the rotation has singularities
+		/// and <paramref name="rotationOrder"/> is set to <see cref="eEulerRotationOrder.XYZ"/> or <see cref="eEulerRotationOrder.YXZ"/>).
+		/// </para>
+		/// </remarks>
+		public Vector3 ToEuler(eEulerRotationOrder rotationOrder = eEulerRotationOrder.YXZ)
 		{
-			Vector3 eulerRad = euler * (float)((System.Math.PI / 180.0));
-			return RotationYawPitchRoll(eulerRad.Z, eulerRad.X, eulerRad.Y);
+			switch (rotationOrder)
+			{
+				case eEulerRotationOrder.YXZ:
+				return ToEulerYXZ();
+				case eEulerRotationOrder.XYZ:
+				return ToEulerXYZ();
+				case eEulerRotationOrder.XZY:
+				return ToEulerXZY();
+				case eEulerRotationOrder.YZX:
+				return ToEulerYZX();
+				case eEulerRotationOrder.ZXY:
+				return ToEulerZXY();
+				case eEulerRotationOrder.ZYX:
+				return ToEulerZYX();
+				default:
+				throw new ArgumentException(nameof(rotationOrder));
+			}
 		}
+
+		#region Internal method for ToEuler
+
+		const float SINGULARITY_THRESHOLD = 0.4999995f;
+		private Vector3 ToEulerYXZ()
+		{
+			float singularityTest = (Y * Z) + (X * W);
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m10 = 2 * ((X * Y) + (Z * W));
+				float m00 = 2 * ((W * W) + (X * X)) - 1;
+
+				return new Vector3(90f, (float)System.Math.Atan2(m10, m00) * RAD_2_DEG, 0f);
+			}
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m10 = 2 * ((X * Y) + (Z * W));
+				float m00 = 2 * ((W * W) + (X * X)) - 1;
+
+				return new Vector3(-90f, (float)System.Math.Atan2(-m10, m00) * RAD_2_DEG, 0f);
+			}
+
+			float rotX = (float)System.Math.Asin(2 * singularityTest);
+
+			float m20 = 2 * ((X * Z) - (Y * W));
+			float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+			float rotY = (float)System.Math.Atan2(-m20, m22);
+
+			float m01 = 2 * ((X * Y) - (Z * W));
+			float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+			float rotZ = (float)System.Math.Atan2(-m01, m11);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+		private Vector3 ToEulerXYZ()
+		{
+			float singularityTest = (X * Z) - (Y * W);
+
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m01 = 2 * ((X * Y) - (Z * W));
+				float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+
+				return new Vector3((float)System.Math.Atan2(m01, m11) * RAD_2_DEG, 90f, 0f);
+			}
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m01 = 2 * ((X * Y) - (Z * W));
+				float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+
+				return new Vector3((float)System.Math.Atan2(-m01, m11) * RAD_2_DEG, -90f, 0f);
+			}
+
+			float m21 = 2 * ((Y * Z) + (X * W));
+			float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+			float rotX = (float)System.Math.Atan2(m21, m22);
+
+			float rotY = (float)System.Math.Asin(-2 * singularityTest);
+
+			float m10 = 2 * ((X * Y) + (Z * W));
+			float m00 = 2 * ((W * W) + (X * X)) - 1;
+			float rotZ = (float)System.Math.Atan2(m10, m00);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+		private Vector3 ToEulerXZY()
+		{
+			float singularityTest = (X * Y) + (Z * W);
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m02 = 2 * ((X * Z) + (Y * W));
+				float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+
+				return new Vector3((float)System.Math.Atan2(m02, m22) * RAD_2_DEG, 0f, 90f);
+			}
+
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m02 = 2 * ((X * Z) + (Y * W));
+				float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+
+				return new Vector3((float)System.Math.Atan2(-m02, m22) * RAD_2_DEG, 0f, -90f);
+			}
+
+			float m12 = 2 * ((Y * Z) - (X * W));
+			float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+			float rotX = (float)System.Math.Atan2(-m12, m11);
+
+			float m20 = 2 * ((X * Z) - (Y * W));
+			float m00 = 2 * ((W * W) + (X * X)) - 1;
+			float rotY = (float)System.Math.Atan2(-m20, m00);
+
+			float rotZ = (float)System.Math.Asin(2 * singularityTest);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+		private Vector3 ToEulerYZX()
+		{
+			float singularityTest = (X * Y) - (Z * W);
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m12 = 2 * ((Y * Z) - (X * W));
+				float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+
+				return new Vector3(0f, (float)System.Math.Atan2(-m12, m22) * RAD_2_DEG, -90f);
+			}
+
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m12 = 2 * ((Y * Z) - (X * W));
+				float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+
+				return new Vector3(0f, (float)System.Math.Atan2(m12, m22) * RAD_2_DEG, 90f);
+			}
+
+			float m21 = 2 * ((Y * Z) + (X * W));
+			float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+			float rotX = (float)System.Math.Atan2(m21, m11);
+
+			float m02 = 2 * ((X * Z) + (Y * W));
+			float m00 = 2 * ((W * W) + (X * X)) - 1;
+			float rotY = (float)System.Math.Atan2(m02, m00);
+
+			float rotZ = (float)System.Math.Asin(-2 * singularityTest);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+		private Vector3 ToEulerZXY()
+		{
+			float singularityTest = (Y * Z) - (X * W);
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m20 = 2 * ((X * Z) - (Y * W));
+				float m00 = 2 * ((W * W) + (X * X)) - 1;
+
+				return new Vector3(-90f, 0f, (float)System.Math.Atan2(-m20, m00) * RAD_2_DEG);
+			}
+
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m20 = 2 * ((X * Z) - (Y * W));
+				float m00 = 2 * ((W * W) + (X * X)) - 1;
+
+				return new Vector3(90f, 0f, (float)System.Math.Atan2(m20, m00) * RAD_2_DEG);
+			}
+
+			float rotX = (float)System.Math.Asin(-2 * singularityTest);
+
+			float m02 = 2 * ((X * Z) + (Y * W));
+			float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+			float rotY = (float)System.Math.Atan2(m02, m22);
+
+			float m10 = 2 * ((X * Y) + (Z * W));
+			float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+			float rotZ = (float)System.Math.Atan2(m10, m11);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+		private Vector3 ToEulerZYX()
+		{
+			float singularityTest = (X * Z) + (Y * W);
+
+			if (singularityTest > SINGULARITY_THRESHOLD)
+			{
+				float m21 = 2 * ((Y * Z) + (X * W));
+				float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+
+				return new Vector3(0f, 90f, (float)System.Math.Atan2(m21, m11) * RAD_2_DEG);
+			}
+
+			if (singularityTest < -SINGULARITY_THRESHOLD)
+			{
+				float m21 = 2 * ((Y * Z) + (X * W));
+				float m11 = 2 * ((W * W) + (Y * Y)) - 1;
+
+				return new Vector3(0f, -90f, (float)System.Math.Atan2(-m21, m11) * RAD_2_DEG);
+			}
+
+			float m12 = 2 * ((Y * Z) - (X * W));
+			float m22 = 2 * ((W * W) + (Z * Z)) - 1;
+			float rotX = (float)System.Math.Atan2(-m12, m22);
+
+			float rotY = (float)System.Math.Asin(2 * singularityTest);
+
+			float m01 = 2 * ((X * Y) - (Z * W));
+			float m00 = 2 * ((W * W) + (X * X)) - 1;
+			float rotZ = (float)System.Math.Atan2(-m01, m00);
+
+			return new Vector3(rotX * RAD_2_DEG, rotY * RAD_2_DEG, rotZ * RAD_2_DEG);
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Creates a quaternion given a rotation and an axis.
@@ -547,7 +931,7 @@ namespace RDR2.Math
 		/// <returns>The newly created quaternion.</returns>
 		public static Quaternion RotationAxis(Vector3 axis, float angle)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 
 			axis = Vector3.Normalize(axis);
 
@@ -565,12 +949,13 @@ namespace RDR2.Math
 
 		/// <summary>
 		/// Creates a quaternion given a rotation matrix.
+		/// Will NOT work correctly if there is scaling in the matrix.
 		/// </summary>
 		/// <param name="matrix">The rotation matrix.</param>
 		/// <returns>The newly created quaternion.</returns>
 		public static Quaternion RotationMatrix(Matrix matrix)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			float sqrt;
 			float half;
 			float scale = matrix.M11 + matrix.M22 + matrix.M33;
@@ -620,7 +1005,15 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
-		/// Creates a Quaternion from the given yaw, pitch, and roll, in radians.
+		/// <para>Creates a Quaternion from the given yaw, pitch, and roll, in radians.</para>
+		/// <para>
+		/// The order of transformations is first yaw, then pitch, then roll (the same as <see cref="eEulerRotationOrder.ZXY"/>,
+		/// which is inconvenient to use when calling native functions but the rotation order is kept for compatibility with scripts built against v3.6.0 or earlier.
+		/// Relative to the object's local coordinate axis, this is equivalent to rotation around the y-axis, followed by rotation around the x-axis, followed by rotation around the z-axis.
+		/// For example, <c>Quaternion.RotationYawPitchRoll(60f * deg2Rad, 30f * deg2Rad, 45f * deg2Rad)</c> will yield (almost) the same result as
+		/// <c>Quaternion.RotationAxis(Vector3.UnitY, 45f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitX, 30f * deg2Rad) * Quaternion.RotationAxis(Vector3.UnitZ, 60f * deg2Rad)</c>
+		/// provided that <c>deg2Rad</c> is calculated with <c>(float)((System.Math.PI / 180.0))</c>.
+		/// </para>
 		/// </summary>
 		/// <param name="yaw">The yaw angle, in radians, around the Z-axis.</param>
 		/// <param name="pitch">The pitch angle, in radians, around the X-axis.</param>
@@ -628,7 +1021,7 @@ namespace RDR2.Math
 		/// <returns>The newly created quaternion.</returns>
 		public static Quaternion RotationYawPitchRoll(float yaw, float pitch, float roll)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 
 			float halfYaw = yaw * 0.5f;
 			float sinYaw = (float)(System.Math.Sin((double)(halfYaw)));
@@ -649,13 +1042,58 @@ namespace RDR2.Math
 		}
 
 		/// <summary>
+		/// Creates a Quaternion from the given relative x, y, z axis
+		/// </summary>
+		/// The Vectors need to be perpendicular to each other
+		/// <param name="rightVector">Relative X axis</param>
+		/// <param name="forwardVector">Relative Y axis</param>
+		/// <param name="upVector">Relative Z axis</param>
+		/// <returns>The newly created quaternion.</returns>
+		public static Quaternion DirectionVectors(Vector3 rightVector, Vector3 forwardVector, Vector3 upVector)
+		{
+			rightVector.Normalize();
+			forwardVector.Normalize();
+			upVector.Normalize();
+
+			var rotationMatrix = new Matrix();
+			rotationMatrix[0, 0] = rightVector.X;
+			rotationMatrix[0, 1] = rightVector.Y;
+			rotationMatrix[0, 2] = rightVector.Z;
+
+			rotationMatrix[1, 0] = forwardVector.X;
+			rotationMatrix[1, 1] = forwardVector.Y;
+			rotationMatrix[1, 2] = forwardVector.Z;
+
+			rotationMatrix[2, 0] = upVector.X;
+			rotationMatrix[2, 1] = upVector.Y;
+			rotationMatrix[2, 2] = upVector.Z;
+
+			return RotationMatrix(rotationMatrix);
+		}
+
+		/// <summary>
+		/// Get direction vectors from the given quaternion
+		/// </summary>
+		/// <param name="quaternion">The quaternion</param>
+		/// <param name="rightVector">RightVector = relative x axis</param>
+		/// <param name="forwardVector">ForwardVector = relative y axis</param>
+		/// <param name="upVector">UpVector = relative z axis</param>
+		public static void GetDirectionVectors(Quaternion quaternion, out Vector3 rightVector, out Vector3 forwardVector, out Vector3 upVector)
+		{
+			quaternion.Normalize();
+			rightVector = quaternion * Vector3.WorldEast;
+			forwardVector = quaternion * Vector3.WorldNorth;
+			upVector = quaternion * Vector3.WorldUp;
+		}
+
+		/// <summary>
 		/// Reverses the direction of a given quaternion.
 		/// </summary>
 		/// <param name="quaternion">The quaternion to negate.</param>
 		/// <returns>A quaternion facing in the opposite direction.</returns>
 		public static Quaternion operator -(Quaternion quaternion)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = -quaternion.X;
 			result.Y = -quaternion.Y;
 			result.Z = -quaternion.Z;
@@ -671,7 +1109,7 @@ namespace RDR2.Math
 		/// <returns>The sum of the two quaternions.</returns>
 		public static Quaternion operator +(Quaternion left, Quaternion right)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = left.X + right.X;
 			result.Y = left.Y + right.Y;
 			result.Z = left.Z + right.Z;
@@ -687,7 +1125,7 @@ namespace RDR2.Math
 		/// <returns>The difference of the two quaternions.</returns>
 		public static Quaternion operator -(Quaternion left, Quaternion right)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = left.X - right.X;
 			result.Y = left.Y - right.Y;
 			result.Z = left.Z - right.Z;
@@ -703,7 +1141,7 @@ namespace RDR2.Math
 		/// <returns>The multiplied quaternion.</returns>
 		public static Quaternion operator *(Quaternion left, Quaternion right)
 		{
-			Quaternion quaternion = new Quaternion();
+			Quaternion quaternion = Zero;
 			float lx = left.X;
 			float ly = left.Y;
 			float lz = left.Z;
@@ -729,7 +1167,7 @@ namespace RDR2.Math
 		/// <returns>The scaled quaternion.</returns>
 		public static Quaternion operator *(Quaternion quaternion, float scale)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = quaternion.X * scale;
 			result.Y = quaternion.Y * scale;
 			result.Z = quaternion.Z * scale;
@@ -745,7 +1183,7 @@ namespace RDR2.Math
 		/// <returns>The scaled quaternion.</returns>
 		public static Quaternion operator *(float scale, Quaternion quaternion)
 		{
-			Quaternion result = new Quaternion();
+			Quaternion result = Zero;
 			result.X = quaternion.X * scale;
 			result.Y = quaternion.Y * scale;
 			result.Z = quaternion.Z * scale;
@@ -761,7 +1199,7 @@ namespace RDR2.Math
 		/// <returns>The result of the division.</returns>
 		public static Quaternion operator /(Quaternion left, Quaternion right)
 		{
-			Quaternion quaternion = new Quaternion();
+			Quaternion quaternion = Zero;
 
 			float lx = left.X;
 			float ly = left.Y;
@@ -792,16 +1230,71 @@ namespace RDR2.Math
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(Quaternion left, Quaternion right) => Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator ==(Quaternion left, Quaternion right) => left.Equals(right);
 
 		/// <summary>
 		/// Tests for inequality between two objects.
 		/// </summary>
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(Quaternion left, Quaternion right) => !Equals(left, right);
+		/// <returns><see langword="true" /> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
+		public static bool operator !=(Quaternion left, Quaternion right) => !left.Equals(right);
+
+		#region RotateTransformOperators
+
+		/// <summary>
+		/// Rotates the point with rotation.
+		/// </summary>
+		/// <param name="rotation">The quaternion to rotate the vector.</param>
+		/// <param name="point">The vector to be rotated.</param>
+		/// <returns>The vector after rotation.</returns>
+		public static Vector3 operator *(Quaternion rotation, Vector3 point)
+		{
+			float q0 = rotation.W;
+			float q0Square = rotation.W * rotation.W;
+			var q = new Vector3(rotation.X, rotation.Y, rotation.Z);
+			return ((q0Square - q.LengthSquared()) * point) + (2 * Vector3.Dot(q, point) * q) + (2 * q0 * Vector3.Cross(q, point));
+		}
+
+		/// <summary>
+		/// Rotates the point with rotation.
+		/// </summary>
+		/// <param name="rotation">The quaternion to rotate the vector.</param>
+		/// <param name="point">The vector to be rotated.</param>
+		/// <returns>The vector after rotation.</returns>
+		public static Vector3 RotateTransform(Quaternion rotation, Vector3 point) => rotation * point;
+
+		/// <summary>
+		/// Rotates the point with rotation.
+		/// </summary>
+		/// <param name="rotation">The quaternion to rotate the vector.</param>
+		/// <param name="point">The vector to be rotated.</param>
+		/// <param name="center">The vector representing the origin of the new coordinate system.</param>
+		/// <returns>The vector after rotation in the original coordinate system.</returns>
+		public static Vector3 RotateTransform(Quaternion rotation, Vector3 point, Vector3 center)
+		{
+			var pointNewCenter = Vector3.Subtract(point, center);
+			Vector3 transformedPoint = RotateTransform(rotation, pointNewCenter);
+			return Vector3.Add(transformedPoint, center);
+		}
+
+		/// <summary>
+		/// Rotates the point with rotation.
+		/// </summary>
+		/// <param name="point">The vector to be rotated.</param>
+		/// <returns>The vector after rotation.</returns>
+		public Vector3 RotateTransform(Vector3 point) => RotateTransform(this, point);
+
+		/// <summary>
+		/// Rotates the point with rotation.
+		/// </summary>
+		/// <param name="point">The vector to be rotated.</param>
+		/// <param name="center">The vector representing the origin of the new coordinate system.</param>
+		/// <returns>The vector after rotation in the original coordinate system.</returns>
+		public Vector3 RotateTransform(Vector3 point, Vector3 center) => RotateTransform(this, point, center);
+
+		#endregion RotateTransformOperators
 
 		/// <summary>
 		/// Converts the value of the object to its equivalent string representation.
@@ -809,17 +1302,18 @@ namespace RDR2.Math
 		/// <returns>The string representation of the value of this instance.</returns>
 		public override string ToString()
 		{
-			return String.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(), Y.ToString(), Z.ToString(), W.ToString());
+			return $"X:{X.ToString()} Y:{Y.ToString()} Z:{Z.ToString()} W:{W.ToString()}";
 		}
 
 		/// <summary>
-		/// Converts the value of the object to its equivalent string representation.
+		/// Converts the value of the object to its equivalent string representation using <see cref="CultureInfo.InvariantCulture"/>.
 		/// </summary>
 		/// <param name="format">The format.</param>
 		/// <returns>The string representation of the value of this instance.</returns>
 		public string ToString(string format)
 		{
-			return String.Format(CultureInfo.InvariantCulture, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format), Y.ToString(format), Z.ToString(format), W.ToString(format));
+			CultureInfo invariantCulture = CultureInfo.InvariantCulture;
+			return $"X:{X.ToString(format, invariantCulture)} Y:{Y.ToString(format, invariantCulture)} Z:{Z.ToString(format, invariantCulture)} W:{W.ToString(format, invariantCulture)}";
 		}
 
 		/// <summary>
@@ -832,29 +1326,22 @@ namespace RDR2.Math
 		/// Returns a value that indicates whether the current instance is equal to a specified object.
 		/// </summary>
 		/// <param name="obj">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public override bool Equals(object obj)
 		{
 			if (obj == null || obj.GetType() != GetType())
+			{
 				return false;
+			}
 
-			return Equals((Quaternion)(obj));
+			return Equals((Quaternion)obj);
 		}
 
 		/// <summary>
 		/// Returns a value that indicates whether the current instance is equal to the specified object.
 		/// </summary>
 		/// <param name="other">Object to make the comparison with.</param>
-		/// <returns><c>true</c> if the current instance is equal to the specified object; <c>false</c> otherwise.</returns>
+		/// <returns><see langword="true" /> if the current instance is equal to the specified object; <see langword="false" /> otherwise.</returns>
 		public bool Equals(Quaternion other) => (X == other.X && Y == other.Y && Z == other.Z && W == other.W);
-
-		/// <summary>
-		/// Determines whether the specified object instances are considered equal.
-		/// </summary>
-		/// <param name="value1"></param>
-		/// <param name="value2"></param>
-		/// <returns><c>true</c> if <paramref name="value1"/> is the same instance as <paramref name="value2"/> or
-		/// if both are <c>null</c> references or if <c>value1.Equals(value2)</c> returns <c>true</c>; otherwise, <c>false</c>.</returns>
-		public static bool Equals(ref Quaternion value1, ref Quaternion value2) => value1.Equals(value2);
 	}
 }
