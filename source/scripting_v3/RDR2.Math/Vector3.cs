@@ -29,32 +29,29 @@ namespace RDR2.Math
 	}
 
 	[Serializable]
-	[StructLayout(LayoutKind.Explicit, Pack = 4)]
+	[StructLayout(LayoutKind.Explicit, Pack = 8)]
 	public struct Vector3 : IEquatable<Vector3>
 	{
 		/// <summary>
 		/// Gets or sets the X component of the vector.
 		/// </summary>
 		/// <value>The X component of the vector.</value>
-		[FieldOffset(0)]
+		[FieldOffset(0x0)]
 		public float X;
 
 		/// <summary>
 		/// Gets or sets the Y component of the vector.
 		/// </summary>
 		/// <value>The Y component of the vector.</value>
-		[FieldOffset(4)]
+		[FieldOffset(0x8)]
 		public float Y;
 
 		/// <summary>
 		/// Gets or sets the Z component of the vector.
 		/// </summary>
 		/// <value>The Z component of the vector.</value>
-		[FieldOffset(8)]
+		[FieldOffset(0x10)]
 		public float Z;
-
-		[FieldOffset(12)]
-		float _padding;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Vector3"/> class.
@@ -67,7 +64,6 @@ namespace RDR2.Math
 			X = x;
 			Y = y;
 			Z = z;
-			_padding = 0;
 		}
 
 		/// <summary>
@@ -79,7 +75,6 @@ namespace RDR2.Math
 			X = value;
 			Y = value;
 			Z = value;
-			_padding = 0;
 		}
 
 		internal Vector3(float[] values) : this(values[0], values[1], values[2])
