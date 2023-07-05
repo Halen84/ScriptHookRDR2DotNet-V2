@@ -165,6 +165,65 @@ namespace RDR2.Native
 	}
 
 
+	/// <summary>
+	/// An output argument passed to a script function.
+	/// </summary>
+	public class OutputArgument : InputArgument, IDisposable
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OutputArgument"/> class for script functions that output data into pointers.
+		/// </summary>
+		public OutputArgument() : base(Marshal.AllocCoTaskMem(24))
+		{
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OutputArgument"/> class with an initial value for script functions that require the pointer to data instead of the actual data.
+		/// </summary>
+		/// <param name="value">The value to set the data of this <see cref="OutputArgument"/> to.</param>
+		public OutputArgument(object value) : this()
+		{
+			unsafe
+			{
+				*(ulong*)(data) = Function.ObjectToNative(value);
+			}
+		}
+
+		~OutputArgument()
+		{
+			Dispose(false);
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose([MarshalAs(UnmanagedType.U1)] bool disposing)
+		{
+			if (data != 0)
+			{
+				Marshal.FreeCoTaskMem((IntPtr)(long)data);
+				data = 0;
+			}
+		}
+
+		public T GetResult<T>()
+		{
+			unsafe
+			{
+				if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2))
+				{
+					return Function.ObjectFromNative<T>((ulong*)data);
+				}
+				else
+				{
+					return (T)Function.ObjectFromNative(typeof(T), (ulong*)data);
+				}
+			}
+		}
+	}
+
+
 	public static class Function
 	{
 		internal static ulong[] FillArgsArray(InputArgument[] arguments)
