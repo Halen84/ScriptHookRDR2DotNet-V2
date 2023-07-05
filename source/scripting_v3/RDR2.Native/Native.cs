@@ -112,7 +112,7 @@ namespace RDR2.Native
 	public class InputArgument
 	{
 		internal ulong data;
-		internal List<ulong> arData = new List<ulong>();
+		internal List<ulong> variadicData = new List<ulong>();
 
 		public InputArgument(ulong value) { data = value; }
 		public InputArgument(object value) { data = Function.ObjectToNative(value); }
@@ -121,7 +121,7 @@ namespace RDR2.Native
 			// Copy the data over
 			for (int i = 0; i < value.Length; i++)
 			{
-				arData.Add(value[i].data);
+				variadicData.Add(value[i].data);
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace RDR2.Native
 			if (argCount > 0)
 			{
 				// Templated natives have their var args param as the last one
-				variadicArgsCount = arguments[arguments.Length - 1].arData.Count;
+				variadicArgsCount = arguments[arguments.Length - 1].variadicData.Count;
 				// Check if this is a templated native, and get number of var args passed to it
 				if (variadicArgsCount > 0)
 				{
@@ -304,12 +304,12 @@ namespace RDR2.Native
 				args[i] = arguments[i].data;
 			}
 
-			// Add InputArgument.arData
+			// Add InputArgument.variadicData
 			if (variadicArgsCount > 0)
 			{
 				for (int i = 0; i < variadicArgsCount; i++)
 				{
-					args[i + (args.Length - variadicArgsCount)] = arguments[arguments.Length - 1].arData[i];
+					args[i + (args.Length - variadicArgsCount)] = arguments[arguments.Length - 1].variadicData[i];
 				}
 			}
 
