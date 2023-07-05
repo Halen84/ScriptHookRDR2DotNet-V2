@@ -7,6 +7,7 @@ using RDR2.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
@@ -20,17 +21,17 @@ namespace RDR2.Native
 		}
 	}
 
-	internal unsafe static class NativeHelper<T>
+	internal static class NativeHelper<T>
 	{
 		static class CastCache<TFrom>
 		{
-			internal static readonly Func<TFrom, T> Convert;
+			internal static readonly Func<TFrom, T> Cast;
 
 			static CastCache()
 			{
-				var paramExp = Expression.Parameter(typeof(TFrom));
-				var convertExp = Expression.Convert(paramExp, typeof(T));
-				Convert = Expression.Lambda<Func<TFrom, T>>(convertExp, paramExp).Compile();
+				ParameterExpression paramExp = Expression.Parameter(typeof(TFrom));
+				UnaryExpression convertExp = Expression.Convert(paramExp, typeof(T));
+				Cast = Expression.Lambda<Func<TFrom, T>>(convertExp, paramExp).Compile();
 			}
 		}
 
@@ -51,12 +52,60 @@ namespace RDR2.Native
 
 		internal static T Convert<TFrom>(TFrom from)
 		{
-			return CastCache<TFrom>.Convert(from);
+			return CastCache<TFrom>.Cast(from);
 		}
 
 		internal static T PtrToStructure(IntPtr ptr)
 		{
 			return _ptrToStrFunc(ptr);
+		}
+	}
+	internal static class InstanceCreator<T1, TInstance>
+	{
+		internal static Func<T1, TInstance> Create;
+
+		static InstanceCreator()
+		{
+			ConstructorInfo constructorInfo = typeof(TInstance).GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, Type.DefaultBinder,
+				new[] { typeof(T1) }, null);
+			ParameterExpression arg1Exp = Expression.Parameter(typeof(T1));
+
+			NewExpression newExp = Expression.New(constructorInfo, arg1Exp);
+			var lambdaExp = Expression.Lambda<Func<T1, TInstance>>(newExp, arg1Exp);
+			Create = lambdaExp.Compile();
+		}
+	}
+	internal static class InstanceCreator<T1, T2, TInstance>
+	{
+		internal static Func<T1, T2, TInstance> Create;
+
+		static InstanceCreator()
+		{
+			ConstructorInfo constructorInfo = typeof(TInstance).GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, Type.DefaultBinder,
+				new[] { typeof(T1), typeof(T2) }, null);
+			ParameterExpression arg1Exp = Expression.Parameter(typeof(T1));
+			ParameterExpression arg2Exp = Expression.Parameter(typeof(T2));
+
+			NewExpression newExp = Expression.New(constructorInfo, arg1Exp, arg2Exp);
+			var lambdaExp = Expression.Lambda<Func<T1, T2, TInstance>>(newExp, arg1Exp, arg2Exp);
+			Create = lambdaExp.Compile();
+		}
+	}
+	internal static class InstanceCreator<T1, T2, T3, TInstance>
+	{
+		internal static Func<T1, T2, T3, TInstance> Create;
+
+		static InstanceCreator()
+		{
+			ConstructorInfo constructor = typeof(TInstance).GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, Type.DefaultBinder,
+				new[] { typeof(T1), typeof(T2), typeof(T3) }, null);
+			ParameterExpression arg1 = Expression.Parameter(typeof(T1));
+			ParameterExpression arg2 = Expression.Parameter(typeof(T2));
+			ParameterExpression arg3 = Expression.Parameter(typeof(T3));
+
+			NewExpression newExp = Expression.New(constructor, arg1, arg2, arg3);
+			var lambdaExp = Expression.Lambda<Func<T1, T2, T3, TInstance>>(newExp, arg1, arg2, arg3);
+			Create = lambdaExp.Compile();
 		}
 	}
 
