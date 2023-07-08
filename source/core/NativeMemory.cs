@@ -98,46 +98,37 @@ namespace RDR2DN
 
 		#endregion
 
-		/// <summary>
-		/// Searches the address space of the current process for a memory pattern.
-		/// </summary>
-		/// <param name="pattern">The pattern.</param>
-		/// <param name="mask">The pattern mask.</param>
-		/// <returns>The address of a region matching the pattern or <see langword="null" /> if none was found.</returns>
-		public static unsafe byte* FindPattern(string pattern, string mask)
+		/// <inheritdoc cref="FindPatternNaive(string, string, IntPtr, ulong)"/>
+		public static unsafe byte* FindPatternNaive(string pattern, string mask)
 		{
 			ProcessModule module = Process.GetCurrentProcess().MainModule;
-			return FindPattern(pattern, mask, module.BaseAddress, (ulong)module.ModuleMemorySize);
+			return FindPatternNaive(pattern, mask, module.BaseAddress, (ulong)module.ModuleMemorySize);
 		}
 
-		/// <summary>
-		/// Searches the specific address space of the current process for a memory pattern.
-		/// </summary>
-		/// <param name="pattern">The pattern.</param>
-		/// <param name="mask">The pattern mask.</param>
-		/// <param name="startAddress">The address to start searching at.</param>
-		/// <returns>The address of a region matching the pattern or <see langword="null" /> if none was found.</returns>
-		public static unsafe byte* FindPattern(string pattern, string mask, IntPtr startAddress)
+		/// <inheritdoc cref="FindPatternNaive(string, string, IntPtr, ulong)"/>
+		public static unsafe byte* FindPatternNaive(string pattern, string mask, IntPtr startAddress)
 		{
 			ProcessModule module = Process.GetCurrentProcess().MainModule;
 
 			if ((ulong)startAddress.ToInt64() < (ulong)module.BaseAddress.ToInt64())
+			{
 				return null;
+			}
 
 			ulong size = (ulong)module.ModuleMemorySize - ((ulong)startAddress - (ulong)module.BaseAddress);
 
-			return FindPattern(pattern, mask, startAddress, size);
+			return FindPatternNaive(pattern, mask, startAddress, size);
 		}
 
 		/// <summary>
-		/// Searches the specific address space of the current process for a memory pattern.
+		/// Searches the specific address space of the current process for a memory pattern using the naive algorithm.
 		/// </summary>
 		/// <param name="pattern">The pattern.</param>
 		/// <param name="mask">The pattern mask.</param>
 		/// <param name="startAddress">The address to start searching at.</param>
 		/// <param name="size">The size where the pattern search will be performed from <paramref name="startAddress"/>.</param>
 		/// <returns>The address of a region matching the pattern or <see langword="null" /> if none was found.</returns>
-		static unsafe byte* FindPattern(string pattern, string mask, IntPtr startAddress, ulong size)
+		public static unsafe byte* FindPatternNaive(string pattern, string mask, IntPtr startAddress, ulong size)
 		{
 			ulong address = (ulong)startAddress.ToInt64();
 			ulong endAddress = address + size;
@@ -147,13 +138,111 @@ namespace RDR2DN
 				for (int i = 0; i < pattern.Length; i++)
 				{
 					if (mask[i] != '?' && ((byte*)address)[i] != pattern[i])
+					{
 						break;
-					else if (i + 1 == pattern.Length)
+					}
+
+					if (i + 1 == pattern.Length)
+					{
 						return (byte*)address;
+					}
 				}
 			}
 
 			return null;
+		}
+
+		/// <inheritdoc cref="FindPatternBmh(string, string, IntPtr, ulong)"/>
+		public static unsafe byte* FindPatternBmh(string pattern, string mask)
+		{
+			ProcessModule module = Process.GetCurrentProcess().MainModule;
+			return FindPatternBmh(pattern, mask, module.BaseAddress, (ulong)module.ModuleMemorySize);
+		}
+
+		/// <inheritdoc cref="FindPatternBmh(string, string, IntPtr, ulong)"/>
+		public static unsafe byte* FindPatternBmh(string pattern, string mask, IntPtr startAddress)
+		{
+			ProcessModule module = Process.GetCurrentProcess().MainModule;
+
+			if ((ulong)startAddress.ToInt64() < (ulong)module.BaseAddress.ToInt64())
+			{
+				return null;
+			}
+
+			ulong size = (ulong)module.ModuleMemorySize - ((ulong)startAddress - (ulong)module.BaseAddress);
+
+			return FindPatternBmh(pattern, mask, startAddress, size);
+		}
+
+		/// <summary>
+		/// Searches the address space of the current process for a memory pattern using the Boyer–Moore–Horspool algorithm.
+		/// Will perform faster than the naive algorithm when the pattern is long enough to expect the bad character skip is consistently high.
+		/// </summary>
+		/// <param name="pattern">The pattern.</param>
+		/// <param name="mask">The pattern mask.</param>
+		/// <param name="startAddress">The address to start searching at.</param>
+		/// <param name="size">The size where the pattern search will be performed from <paramref name="startAddress"/>.</param>
+		/// <returns>The address of a region matching the pattern or <see langword="null" /> if none was found.</returns>
+		public static unsafe byte* FindPatternBmh(string pattern, string mask, IntPtr startAddress, ulong size)
+		{
+			// Use short array intentionally to spare heap
+			// Warning: throws an exception if length of pattern and mask strings does not match
+			short[] patternArray = new short[pattern.Length];
+			for (int i = 0; i < patternArray.Length; i++)
+			{
+				patternArray[i] = (mask[i] != '?') ? (short)pattern[i] : (short)-1;
+			}
+
+			int lastPatternIndex = patternArray.Length - 1;
+			short[] skipTable = CreateShiftTableForBmh(patternArray);
+
+			byte* endAddressToScan = (byte*)startAddress + size - patternArray.Length;
+
+			// Pin arrays to avoid boundary check and search will be long enough to amortize the pin cost in time wise
+			fixed (short* skipTablePtr = skipTable)
+			fixed (short* patternArrayPtr = patternArray)
+			{
+				for (byte* curHeadAddress = (byte*)startAddress; curHeadAddress <= endAddressToScan; curHeadAddress += Math.Max((int)skipTablePtr[(curHeadAddress)[lastPatternIndex] & 0xFF], 1))
+				{
+					for (int i = lastPatternIndex; patternArrayPtr[i] < 0 || ((byte*)curHeadAddress)[i] == patternArrayPtr[i]; --i)
+					{
+						if (i == 0)
+						{
+							return curHeadAddress;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
+		private static short[] CreateShiftTableForBmh(short[] pattern)
+		{
+			short[] skipTable = new short[256];
+			int lastIndex = pattern.Length - 1;
+
+			int diff = lastIndex - Math.Max(Array.LastIndexOf<short>(pattern, -1), 0);
+			if (diff == 0)
+			{
+				diff = 1;
+			}
+
+			for (int i = 0; i < skipTable.Length; i++)
+			{
+				skipTable[i] = (short)diff;
+			}
+
+			for (int i = lastIndex - diff; i < lastIndex; i++)
+			{
+				short patternVal = pattern[i];
+				if (patternVal >= 0)
+				{
+					skipTable[patternVal] = (short)(lastIndex - i);
+				}
+			}
+
+			return skipTable;
 		}
 
 		/// <summary>
@@ -179,15 +268,15 @@ namespace RDR2DN
 			/*
 			byte* address;
 
-			address = FindPattern("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
+			address = FindPatternBmh("\x40\x53\x48\x83\xEC\x20\x33\xDB\x38\x1D\x00\x00\x00\x00\x74\x1C", "xxxxxxxxxx????xx");
 			GetPlayerAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
-				new IntPtr(*(int*)address));
+				new new IntPtr(*(int*)(address + 3) + address + 7));
 
-			address = FindPattern("\x44\x8B\xC9\x83\xF9\xFF", "xxxxxx");
+			address = FindPatternBmh("\x44\x8B\xC9\x83\xF9\xFF", "xxxxxx");
 			GetEntityAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
 				new IntPtr(*(int*)address));
 
-			address = FindPattern("\x48\x83\xEC\x28\x45\x33\xC0\x44\x8B\xC9", "xxxxxxxxxx");
+			address = FindPatternBmh("\x48\x83\xEC\x28\x45\x33\xC0\x44\x8B\xC9", "xxxxxxxxxx");
 			GetCameraAddressFunc = GetDelegateForFunctionPointer<GetHandleAddressFuncDelegate>(
 				new IntPtr(*(int*)address));
 			*/
