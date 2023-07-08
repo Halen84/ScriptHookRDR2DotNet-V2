@@ -296,16 +296,25 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <returns>The value at the address.</returns>
-		public static Int16 ReadInt16(IntPtr address)
+		public static short ReadInt16(IntPtr address)
 		{
 			return *(short*)address.ToPointer();
+		}
+		/// <summary>
+		/// Reads an unsigned single 16-bit value from the specified <paramref name="address"/>.
+		/// </summary>
+		/// <param name="address">The memory address to access.</param>
+		/// <returns>The value at the address.</returns>
+		public static ushort ReadUInt16(IntPtr address)
+		{
+			return *(ushort*)address.ToPointer();
 		}
 		/// <summary>
 		/// Reads a single 32-bit value from the specified <paramref name="address"/>.
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <returns>The value at the address.</returns>
-		public static Int32 ReadInt32(IntPtr address)
+		public static int ReadInt32(IntPtr address)
 		{
 			return *(int*)address.ToPointer();
 		}
@@ -323,7 +332,7 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <returns>The string at the address.</returns>
-		public static String ReadString(IntPtr address)
+		public static string ReadString(IntPtr address)
 		{
 			return PtrToStringUTF8(address);
 		}
@@ -343,7 +352,7 @@ namespace RDR2DN
 		/// <returns>All elements of the matrix in row major arrangement.</returns>
 		public static float[] ReadMatrix(IntPtr address)
 		{
-			var data = (float*)address.ToPointer();
+			float* data = (float*)address.ToPointer();
 			return new float[16] { data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15] };
 		}
 		/// <summary>
@@ -351,10 +360,9 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <returns>All elements of the vector.</returns>
-		public static float[] ReadVector3(IntPtr address)
+		public static FVector3 ReadVector3(IntPtr address)
 		{
-			var data = (float*)address.ToPointer();
-			return new float[3] { data[0], data[1], data[2] };
+			return *(FVector3*)address.ToPointer();
 		}
 
 		/// <summary>
@@ -364,7 +372,7 @@ namespace RDR2DN
 		/// <param name="value">The value to write.</param>
 		public static void WriteByte(IntPtr address, byte value)
 		{
-			var data = (byte*)address.ToPointer();
+			byte* data = (byte*)address.ToPointer();
 			*data = value;
 		}
 		/// <summary>
@@ -372,9 +380,19 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <param name="value">The value to write.</param>
-		public static void WriteInt16(IntPtr address, Int16 value)
+		public static void WriteInt16(IntPtr address, short value)
 		{
-			var data = (short*)address.ToPointer();
+			short* data = (short*)address.ToPointer();
+			*data = value;
+		}
+		/// <summary>
+		/// Writes an unsigned single 16-bit value to the specified <paramref name="address"/>.
+		/// </summary>
+		/// <param name="address">The memory address to access.</param>
+		/// <param name="value">The value to write.</param>
+		public static void WriteUInt16(IntPtr address, ushort value)
+		{
+			ushort* data = (ushort*)address.ToPointer();
 			*data = value;
 		}
 		/// <summary>
@@ -382,9 +400,9 @@ namespace RDR2DN
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <param name="value">The value to write.</param>
-		public static void WriteInt32(IntPtr address, Int32 value)
+		public static void WriteInt32(IntPtr address, int value)
 		{
-			var data = (int*)address.ToPointer();
+			int* data = (int*)address.ToPointer();
 			*data = value;
 		}
 		/// <summary>
@@ -394,7 +412,7 @@ namespace RDR2DN
 		/// <param name="value">The value to write.</param>
 		public static void WriteFloat(IntPtr address, float value)
 		{
-			var data = (float*)address.ToPointer();
+			float* data = (float*)address.ToPointer();
 			*data = value;
 		}
 		/// <summary>
@@ -404,21 +422,30 @@ namespace RDR2DN
 		/// <param name="value">The elements of the matrix in row major arrangement to write.</param>
 		public static void WriteMatrix(IntPtr address, float[] value)
 		{
-			var data = (float*)(address.ToPointer());
+			float* data = (float*)(address.ToPointer());
 			for (int i = 0; i < value.Length; i++)
+			{
 				data[i] = value[i];
+			}
 		}
 		/// <summary>
 		/// Writes a 3-component floating-point to the specified <paramref name="address"/>.
 		/// </summary>
 		/// <param name="address">The memory address to access.</param>
 		/// <param name="value">The vector components to write.</param>
-		public static void WriteVector3(IntPtr address, float[] value)
+		public static void WriteVector3(IntPtr address, FVector3 value)
 		{
-			var data = (float*)address.ToPointer();
-			data[0] = value[0];
-			data[1] = value[1];
-			data[2] = value[2];
+			*(FVector3*)address.ToPointer() = value;
+		}
+		/// <summary>
+		/// Writes a single 64-bit value from the specified <paramref name="address"/>.
+		/// </summary>
+		/// <param name="address">The memory address to access.</param>
+		/// <param name="value">The value to write.</param>
+		public static void WriteAddress(IntPtr address, IntPtr value)
+		{
+			long* data = (long*)address.ToPointer();
+			*data = value.ToInt64();
 		}
 
 		/// <summary>
@@ -499,6 +526,25 @@ namespace RDR2DN
 			return nativeUtf8;
 		}
 
+		// To avoid unnessesary GC pressure for creating temp managed arrays when you pass methods vector 3 values to method in NativeMemory that take ones.
+		[StructLayout(LayoutKind.Explicit, Size = 0xC)]
+		public struct FVector3
+		{
+			[FieldOffset(0x0)]
+			public float X;
+			[FieldOffset(0x4)]
+			public float Y;
+			[FieldOffset(0x8)]
+			public float Z;
+
+			public FVector3(float x, float y, float z)
+			{
+				X = x;
+				Y = y;
+				Z = z;
+			}
+		}
+
 
 		#region -- Pool Addresses --
 
@@ -521,11 +567,11 @@ namespace RDR2DN
 		}
 		*/
 
-#endregion
+		#endregion
 
-			#region -- Game Data --
+		#region -- Game Data --
 
-			delegate uint GetHashKeyDelegate(IntPtr stringPtr, uint initialHash);
+		delegate uint GetHashKeyDelegate(IntPtr stringPtr, uint initialHash);
 		static GetHashKeyDelegate GetHashKeyFunc;
 
 		public static uint GetHashKey(string key)
