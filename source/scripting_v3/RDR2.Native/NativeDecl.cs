@@ -300,7 +300,7 @@ namespace RDR2.Native
 		public static void FADE_ANIM_SCENE_AUDIO_OUT(int animScene, float p1) => Function.Call(0x323E3AD772BA5D57, animScene, p1);
 		public static void BLOCK_ANIM_SCENE_FADING_NEXT_FRAME(bool p0, bool p1) => Function.Call(0x1B70811D3BF75DB9, p0, p1);
 		public static void SET_ANIM_SCENE_ORIGIN(int animScene, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, int order) => Function.Call(0x020894BF17A02EF2, animScene, posX, posY, posZ, rotX, rotY, rotZ, order);
-		public static void SET_ANIM_SCENE_ORIGIN(int animScene, Vector3 vec, Vector3 rotation, int order) => Function.Call(0x020894BF17A02EF2, animScene, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, order);
+		public static void SET_ANIM_SCENE_ORIGIN(int animScene, Vector3 pos, Vector3 rot, int order) => Function.Call(0x020894BF17A02EF2, animScene, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, order);
 		public static void GET_ANIM_SCENE_ORIGIN(int animScene, Vector3* position, Vector3* rotation, int order) => Function.Call(0xADF1D53F3B1FE0A7, animScene, position, rotation, order);
 		public static void SET_ANIM_SCENE_PAUSED(int animScene, bool toggle) => Function.Call(0xD6824B7D24DC0CE0, animScene, toggle);
 		public static bool _IS_ANIM_SCENE_PAUSED(int animScene) => Function.Call<bool>(0x4B4038796F0D6566, animScene);
@@ -1096,10 +1096,10 @@ namespace RDR2.Native
 		public static void STOP_RENDERING_SCRIPT_CAMS_USING_CATCH_UP(bool render, float distance, int blendBackSmoothingType, bool p3, bool p4, bool p5) => Function.Call(0x8C7C7FF7CF0E5153, render, distance, blendBackSmoothingType, p3, p4, p5);
 		public static int CREATE_CAM(string camName, bool p1) => Function.Call<int>(0xE72CDBA7F0A02DD6, camName, p1);
 		public static int CREATE_CAM_WITH_PARAMS(string camName, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float fov, bool p8, int p9) => Function.Call<int>(0x40C23491CE83708E, camName, posX, posY, posZ, rotX, rotY, rotZ, fov, p8, p9);
-		public static int CREATE_CAM_WITH_PARAMS(string camName, Vector3 vec, Vector3 rotation, float fov, bool p8, int p9) => Function.Call<int>(0x40C23491CE83708E, camName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, fov, p8, p9);
+		public static int CREATE_CAM_WITH_PARAMS(string camName, Vector3 pos, Vector3 rot, float fov, bool p8, int p9) => Function.Call<int>(0x40C23491CE83708E, camName, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, fov, p8, p9);
 		public static int CREATE_CAMERA(uint camHash, bool p1) => Function.Call<int>(0x57CDF879EA466C46, camHash, p1);
 		public static int CREATE_CAMERA_WITH_PARAMS(uint camHash, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float fov, bool p8, ulong p9) => Function.Call<int>(0x98B99B9F27E2D60B, camHash, posX, posY, posZ, rotX, rotY, rotZ, fov, p8, p9);
-		public static int CREATE_CAMERA_WITH_PARAMS(uint camHash, Vector3 vec, Vector3 rotation, float fov, bool p8, ulong p9) => Function.Call<int>(0x98B99B9F27E2D60B, camHash, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, fov, p8, p9);
+		public static int CREATE_CAMERA_WITH_PARAMS(uint camHash, Vector3 pos, Vector3 rot, float fov, bool p8, ulong p9) => Function.Call<int>(0x98B99B9F27E2D60B, camHash, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, fov, p8, p9);
 		/// <summary>
 		/// BOOL param indicates whether the cam should be destroyed if it belongs to the calling script.
 		/// </summary>
@@ -1129,17 +1129,17 @@ namespace RDR2.Native
 		public static Vector3 GET_CAM_ROT(int cam, int rotationOrder) => Function.Call<Vector3>(0x9BF96B57254E7889, cam, rotationOrder);
 		public static float GET_CAM_FOV(int cam) => Function.Call<float>(0x8101D32A0A6B0F60, cam);
 		public static void SET_CAM_PARAMS(int cam, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float fieldOfView, ulong p8, int p9, int p10, int p11, ulong p12, ulong p13) => Function.Call(0xA47BBFFFB83D4D0A, cam, posX, posY, posZ, rotX, rotY, rotZ, fieldOfView, p8, p9, p10, p11, p12, p13);
-		public static void SET_CAM_PARAMS(int cam, Vector3 vec, Vector3 rotation, float fieldOfView, ulong p8, int p9, int p10, int p11, ulong p12, ulong p13) => Function.Call(0xA47BBFFFB83D4D0A, cam, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, fieldOfView, p8, p9, p10, p11, p12, p13);
+		public static void SET_CAM_PARAMS(int cam, Vector3 pos, Vector3 rot, float fieldOfView, ulong p8, int p9, int p10, int p11, ulong p12, ulong p13) => Function.Call(0xA47BBFFFB83D4D0A, cam, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, fieldOfView, p8, p9, p10, p11, p12, p13);
 		/// <summary>
 		/// Sets the position of the cam.
 		/// </summary>
 		public static void SET_CAM_COORD(int cam, float posX, float posY, float posZ) => Function.Call(0xF9EE7D419EE49DE6, cam, posX, posY, posZ);
-		public static void SET_CAM_COORD(int cam, Vector3 vec) => Function.Call(0xF9EE7D419EE49DE6, cam, vec.X, vec.Y, vec.Z);
+		public static void SET_CAM_COORD(int cam, Vector3 pos) => Function.Call(0xF9EE7D419EE49DE6, cam, pos.X, pos.Y, pos.Z);
 		/// <summary>
 		/// Sets the rotation of the cam.
 		/// </summary>
 		public static void SET_CAM_ROT(int cam, float rotX, float rotY, float rotZ, int rotationOrder) => Function.Call(0x63DFA6810AD78719, cam, rotX, rotY, rotZ, rotationOrder);
-		public static void SET_CAM_ROT(int cam, Vector3 rotation, int rotationOrder) => Function.Call(0x63DFA6810AD78719, cam, rotation.X, rotation.Y, rotation.Z, rotationOrder);
+		public static void SET_CAM_ROT(int cam, Vector3 rot, int rotationOrder) => Function.Call(0x63DFA6810AD78719, cam, rot.X, rot.Y, rot.Z, rotationOrder);
 		/// <summary>
 		/// Sets the field of view of the cam.
 		/// 
@@ -1184,7 +1184,7 @@ namespace RDR2.Native
 		/// p9 != 0 seems to override the rotation/pitch (bool?)
 		/// </summary>
 		public static void ADD_CAM_SPLINE_NODE(int camera, float x, float y, float z, float xRot, float yRot, float zRot, int length, int p8, int p9) => Function.Call(0xF1F57F9D230F9CD1, camera, x, y, z, xRot, yRot, zRot, length, p8, p9);
-		public static void ADD_CAM_SPLINE_NODE(int camera, Vector3 vec, Vector3 rotation, int length, int p8, int p9) => Function.Call(0xF1F57F9D230F9CD1, camera, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, length, p8, p9);
+		public static void ADD_CAM_SPLINE_NODE(int camera, Vector3 vec, Vector3 rot, int length, int p8, int p9) => Function.Call(0xF1F57F9D230F9CD1, camera, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, length, p8, p9);
 		public static void SET_CAM_SPLINE_PHASE(int cam, float p1) => Function.Call(0xF1898A68E7C15636, cam, p1);
 		/// <summary>
 		/// Can use this with SET_CAM_SPLINE_PHASE to set the float it this native returns.
@@ -1200,7 +1200,7 @@ namespace RDR2.Native
 		public static bool IS_CAM_SHAKING(int cam) => Function.Call<bool>(0x2EEB402BD7320159, cam);
 		public static void STOP_CAM_SHAKING(int cam, bool p1) => Function.Call(0xB78CC4B4706614B0, cam, p1);
 		public static bool PLAY_CAM_ANIM(int cam, string animName, string animDictionary, float x, float y, float z, float xRot, float yRot, float zRot, bool p9, int p10) => Function.Call<bool>(0xA263DDF694D563F6, cam, animName, animDictionary, x, y, z, xRot, yRot, zRot, p9, p10);
-		public static bool PLAY_CAM_ANIM(int cam, string animName, string animDictionary, Vector3 vec, Vector3 rotation, bool p9, int p10) => Function.Call<bool>(0xA263DDF694D563F6, cam, animName, animDictionary, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p9, p10);
+		public static bool PLAY_CAM_ANIM(int cam, string animName, string animDictionary, Vector3 vec, Vector3 rot, bool p9, int p10) => Function.Call<bool>(0xA263DDF694D563F6, cam, animName, animDictionary, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, p9, p10);
 		public static void _0xCF69EA05CD9C33C9() => Function.Call(0xCF69EA05CD9C33C9);
 		/// <summary>
 		/// Only used in R* Script camera_photomode
@@ -1542,7 +1542,7 @@ namespace RDR2.Native
 		public static bool _0xC3AEBB276825A359(string dictionary, string shotName, int duration) => Function.Call<bool>(0xC3AEBB276825A359, dictionary, shotName, duration);
 		public static bool _0x1D931B7CC0EE3956(string dictionary, string shotName, string cameraName) => Function.Call<bool>(0x1D931B7CC0EE3956, dictionary, shotName, cameraName);
 		public static void _CINEMATIC_LOCATION_SET_LOCATION_AND_ROTATION(string name, float x, float y, float z, float rotX, float rotY, float rotZ) => Function.Call(0x0E94C95EC3185FA9, name, x, y, z, rotX, rotY, rotZ);
-		public static void _CINEMATIC_LOCATION_SET_LOCATION_AND_ROTATION(string name, Vector3 vec, Vector3 rotation) => Function.Call(0x0E94C95EC3185FA9, name, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z);
+		public static void _CINEMATIC_LOCATION_SET_LOCATION_AND_ROTATION(string name, Vector3 vec, Vector3 rot) => Function.Call(0x0E94C95EC3185FA9, name, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z);
 		/// <summary>
 		/// Only used in R* Script fm_mission_controller
 		/// </summary>
@@ -2181,7 +2181,7 @@ namespace RDR2.Native
 		public static bool _GET_IS_BIRD(int entity) => Function.Call<bool>(0xC346A546612C49A9, entity);
 		public static bool _GET_IS_PREDATOR(int entity) => Function.Call<bool>(0x5594AFE9DE0C01B7, entity);
 		public static Vector3 GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS(int entity, float posX, float posY, float posZ) => Function.Call<Vector3>(0x497C6B1A2C9AE69C, entity, posX, posY, posZ);
-		public static Vector3 GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS(int entity, Vector3 vec) => Function.Call<Vector3>(0x497C6B1A2C9AE69C, entity, vec.X, vec.Y, vec.Z);
+		public static Vector3 GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS(int entity, Vector3 pos) => Function.Call<Vector3>(0x497C6B1A2C9AE69C, entity, pos.X, pos.Y, pos.Z);
 		/// <summary>
 		/// Offset values are relative to the entity.
 		/// 
@@ -2249,13 +2249,14 @@ namespace RDR2.Native
 		/// Last three are unknown ints, almost always p7 = 0, p8 = 1, p9 = 0
 		/// </summary>
 		public static bool IS_ENTITY_AT_COORD(int entity, float xPos, float yPos, float zPos, float xSize, float ySize, float zSize, bool p7, bool p8, int p9) => Function.Call<bool>(0x5E58342602E94718, entity, xPos, yPos, zPos, xSize, ySize, zSize, p7, p8, p9);
-		public static bool IS_ENTITY_AT_COORD(int entity, Vector3 vec, float xSize, float ySize, float zSize, bool p7, bool p8, int p9) => Function.Call<bool>(0x5E58342602E94718, entity, vec.X, vec.Y, vec.Z, xSize, ySize, zSize, p7, p8, p9);
+		public static bool IS_ENTITY_AT_COORD(int entity, Vector3 pos, Vector3 size, bool p7, bool p8, int p9) => Function.Call<bool>(0x5E58342602E94718, entity, pos.X, pos.Y, pos.Z, size.X, size.Y, size.Z, p7, p8, p9);
 		/// <summary>
 		/// Checks if entity1 is within the box defined by x/y/zSize of entity2.
 		/// 
 		/// Last three parameters are almost always p5 = 0, p6 = 1, p7 = 0
 		/// </summary>
 		public static bool IS_ENTITY_AT_ENTITY(int entity1, int entity2, float xSize, float ySize, float zSize, bool p5, bool p6, int p7) => Function.Call<bool>(0xC057F02B837A27F6, entity1, entity2, xSize, ySize, zSize, p5, p6, p7);
+		public static bool IS_ENTITY_AT_ENTITY(int entity1, int entity2, Vector3 size, bool p5, bool p6, int p7) => Function.Call<bool>(0xC057F02B837A27F6, entity1, entity2, size.X, size.Y, size.Z, p5, p6, p7);
 		public static bool IS_ENTITY_ATTACHED(int entity) => Function.Call<bool>(0xEE6AD63ABF59C0B7, entity);
 		public static bool IS_ENTITY_ATTACHED_TO_ANY_OBJECT(int entity) => Function.Call<bool>(0x306C1F6178F01AB3, entity);
 		public static bool IS_ENTITY_ATTACHED_TO_ANY_PED(int entity) => Function.Call<bool>(0xC841153DED2CA89A, entity);
@@ -2270,6 +2271,7 @@ namespace RDR2.Native
 		/// Angle is measured in degrees.
 		/// </summary>
 		public static bool IS_ENTITY_IN_ANGLED_AREA(int entity, float originX, float originY, float originZ, float edgeX, float edgeY, float edgeZ, float angle, bool p8, bool p9, ulong p10) => Function.Call<bool>(0xD3151E53134595E5, entity, originX, originY, originZ, edgeX, edgeY, edgeZ, angle, p8, p9, p10);
+		public static bool IS_ENTITY_IN_ANGLED_AREA(int entity, Vector3 origin, Vector3 edge, float angle, bool p8, bool p9, ulong p10) => Function.Call<bool>(0xD3151E53134595E5, entity, origin.X, origin.Y, origin.Z, edge.X, edge.Y, edge.Z, angle, p8, p9, p10);
 		public static bool IS_ENTITY_IN_AREA(int entity, float x1, float y1, float z1, float x2, float y2, float z2, bool p7, bool p8, ulong p9) => Function.Call<bool>(0x0C2634C40A16193E, entity, x1, y1, z1, x2, y2, z2, p7, p8, p9);
 		public static bool IS_ENTITY_IN_AREA(int entity, Vector3 vec1, Vector3 vec2, bool p7, bool p8, ulong p9) => Function.Call<bool>(0x0C2634C40A16193E, entity, vec1.X, vec1.Y, vec1.Z, vec2.X, vec2.Y, vec2.Z, p7, p8, p9);
 		public static bool IS_ENTITY_IN_VOLUME(int entity, int volume, bool p2, int p3) => Function.Call<bool>(0x5A5526BC09C06623, entity, volume, p2, p3);
@@ -2430,7 +2432,7 @@ namespace RDR2.Native
 		public static void APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(int entity, int forceType, float x, float y, float z, bool p5, bool isDirectionRel, bool isForceRel, bool p8) => Function.Call(0x31DA7CEC5334DB37, entity, forceType, x, y, z, p5, isDirectionRel, isForceRel, p8);
 		public static void APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(int entity, int forceType, Vector3 vec, bool p5, bool isDirectionRel, bool isForceRel, bool p8) => Function.Call(0x31DA7CEC5334DB37, entity, forceType, vec.X, vec.Y, vec.Z, p5, isDirectionRel, isForceRel, p8);
 		public static void APPLY_FORCE_TO_ENTITY(int entity, int forceFlags, float x, float y, float z, float offX, float offY, float offZ, int boneIndex, bool isDirectionRel, bool ignoreUpVec, bool isForceRel, bool p12, bool p13) => Function.Call(0xF15E8F5D333F09C4, entity, forceFlags, x, y, z, offX, offY, offZ, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13);
-		public static void APPLY_FORCE_TO_ENTITY(int entity, int forceFlags, Vector3 vec, Vector3 offset, int boneIndex, bool isDirectionRel, bool ignoreUpVec, bool isForceRel, bool p12, bool p13) => Function.Call(0xF15E8F5D333F09C4, entity, forceFlags, vec.X, vec.Y, vec.Z, offset.X, offset.Y, offset.Z, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13);
+		public static void APPLY_FORCE_TO_ENTITY(int entity, int forceFlags, Vector3 vec, Vector3 off, int boneIndex, bool isDirectionRel, bool ignoreUpVec, bool isForceRel, bool p12, bool p13) => Function.Call(0xF15E8F5D333F09C4, entity, forceFlags, vec.X, vec.Y, vec.Z, off.X, off.Y, off.Z, boneIndex, isDirectionRel, ignoreUpVec, isForceRel, p12, p13);
 		/// <summary>
 		/// Attaches entity1 to bone (boneIndex) of entity2.
 		/// 
@@ -2444,7 +2446,7 @@ namespace RDR2.Native
 		/// fixedRot - if false it ignores entity vector
 		/// </summary>
 		public static void ATTACH_ENTITY_TO_ENTITY(int entity1, int entity2, int boneIndex, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, bool p9, bool useSoftPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot, bool p15, bool p16) => Function.Call(0x6B9BBD38AB0796DF, entity1, entity2, boneIndex, xPos, yPos, zPos, xRot, yRot, zRot, p9, useSoftPinning, collision, isPed, vertexIndex, fixedRot, p15, p16);
-		public static void ATTACH_ENTITY_TO_ENTITY(int entity1, int entity2, int boneIndex, Vector3 vec, Vector3 rotation, bool p9, bool useSoftPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot, bool p15, bool p16) => Function.Call(0x6B9BBD38AB0796DF, entity1, entity2, boneIndex, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p9, useSoftPinning, collision, isPed, vertexIndex, fixedRot, p15, p16);
+		public static void ATTACH_ENTITY_TO_ENTITY(int entity1, int entity2, int boneIndex, Vector3 pos, Vector3 rot, bool p9, bool useSoftPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot, bool p15, bool p16) => Function.Call(0x6B9BBD38AB0796DF, entity1, entity2, boneIndex, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, p9, useSoftPinning, collision, isPed, vertexIndex, fixedRot, p15, p16);
 		public static void ATTACH_ENTITY_TO_ENTITY_PHYSICALLY(int entity1, int entity2, int p2, int boneIndex, float offsetX, float offsetY, float offsetZ, float p7, float p8, float p9, float p10, float p11, float p12, float p13, bool p14, bool p15, bool p16, bool p17, int p18, bool p19, float p20, float p21) => Function.Call(0xB629A43CA1643481, entity1, entity2, p2, boneIndex, offsetX, offsetY, offsetZ, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21);
 		public static void ATTACH_ENTITY_TO_ENTITY_PHYSICALLY(int entity1, int entity2, int p2, int boneIndex, Vector3 offset, float p7, float p8, float p9, float p10, float p11, float p12, float p13, bool p14, bool p15, bool p16, bool p17, int p18, bool p19, float p20, float p21) => Function.Call(0xB629A43CA1643481, entity1, entity2, p2, boneIndex, offset.X, offset.Y, offset.Z, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21);
 		public static void _0x445D7D8EA66E373E(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14, ulong p15) => Function.Call(0x445D7D8EA66E373E, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
@@ -2514,18 +2516,18 @@ namespace RDR2.Native
 		public static void SET_ENTITY_COLLISION(int entity, bool toggle, bool keepPhysics) => Function.Call(0xF66F820909453B8C, entity, toggle, keepPhysics);
 		public static void SET_ENTITY_COMPLETELY_DISABLE_COLLISION(int entity, bool toggle, bool keepPhysics) => Function.Call(0xE0580EC84813875A, entity, toggle, keepPhysics);
 		public static void SET_ENTITY_COORDS(int entity, float xPos, float yPos, float zPos, bool xAxis, bool yAxis, bool zAxis, bool clearArea) => Function.Call(0x06843DA7060A026B, entity, xPos, yPos, zPos, xAxis, yAxis, zAxis, clearArea);
-		public static void SET_ENTITY_COORDS(int entity, Vector3 vec, bool xAxis, bool yAxis, bool zAxis, bool clearArea) => Function.Call(0x06843DA7060A026B, entity, vec.X, vec.Y, vec.Z, xAxis, yAxis, zAxis, clearArea);
+		public static void SET_ENTITY_COORDS(int entity, Vector3 pos, bool xAxis, bool yAxis, bool zAxis, bool clearArea) => Function.Call(0x06843DA7060A026B, entity, pos.X, pos.Y, pos.Z, xAxis, yAxis, zAxis, clearArea);
 		/// <summary>
 		/// Axis - Invert Axis Flags
 		/// </summary>
 		public static void SET_ENTITY_COORDS_NO_OFFSET(int entity, float xPos, float yPos, float zPos, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x239A3351AC1DA385, entity, xPos, yPos, zPos, xAxis, yAxis, zAxis);
-		public static void SET_ENTITY_COORDS_NO_OFFSET(int entity, Vector3 vec, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x239A3351AC1DA385, entity, vec.X, vec.Y, vec.Z, xAxis, yAxis, zAxis);
+		public static void SET_ENTITY_COORDS_NO_OFFSET(int entity, Vector3 pos, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x239A3351AC1DA385, entity, pos.X, pos.Y, pos.Z, xAxis, yAxis, zAxis);
 		public static void SET_ENTITY_DYNAMIC(int entity, bool toggle) => Function.Call(0xFBFC4473F66CE344, entity, toggle);
 		public static void SET_ENTITY_HEADING(int entity, float heading) => Function.Call(0xCF2B9C0645C4651B, entity, heading);
 		public static void _SET_ENTITY_COORDS_AND_HEADING(int entity, float xPos, float yPos, float zPos, float heading, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x203BEFFDBE12E96A, entity, xPos, yPos, zPos, heading, xAxis, yAxis, zAxis);
-		public static void _SET_ENTITY_COORDS_AND_HEADING(int entity, Vector3 vec, float heading, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x203BEFFDBE12E96A, entity, vec.X, vec.Y, vec.Z, heading, xAxis, yAxis, zAxis);
+		public static void _SET_ENTITY_COORDS_AND_HEADING(int entity, Vector3 pos, float heading, bool xAxis, bool yAxis, bool zAxis) => Function.Call(0x203BEFFDBE12E96A, entity, pos.X, pos.Y, pos.Z, heading, xAxis, yAxis, zAxis);
 		public static void _SET_ENTITY_COORDS_AND_HEADING_NO_OFFSET(int entity, float xPos, float yPos, float zPos, float heading, bool p5, bool p6) => Function.Call(0x0918E3565C20F03C, entity, xPos, yPos, zPos, heading, p5, p6);
-		public static void _SET_ENTITY_COORDS_AND_HEADING_NO_OFFSET(int entity, Vector3 vec, float heading, bool p5, bool p6) => Function.Call(0x0918E3565C20F03C, entity, vec.X, vec.Y, vec.Z, heading, p5, p6);
+		public static void _SET_ENTITY_COORDS_AND_HEADING_NO_OFFSET(int entity, Vector3 pos, float heading, bool p5, bool p6) => Function.Call(0x0918E3565C20F03C, entity, pos.X, pos.Y, pos.Z, heading, p5, p6);
 		/// <summary>
 		/// Sets the entity's health. healthAmount sets the health value to that, and sets the maximum health core value. Setting healthAmount to 0 will kill the entity. entityKilledBy parameter can also be 0
 		/// </summary>
@@ -2553,7 +2555,7 @@ namespace RDR2.Native
 		/// Old name: _HAS_COLLISION_LOADED_AT_COORDS
 		/// </summary>
 		public static bool HAS_COLLISION_LOADED_AROUND_POSITION(float xPos, float yPos, float zPos) => Function.Call<bool>(0x6BFBDC46139C45AB, xPos, yPos, zPos);
-		public static bool HAS_COLLISION_LOADED_AROUND_POSITION(Vector3 vec) => Function.Call<bool>(0x6BFBDC46139C45AB, vec.X, vec.Y, vec.Z);
+		public static bool HAS_COLLISION_LOADED_AROUND_POSITION(Vector3 pos) => Function.Call<bool>(0x6BFBDC46139C45AB, pos.X, pos.Y, pos.Z);
 		public static void SET_ENTITY_ONLY_DAMAGED_BY_PLAYER(int entity, bool toggle) => Function.Call(0x473598683095D430, entity, toggle);
 		public static void SET_ENTITY_ONLY_DAMAGED_BY_RELATIONSHIP_GROUP(int entity, bool p1, uint relationshipGroup) => Function.Call(0x6C1F6AA2F0ADD104, entity, p1, relationshipGroup);
 		/// <summary>
@@ -2568,7 +2570,6 @@ namespace RDR2.Native
 		public static void SET_ENTITY_QUATERNION(int entity, float x, float y, float z, float w) => Function.Call(0x100E7007D13E3687, entity, x, y, z, w);
 		public static void SET_ENTITY_QUATERNION(int entity, Vector3 vec, float w) => Function.Call(0x100E7007D13E3687, entity, vec.X, vec.Y, vec.Z, w);
 		public static void SET_ENTITY_ROTATION(int entity, float pitch, float roll, float yaw, int rotationOrder, bool p5) => Function.Call(0x9CC8314DFEDE441E, entity, pitch, roll, yaw, rotationOrder, p5);
-		public static void SET_ENTITY_ROTATION(int entity, Vector3 rotation, int rotationOrder, bool p5) => Function.Call(0x9CC8314DFEDE441E, entity, rotation.X, rotation.Y, rotation.Z, rotationOrder, p5);
 		public static void _0xD45BB89B53FC0CFD(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7) => Function.Call(0xD45BB89B53FC0CFD, p0, p1, p2, p3, p4, p5, p6, p7);
 		public static void SET_ENTITY_VISIBLE(int entity, bool toggle) => Function.Call(0x1794B4FCC84D812F, entity, toggle);
 		public static void _0x80FDEB3A9E9AA578(int entity, bool p1) => Function.Call(0x80FDEB3A9E9AA578, entity, p1);
@@ -2823,7 +2824,7 @@ namespace RDR2.Native
 		public static void STOP_FIRE_IN_RANGE(float x, float y, float z, float radius) => Function.Call(0xDB38F247BD421708, x, y, z, radius);
 		public static void STOP_FIRE_IN_RANGE(Vector3 vec, float radius) => Function.Call(0xDB38F247BD421708, vec.X, vec.Y, vec.Z, radius);
 		public static void _STOP_FIRE_IN_BOX(float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call(0xB7C7BDC375AEA9A4, posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static void _STOP_FIRE_IN_BOX(Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call(0xB7C7BDC375AEA9A4, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static void _STOP_FIRE_IN_BOX(Vector3 pos, Vector3 rot, Vector3 scale) => Function.Call(0xB7C7BDC375AEA9A4, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static bool GET_CLOSEST_FIRE_POS(Vector3* outPosition, float x, float y, float z) => Function.Call<bool>(0xB646FB657F448261, outPosition, x, y, z);
 		public static bool GET_CLOSEST_FIRE_POS(Vector3* outPosition, Vector3 vec) => Function.Call<bool>(0xB646FB657F448261, outPosition, vec.X, vec.Y, vec.Z);
 		public static ulong _0x559FC1D310813031(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9) => Function.Call<ulong>(0x559FC1D310813031, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
@@ -3069,7 +3070,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static int GET_STATUS_OF_SORTED_LIST_OPERATION() => Function.Call<int>(0xB28894CD7408BD0C);
 		public static void DRAW_LIGHT_WITH_RANGE(float posX, float posY, float posZ, int colorR, int colorG, int colorB, float range, float intensity) => Function.Call(0xD2D9E04C0DF927F4, posX, posY, posZ, colorR, colorG, colorB, range, intensity);
-		public static void DRAW_LIGHT_WITH_RANGE(Vector3 vec, int colorR, int colorG, int colorB, float range, float intensity) => Function.Call(0xD2D9E04C0DF927F4, vec.X, vec.Y, vec.Z, colorR, colorG, colorB, range, intensity);
+		public static void DRAW_LIGHT_WITH_RANGE(Vector3 pos, int colorR, int colorG, int colorB, float range, float intensity) => Function.Call(0xD2D9E04C0DF927F4, pos.X, pos.Y, pos.Z, colorR, colorG, colorB, range, intensity);
 		public static void UPDATE_LIGHTS_ON_ENTITY(int entity) => Function.Call(0xBDBACB52A03CC760, entity);
 		/// <summary>
 		/// https://gfycat.com/meagerfaireyra
@@ -3084,7 +3085,7 @@ namespace RDR2.Native
 		/// https://github.com/femga/rdr3_discoveries/blob/master/graphics/markers/marker_types.lua
 		/// </summary>
 		public static void _DRAW_MARKER(uint type, float posX, float posY, float posZ, float dirX, float dirY, float dirZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, int red, int green, int blue, int alpha, bool bobUpAndDown, bool faceCamera, int p19, bool rotate, string textureDict, string textureName, bool drawOnEnts) => Function.Call(0x2A32FAA57B937173, type, posX, posY, posZ, dirX, dirY, dirZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, red, green, blue, alpha, bobUpAndDown, faceCamera, p19, rotate, textureDict, textureName, drawOnEnts);
-		public static void _DRAW_MARKER(uint type, Vector3 vec, Vector3 direction, Vector3 rotation, Vector3 scale, int red, int green, int blue, int alpha, bool bobUpAndDown, bool faceCamera, int p19, bool rotate, string textureDict, string textureName, bool drawOnEnts) => Function.Call(0x2A32FAA57B937173, type, vec.X, vec.Y, vec.Z, direction.X, direction.Y, direction.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, red, green, blue, alpha, bobUpAndDown, faceCamera, p19, rotate, textureDict, textureName, drawOnEnts);
+		public static void _DRAW_MARKER(uint type, Vector3 pos, Vector3 dir, Vector3 rot, Vector3 scale, int red, int green, int blue, int alpha, bool bobUpAndDown, bool faceCamera, int p19, bool rotate, string textureDict, string textureName, bool drawOnEnts) => Function.Call(0x2A32FAA57B937173, type, pos.X, pos.Y, pos.Z, dir.X, dir.Y, dir.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z, red, green, blue, alpha, bobUpAndDown, faceCamera, p19, rotate, textureDict, textureName, drawOnEnts);
 		public static int CREATE_CHECKPOINT_WITH_NAMEHASH(uint typeHash, float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2, float radius, int red, int green, int blue, int alpha, int reserved) => Function.Call<int>(0x175668836B44CBB0, typeHash, posX1, posY1, posZ1, posX2, posY2, posZ2, radius, red, green, blue, alpha, reserved);
 		public static int CREATE_CHECKPOINT_WITH_NAMEHASH(uint typeHash, Vector3 vec1, Vector3 vec2, float radius, int red, int green, int blue, int alpha, int reserved) => Function.Call<int>(0x175668836B44CBB0, typeHash, vec1.X, vec1.Y, vec1.Z, vec2.X, vec2.Y, vec2.Z, radius, red, green, blue, alpha, reserved);
 		public static bool _DOES_CHECKPOINT_HAVE_FX(int checkpoint) => Function.Call<bool>(0x4C11CCACB7C02B6E, checkpoint);
@@ -3161,7 +3162,7 @@ namespace RDR2.Native
 		public static ulong _0xC28F62AC9774FC1B() => Function.Call<ulong>(0xC28F62AC9774FC1B);
 		public static void _0xEB48CE48EEC41FD4(ulong p0) => Function.Call(0xEB48CE48EEC41FD4, p0);
 		public static bool GET_SCREEN_COORD_FROM_WORLD_COORD(float worldX, float worldY, float worldZ, float* screenX, float* screenY) => Function.Call<bool>(0xCB50D7AFCC8B0EC6, worldX, worldY, worldZ, screenX, screenY);
-		public static bool GET_SCREEN_COORD_FROM_WORLD_COORD(Vector3 vec, float* screenX, float* screenY) => Function.Call<bool>(0xCB50D7AFCC8B0EC6, vec.X, vec.Y, vec.Z, screenX, screenY);
+		public static bool GET_SCREEN_COORD_FROM_WORLD_COORD(Vector3 world, float* screenX, float* screenY) => Function.Call<bool>(0xCB50D7AFCC8B0EC6, world.X, world.Y, world.Z, screenX, screenY);
 		public static bool _IS_TEXTURE_IN_DICT(uint txdHash, uint dict) => Function.Call<bool>(0xA2A51869BDED733B, txdHash, dict);
 		/// <summary>
 		/// Does not affect weapons, particles, fire/explosions, flashlights or the sun.
@@ -3287,17 +3288,17 @@ namespace RDR2.Native
 		/// https://github.com/femga/rdr3_discoveries/blob/master/graphics/ptfx/ptfx_assets_non_looped.lua
 		/// </summary>
 		public static int START_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x2E80BF72EF7C87AC, effectName, xPos, yPos, zPos, xRot, yRot, zRot, scale, xAxis, yAxis, zAxis);
-		public static int START_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, Vector3 vec, Vector3 rotation, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x2E80BF72EF7C87AC, effectName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale, xAxis, yAxis, zAxis);
+		public static int START_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, Vector3 pos, Vector3 rot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x2E80BF72EF7C87AC, effectName, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, scale, xAxis, yAxis, zAxis);
 		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<bool>(0xFB97618457994A62, effectName, xPos, yPos, zPos, xRot, yRot, zRot, scale, xAxis, yAxis, zAxis);
-		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, Vector3 vec, Vector3 rotation, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<bool>(0xFB97618457994A62, effectName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale, xAxis, yAxis, zAxis);
+		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_AT_COORD(string effectName, Vector3 pos, Vector3 rot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<bool>(0xFB97618457994A62, effectName, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, scale, xAxis, yAxis, zAxis);
 		public static bool START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE(string effectName, int ped, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0x3FAA72BD940C3AC0, effectName, ped, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, boneIndex, scale, axisX, axisY, axisZ);
-		public static bool START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE(string effectName, int ped, Vector3 offset, Vector3 rotation, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0x3FAA72BD940C3AC0, effectName, ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, boneIndex, scale, axisX, axisY, axisZ);
+		public static bool START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE(string effectName, int ped, Vector3 offset, Vector3 rot, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0x3FAA72BD940C3AC0, effectName, ped, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, boneIndex, scale, axisX, axisY, axisZ);
 		public static bool START_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xFF4C64C513388C12, effectName, entity, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scale, axisX, axisY, axisZ);
-		public static bool START_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rotation, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xFF4C64C513388C12, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale, axisX, axisY, axisZ);
+		public static bool START_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rot, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xFF4C64C513388C12, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, scale, axisX, axisY, axisZ);
 		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xE6CFE43937061143, effectName, entity, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, scale, axisX, axisY, axisZ);
-		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rotation, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xE6CFE43937061143, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale, axisX, axisY, axisZ);
+		public static bool START_NETWORKED_PARTICLE_FX_NON_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rot, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xE6CFE43937061143, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, scale, axisX, axisY, axisZ);
 		public static bool _START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE_2(string effectName, int ped, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xC695870B8A149B96, effectName, ped, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, boneIndex, scale, axisX, axisY, axisZ);
-		public static bool _START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE_2(string effectName, int ped, Vector3 offset, Vector3 rotation, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xC695870B8A149B96, effectName, ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, boneIndex, scale, axisX, axisY, axisZ);
+		public static bool _START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE_2(string effectName, int ped, Vector3 offset, Vector3 rot, int boneIndex, float scale, bool axisX, bool axisY, bool axisZ) => Function.Call<bool>(0xC695870B8A149B96, effectName, ped, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, boneIndex, scale, axisX, axisY, axisZ);
 		public static void SET_PARTICLE_FX_NON_LOOPED_COLOUR(float r, float g, float b) => Function.Call(0x60B85BED6577A35B, r, g, b);
 		public static void SET_PARTICLE_FX_NON_LOOPED_ALPHA(float alpha) => Function.Call(0xE8A35938A7026CEA, alpha);
 		public static void _SET_PARTICLE_FX_NON_LOOPED_EMITTER_SCALE(float p0, float p1, float p2) => Function.Call(0x56C392C2BD78B024, p0, p1, p2);
@@ -3305,21 +3306,21 @@ namespace RDR2.Native
 		/// https://github.com/femga/rdr3_discoveries/blob/master/graphics/ptfx/ptfx_assets_looped.lua
 		/// </summary>
 		public static int START_PARTICLE_FX_LOOPED_AT_COORD(string effectName, float x, float y, float z, float xRot, float yRot, float zRot, float scale, bool xAxis, bool yAxis, bool zAxis, bool p11) => Function.Call<int>(0xBA32867E86125D3A, effectName, x, y, z, xRot, yRot, zRot, scale, xAxis, yAxis, zAxis, p11);
-		public static int START_PARTICLE_FX_LOOPED_AT_COORD(string effectName, Vector3 vec, Vector3 rotation, float scale, bool xAxis, bool yAxis, bool zAxis, bool p11) => Function.Call<int>(0xBA32867E86125D3A, effectName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale, xAxis, yAxis, zAxis, p11);
+		public static int START_PARTICLE_FX_LOOPED_AT_COORD(string effectName, Vector3 vec, Vector3 rot, float scale, bool xAxis, bool yAxis, bool zAxis, bool p11) => Function.Call<int>(0xBA32867E86125D3A, effectName, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale, xAxis, yAxis, zAxis, p11);
 		public static int START_PARTICLE_FX_LOOPED_ON_PED_BONE(string effectName, int ped, float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xE689C1B1432BB8AF, effectName, ped, xOffset, yOffset, zOffset, xRot, yRot, zRot, boneIndex, scale, xAxis, yAxis, zAxis);
-		public static int START_PARTICLE_FX_LOOPED_ON_PED_BONE(string effectName, int ped, Vector3 offset, Vector3 rotation, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xE689C1B1432BB8AF, effectName, ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, boneIndex, scale, xAxis, yAxis, zAxis);
+		public static int START_PARTICLE_FX_LOOPED_ON_PED_BONE(string effectName, int ped, Vector3 offset, Vector3 rot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xE689C1B1432BB8AF, effectName, ped, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, boneIndex, scale, xAxis, yAxis, zAxis);
 		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xBD41E1440CE39800, effectName, entity, xOffset, yOffset, zOffset, xRot, yRot, zRot, scale, xAxis, yAxis, zAxis);
-		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rotation, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xBD41E1440CE39800, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale, xAxis, yAxis, zAxis);
+		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xBD41E1440CE39800, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, scale, xAxis, yAxis, zAxis);
 		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xD3BA6EC7F2FBD5E9, effectName, entity, xOffset, yOffset, zOffset, xRot, yRot, zRot, boneIndex, scale, xAxis, yAxis, zAxis);
-		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, Vector3 offset, Vector3 rotation, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xD3BA6EC7F2FBD5E9, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, boneIndex, scale, xAxis, yAxis, zAxis);
+		public static int START_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, Vector3 offset, Vector3 rot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0xD3BA6EC7F2FBD5E9, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, boneIndex, scale, xAxis, yAxis, zAxis);
 		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x8F90AB32E1944BDE, effectName, entity, xOffset, yOffset, zOffset, xRot, yRot, zRot, scale, xAxis, yAxis, zAxis);
-		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rotation, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x8F90AB32E1944BDE, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale, xAxis, yAxis, zAxis);
+		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY(string effectName, int entity, Vector3 offset, Vector3 rot, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x8F90AB32E1944BDE, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, scale, xAxis, yAxis, zAxis);
 		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, float xOffset, float yOffset, float zOffset, float xRot, float yRot, float zRot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x9C56621462FFE7A6, effectName, entity, xOffset, yOffset, zOffset, xRot, yRot, zRot, boneIndex, scale, xAxis, yAxis, zAxis);
-		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, Vector3 offset, Vector3 rotation, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x9C56621462FFE7A6, effectName, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, boneIndex, scale, xAxis, yAxis, zAxis);
+		public static int START_NETWORKED_PARTICLE_FX_LOOPED_ON_ENTITY_BONE(string effectName, int entity, Vector3 offset, Vector3 rot, int boneIndex, float scale, bool xAxis, bool yAxis, bool zAxis) => Function.Call<int>(0x9C56621462FFE7A6, effectName, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, boneIndex, scale, xAxis, yAxis, zAxis);
 		public static void STOP_PARTICLE_FX_LOOPED(int ptfxHandle, bool p1) => Function.Call(0x22970F3A088B133B, ptfxHandle, p1);
 		public static bool DOES_PARTICLE_FX_LOOPED_EXIST(int ptfxHandle) => Function.Call<bool>(0x9DD5AFF561E88F2A, ptfxHandle);
 		public static void SET_PARTICLE_FX_LOOPED_OFFSETS(int ptfxHandle, float x, float y, float z, float rotX, float rotY, float rotZ) => Function.Call(0xD3A4A95FC94FE83B, ptfxHandle, x, y, z, rotX, rotY, rotZ);
-		public static void SET_PARTICLE_FX_LOOPED_OFFSETS(int ptfxHandle, Vector3 vec, Vector3 rotation) => Function.Call(0xD3A4A95FC94FE83B, ptfxHandle, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z);
+		public static void SET_PARTICLE_FX_LOOPED_OFFSETS(int ptfxHandle, Vector3 vec, Vector3 rot) => Function.Call(0xD3A4A95FC94FE83B, ptfxHandle, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z);
 		public static void SET_PARTICLE_FX_LOOPED_EVOLUTION(int ptfxHandle, string propertyName, float amount, bool noNetwork) => Function.Call(0x3674F389B0FACD80, ptfxHandle, propertyName, amount, noNetwork);
 		public static void SET_PARTICLE_FX_LOOPED_COLOUR(int ptfxHandle, float r, float g, float b, bool p4) => Function.Call(0x239879FC61C610CC, ptfxHandle, r, g, b, p4);
 		public static void SET_PARTICLE_FX_LOOPED_ALPHA(int ptfxHandle, float alpha) => Function.Call(0x88786E76234F7054, ptfxHandle, alpha);
@@ -3851,7 +3852,7 @@ namespace RDR2.Native
 		public static void SET_MISSION_NAME_FOR_UGC_MISSION(bool p0, string name) => Function.Call(0xD98630CE73C61E98, p0, name);
 		public static void _0xCE0D2F5586627CCE(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4) => Function.Call(0xCE0D2F5586627CCE, p0, p1, p2, p3, p4);
 		public static bool GET_HUD_SCREEN_POSITION_FROM_WORLD_POSITION(float worldX, float worldY, float worldZ, float* screenX, float* screenY) => Function.Call<bool>(0xB39C81628EF10B42, worldX, worldY, worldZ, screenX, screenY);
-		public static bool GET_HUD_SCREEN_POSITION_FROM_WORLD_POSITION(Vector3 vec, float* screenX, float* screenY) => Function.Call<bool>(0xB39C81628EF10B42, vec.X, vec.Y, vec.Z, screenX, screenY);
+		public static bool GET_HUD_SCREEN_POSITION_FROM_WORLD_POSITION(Vector3 world, float* screenX, float* screenY) => Function.Call<bool>(0xB39C81628EF10B42, world.X, world.Y, world.Z, screenX, screenY);
 		public static void _HIDE_HUD_THIS_FRAME() => Function.Call(0xBF4F34A85CA2970D);
 		public static void DISABLE_FRONTEND_THIS_FRAME() => Function.Call(0x56CE42A528156A67);
 		public static void _0x5651516D947ABC53() => Function.Call(0x5651516D947ABC53);
@@ -5089,7 +5090,7 @@ namespace RDR2.Native
 		public static void _TRIGGER_SONAR_BLIP_ON_ENTITY(uint typeHash, int entity) => Function.Call(0x0C7A2289A5C4D7C9, typeHash, entity);
 		public static void ALLOW_SONAR_BLIPS(bool toggle) => Function.Call(0x6E6E64788C07D2E0, toggle);
 		public static void SET_BLIP_COORDS(int blip, float posX, float posY, float posZ) => Function.Call(0x4FF674F5E23D49CE, blip, posX, posY, posZ);
-		public static void SET_BLIP_COORDS(int blip, Vector3 vec) => Function.Call(0x4FF674F5E23D49CE, blip, vec.X, vec.Y, vec.Z);
+		public static void SET_BLIP_COORDS(int blip, Vector3 pos) => Function.Call(0x4FF674F5E23D49CE, blip, pos.X, pos.Y, pos.Z);
 		public static Vector3 GET_BLIP_COORDS(int blip) => Function.Call<Vector3>(0x201C319797BDA603, blip);
 		public static void SET_BLIP_SPRITE(int blip, uint hash, bool p2) => Function.Call(0x74F74D3207ED525C, blip, hash, p2);
 		/// <summary>
@@ -7218,6 +7219,7 @@ namespace RDR2.Native
 		public static void DELETE_OBJECT(int* _object) => Function.Call(0x931914268722C263, _object);
 		public static bool PLACE_OBJECT_ON_GROUND_PROPERLY(int _object, bool p1) => Function.Call<bool>(0x58A850EAEE20FAA3, _object, p1);
 		public static bool SLIDE_OBJECT(int _object, float toX, float toY, float toZ, float speedX, float speedY, float speedZ, bool collision) => Function.Call<bool>(0x2FDFF4107B8C1147, _object, toX, toY, toZ, speedX, speedY, speedZ, collision);
+		public static bool SLIDE_OBJECT(int _object, Vector3 to, Vector3 speed, bool collision) => Function.Call<bool>(0x2FDFF4107B8C1147, _object, to.X, to.Y, to.Z, speed.X, speed.Y, speed.Z, collision);
 		public static void SET_OBJECT_TARGETTABLE(int _object, bool targettable) => Function.Call(0x8A7391690F5AFD81, _object, targettable);
 		public static void _SET_OBJECT_TARGETTABLE_2(int _object, bool targettable) => Function.Call(0x581EDBE56E8D62C9, _object, targettable);
 		/// <summary>
@@ -7240,7 +7242,7 @@ namespace RDR2.Native
 		/// Old name: _GET_OBJECT_OFFSET_FROM_COORDS
 		/// </summary>
 		public static Vector3 GET_OFFSET_FROM_COORD_AND_HEADING_IN_WORLD_COORDS(float xPos, float yPos, float zPos, float heading, float xOffset, float yOffset, float zOffset) => Function.Call<Vector3>(0x163E252DE035A133, xPos, yPos, zPos, heading, xOffset, yOffset, zOffset);
-		public static Vector3 GET_OFFSET_FROM_COORD_AND_HEADING_IN_WORLD_COORDS(Vector3 vec, float heading, Vector3 offset) => Function.Call<Vector3>(0x163E252DE035A133, vec.X, vec.Y, vec.Z, heading, offset.X, offset.Y, offset.Z);
+		public static Vector3 GET_OFFSET_FROM_COORD_AND_HEADING_IN_WORLD_COORDS(Vector3 pos, float heading, Vector3 offset) => Function.Call<Vector3>(0x163E252DE035A133, pos.X, pos.Y, pos.Z, heading, offset.X, offset.Y, offset.Z);
 		/// <summary>
 		/// Registers a door, hashes: https://github.com/femga/rdr3_discoveries/tree/master/doorHashes
 		/// </summary>
@@ -7357,7 +7359,7 @@ namespace RDR2.Native
 		/// flags: see CREATE_PICKUP
 		/// </summary>
 		public static int CREATE_PICKUP_ROTATE(uint pickupHash, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, int flags, int p8, int p9, bool p10, uint modelHash, int p12, float p13, ulong p14) => Function.Call<int>(0x891804727E0A98B7, pickupHash, posX, posY, posZ, rotX, rotY, rotZ, flags, p8, p9, p10, modelHash, p12, p13, p14);
-		public static int CREATE_PICKUP_ROTATE(uint pickupHash, Vector3 vec, Vector3 rotation, int flags, int p8, int p9, bool p10, uint modelHash, int p12, float p13, ulong p14) => Function.Call<int>(0x891804727E0A98B7, pickupHash, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, flags, p8, p9, p10, modelHash, p12, p13, p14);
+		public static int CREATE_PICKUP_ROTATE(uint pickupHash, Vector3 pos, Vector3 rot, int flags, int p8, int p9, bool p10, uint modelHash, int p12, float p13, ulong p14) => Function.Call<int>(0x891804727E0A98B7, pickupHash, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, flags, p8, p9, p10, modelHash, p12, p13, p14);
 		/// <summary>
 		/// flags: see CREATE_PICKUP
 		/// </summary>
@@ -7609,7 +7611,7 @@ namespace RDR2.Native
 		public static bool GET_NTH_CLOSEST_VEHICLE_NODE_ID_WITH_HEADING(float x, float y, float z, int nthClosest, Vector3* outPosition, float outHeading, ulong p6, float p7, float p8) => Function.Call<bool>(0x4114EAA8A7F7766D, x, y, z, nthClosest, outPosition, outHeading, p6, p7, p8);
 		public static bool GET_NTH_CLOSEST_VEHICLE_NODE_ID_WITH_HEADING(Vector3 vec, int nthClosest, Vector3* outPosition, float outHeading, ulong p6, float p7, float p8) => Function.Call<bool>(0x4114EAA8A7F7766D, vec.X, vec.Y, vec.Z, nthClosest, outPosition, outHeading, p6, p7, p8);
 		public static bool GET_NTH_CLOSEST_VEHICLE_NODE_FAVOUR_DIRECTION(float x, float y, float z, float desiredX, float desiredY, float desiredZ, int nthClosest, Vector3* outPosition, float* outHeading, int nodetype, ulong p10, ulong p11) => Function.Call<bool>(0x2FAC235A6062F14A, x, y, z, desiredX, desiredY, desiredZ, nthClosest, outPosition, outHeading, nodetype, p10, p11);
-		public static bool GET_NTH_CLOSEST_VEHICLE_NODE_FAVOUR_DIRECTION(Vector3 vec, float desiredX, float desiredY, float desiredZ, int nthClosest, Vector3* outPosition, float* outHeading, int nodetype, ulong p10, ulong p11) => Function.Call<bool>(0x2FAC235A6062F14A, vec.X, vec.Y, vec.Z, desiredX, desiredY, desiredZ, nthClosest, outPosition, outHeading, nodetype, p10, p11);
+		public static bool GET_NTH_CLOSEST_VEHICLE_NODE_FAVOUR_DIRECTION(Vector3 vec, Vector3 desired, int nthClosest, Vector3* outPosition, float* outHeading, int nodetype, ulong p10, ulong p11) => Function.Call<bool>(0x2FAC235A6062F14A, vec.X, vec.Y, vec.Z, desired.X, desired.Y, desired.Z, nthClosest, outPosition, outHeading, nodetype, p10, p11);
 		/// <summary>
 		/// Returns true if the id is non zero.
 		/// </summary>
@@ -7964,7 +7966,7 @@ namespace RDR2.Native
 		public static void SET_PED_NON_CREATION_AREA(Vector3 vec1, Vector3 vec2) => Function.Call(0xEE01041D559983EA, vec1.X, vec1.Y, vec1.Z, vec2.X, vec2.Y, vec2.Z);
 		public static void CLEAR_PED_NON_CREATION_AREA() => Function.Call(0x2E05208086BA0651);
 		public static void _ATTACH_VOLUME_TO_ENTITY(int volume, int entity, float offsetX, float offsetY, float offsetZ, float rotX, float rotY, float rotZ, int p8, bool p9) => Function.Call(0x7C00CFC48A782DC0, volume, entity, offsetX, offsetY, offsetZ, rotX, rotY, rotZ, p8, p9);
-		public static void _ATTACH_VOLUME_TO_ENTITY(int volume, int entity, Vector3 offset, Vector3 rotation, int p8, bool p9) => Function.Call(0x7C00CFC48A782DC0, volume, entity, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, p8, p9);
+		public static void _ATTACH_VOLUME_TO_ENTITY(int volume, int entity, Vector3 offset, Vector3 rot, int p8, bool p9) => Function.Call(0x7C00CFC48A782DC0, volume, entity, offset.X, offset.Y, offset.Z, rot.X, rot.Y, rot.Z, p8, p9);
 		public static void _DETACH_VOLUME_FROM_ENTITY(int volume, int entity) => Function.Call(0x19C975B81BE53C28, volume, entity);
 		public static void SET_PED_ONTO_MOUNT(int ped, int mount, int seatIndex, bool p3) => Function.Call(0x028F76B6E78246EB, ped, mount, seatIndex, p3);
 		public static void _REMOVE_PED_FROM_MOUNT(int ped, bool p1, bool p2) => Function.Call(0x5337B721C51883A9, ped, p1, p2);
@@ -8824,9 +8826,9 @@ namespace RDR2.Native
 		/// </summary>
 		public static float _GET_PED_DRUNKNESS(int ped) => Function.Call<float>(0x6FB76442469ABD68, ped);
 		public static Vector3 GET_ANIM_INITIAL_OFFSET_POSITION(string animDict, string animName, float x, float y, float z, float xRot, float yRot, float zRot, float p8, int p9) => Function.Call<Vector3>(0xBE22B26DD764C040, animDict, animName, x, y, z, xRot, yRot, zRot, p8, p9);
-		public static Vector3 GET_ANIM_INITIAL_OFFSET_POSITION(string animDict, string animName, Vector3 vec, Vector3 rotation, float p8, int p9) => Function.Call<Vector3>(0xBE22B26DD764C040, animDict, animName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p8, p9);
+		public static Vector3 GET_ANIM_INITIAL_OFFSET_POSITION(string animDict, string animName, Vector3 vec, Vector3 rot, float p8, int p9) => Function.Call<Vector3>(0xBE22B26DD764C040, animDict, animName, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, p8, p9);
 		public static Vector3 GET_ANIM_INITIAL_OFFSET_ROTATION(string animDict, string animName, float x, float y, float z, float xRot, float yRot, float zRot, float p8, int p9) => Function.Call<Vector3>(0x4B805E6046EE9E47, animDict, animName, x, y, z, xRot, yRot, zRot, p8, p9);
-		public static Vector3 GET_ANIM_INITIAL_OFFSET_ROTATION(string animDict, string animName, Vector3 vec, Vector3 rotation, float p8, int p9) => Function.Call<Vector3>(0x4B805E6046EE9E47, animDict, animName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p8, p9);
+		public static Vector3 GET_ANIM_INITIAL_OFFSET_ROTATION(string animDict, string animName, Vector3 vec, Vector3 rot, float p8, int p9) => Function.Call<Vector3>(0x4B805E6046EE9E47, animDict, animName, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, p8, p9);
 		public static void SET_PED_RANDOM_COMPONENT_VARIATION(int ped, int p1) => Function.Call(0xC8A9481A01E63C28, ped, p1);
 		public static void KNOCK_OFF_PED_PROP(int ped, bool p1, bool p2, bool p3, bool p4) => Function.Call(0x6FD7816A36615F48, ped, p1, p2, p3, p4);
 		public static void SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(int ped, bool toggle) => Function.Call(0x9F8AA94D6D97DBF4, ped, toggle);
@@ -8869,6 +8871,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static bool SET_PED_TO_RAGDOLL(int ped, int timeMin, int timeMax, int ragdollType, bool p4, bool p5, string p6) => Function.Call<bool>(0xAE99FB955581844A, ped, timeMin, timeMax, ragdollType, p4, p5, p6);
 		public static bool SET_PED_TO_RAGDOLL_WITH_FALL(int ped, int timeMin, int timeMax, int ragdollType, float falldirX, float falldirY, float falldirZ, float p7, float p8, float p9, float p10, float p11, float p12, float p13) => Function.Call<bool>(0xD76632D99E4966C8, ped, timeMin, timeMax, ragdollType, falldirX, falldirY, falldirZ, p7, p8, p9, p10, p11, p12, p13);
+		public static bool SET_PED_TO_RAGDOLL_WITH_FALL(int ped, int timeMin, int timeMax, int ragdollType, Vector3 falldir, float p7, float p8, float p9, float p10, float p11, float p12, float p13) => Function.Call<bool>(0xD76632D99E4966C8, ped, timeMin, timeMax, ragdollType, falldir.X, falldir.Y, falldir.Z, p7, p8, p9, p10, p11, p12, p13);
 		/// <summary>
 		/// Causes Ped to ragdoll on collision with any object (e.g Running into trashcan). If applied to player you will sometimes trip on the sidewalk.
 		/// </summary>
@@ -10118,7 +10121,7 @@ namespace RDR2.Native
 		/// Creates a pickup-able metaped component. asset doesn't seems to be related to component hashes. Hash example : 0xD20354AB (https ://i.imgur.com/dzHkcDb.png)
 		/// </summary>
 		public static int _CREATE_META_PED_ASSET(uint asset, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, bool p7, bool p8, bool p9) => Function.Call<int>(0x9641A9A20310F6B8, asset, posX, posY, posZ, rotX, rotY, rotZ, p7, p8, p9);
-		public static int _CREATE_META_PED_ASSET(uint asset, Vector3 vec, Vector3 rotation, bool p7, bool p8, bool p9) => Function.Call<int>(0x9641A9A20310F6B8, asset, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p7, p8, p9);
+		public static int _CREATE_META_PED_ASSET(uint asset, Vector3 pos, Vector3 rot, bool p7, bool p8, bool p9) => Function.Call<int>(0x9641A9A20310F6B8, asset, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, p7, p8, p9);
 		public static bool _HAS_META_PED_OUTFIT_LOADED(int requestId) => Function.Call<bool>(0x610438375E5D1801, requestId);
 		public static bool _IS_META_PED_OUTFIT_REQUEST_VALID(int requestId) => Function.Call<bool>(0xB25E57FC8E37114D, requestId);
 		/// <summary>
@@ -10201,7 +10204,7 @@ namespace RDR2.Native
 		/// _CREATE_[P-Z]
 		/// </summary>
 		public static int _CREATE_GRAVITY_WELL(float xPos, float yPos, float zPos, float heading, float radius, float p5, float p6, float p7, bool stopAtDestination) => Function.Call<int>(0x4F5EBE70081E5A20, xPos, yPos, zPos, heading, radius, p5, p6, p7, stopAtDestination);
-		public static int _CREATE_GRAVITY_WELL(Vector3 vec, float heading, float radius, float p5, float p6, float p7, bool stopAtDestination) => Function.Call<int>(0x4F5EBE70081E5A20, vec.X, vec.Y, vec.Z, heading, radius, p5, p6, p7, stopAtDestination);
+		public static int _CREATE_GRAVITY_WELL(Vector3 pos, float heading, float radius, float p5, float p6, float p7, bool stopAtDestination) => Function.Call<int>(0x4F5EBE70081E5A20, pos.X, pos.Y, pos.Z, heading, radius, p5, p6, p7, stopAtDestination);
 		/// <summary>
 		/// Removes gravity well by handle returned from 0x4F5EBE70081E5A20
 		/// </summary>
@@ -10565,9 +10568,9 @@ namespace RDR2.Native
 		/// Rope types 0, 15 and 18 have proper physics for hanging objects (taut, do not sag, small to medium diameter, good aspect for a rope)
 		/// </summary>
 		public static int ADD_ROPE(float x, float y, float z, float rotX, float rotY, float rotZ, float length, int ropeType, float maxLength, float minLength, float p10, bool p11, bool p12, bool rigid, float p14, bool breakWhenShot, ulong* unkPtr, bool p17) => Function.Call<int>(0xE832D760399EB220, x, y, z, rotX, rotY, rotZ, length, ropeType, maxLength, minLength, p10, p11, p12, rigid, p14, breakWhenShot, unkPtr, p17);
-		public static int ADD_ROPE(Vector3 vec, Vector3 rotation, float length, int ropeType, float maxLength, float minLength, float p10, bool p11, bool p12, bool rigid, float p14, bool breakWhenShot, ulong* unkPtr, bool p17) => Function.Call<int>(0xE832D760399EB220, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, length, ropeType, maxLength, minLength, p10, p11, p12, rigid, p14, breakWhenShot, unkPtr, p17);
+		public static int ADD_ROPE(Vector3 vec, Vector3 rot, float length, int ropeType, float maxLength, float minLength, float p10, bool p11, bool p12, bool rigid, float p14, bool breakWhenShot, ulong* unkPtr, bool p17) => Function.Call<int>(0xE832D760399EB220, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, length, ropeType, maxLength, minLength, p10, p11, p12, rigid, p14, breakWhenShot, unkPtr, p17);
 		public static int _ADD_ROPE_2(float x, float y, float z, float rotX, float rotY, float rotZ, float length, int ropeType, bool isNetworked, int p9, float p10) => Function.Call<int>(0xE9C59F6809373A99, x, y, z, rotX, rotY, rotZ, length, ropeType, isNetworked, p9, p10);
-		public static int _ADD_ROPE_2(Vector3 vec, Vector3 rotation, float length, int ropeType, bool isNetworked, int p9, float p10) => Function.Call<int>(0xE9C59F6809373A99, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, length, ropeType, isNetworked, p9, p10);
+		public static int _ADD_ROPE_2(Vector3 vec, Vector3 rot, float length, int ropeType, bool isNetworked, int p9, float p10) => Function.Call<int>(0xE9C59F6809373A99, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, length, ropeType, isNetworked, p9, p10);
 		public static void DELETE_ROPE(int* ropeId) => Function.Call(0x52B4829281364649, ropeId);
 		public static void _RELEASE_ROPE(int ropeId) => Function.Call(0x6076213101A47B3B, ropeId);
 		public static void DELETE_CHILD_ROPE(int ropeId) => Function.Call(0xAA5D6B1888E4DB20, ropeId);
@@ -10591,10 +10594,12 @@ namespace RDR2.Native
 		/// If you use a boneName (p12/p13) make sure boneId (p15/p16) is set to -1.
 		/// </summary>
 		public static void ATTACH_ENTITIES_TO_ROPE(int ropeId, int entity1, int entity2, float ent1X, float ent1Y, float ent1Z, float ent2X, float ent2Y, float ent2Z, float length, int alwaysZero1, int alwaysZero2, string boneName1, string boneName2, bool p14, int boneId1, int boneId2, int alwaysZero3, int alwaysZero4, bool p19, bool p20) => Function.Call(0x3D95EC8B6D940AC3, ropeId, entity1, entity2, ent1X, ent1Y, ent1Z, ent2X, ent2Y, ent2Z, length, alwaysZero1, alwaysZero2, boneName1, boneName2, p14, boneId1, boneId2, alwaysZero3, alwaysZero4, p19, p20);
+		public static void ATTACH_ENTITIES_TO_ROPE(int ropeId, int entity1, int entity2, Vector3 ent1, Vector3 ent2, float length, int alwaysZero1, int alwaysZero2, string boneName1, string boneName2, bool p14, int boneId1, int boneId2, int alwaysZero3, int alwaysZero4, bool p19, bool p20) => Function.Call(0x3D95EC8B6D940AC3, ropeId, entity1, entity2, ent1.X, ent1.Y, ent1.Z, ent2.X, ent2.Y, ent2.Z, length, alwaysZero1, alwaysZero2, boneName1, boneName2, p14, boneId1, boneId2, alwaysZero3, alwaysZero4, p19, p20);
 		/// <summary>
 		/// Attaches a rope to two entities: binds two bones from two entities; one entity can be an object, i.e. a suspension point, the other an NPC bone
 		/// </summary>
 		public static void _ATTACH_ENTITIES_TO_ROPE_2(int ropeId, int entity1, int entity2, float ent1X, float ent1Y, float ent1Z, float ent2X, float ent2Y, float ent2Z, string boneName1, string boneName2) => Function.Call(0x462FF2A432733A44, ropeId, entity1, entity2, ent1X, ent1Y, ent1Z, ent2X, ent2Y, ent2Z, boneName1, boneName2);
+		public static void _ATTACH_ENTITIES_TO_ROPE_2(int ropeId, int entity1, int entity2, Vector3 ent1, Vector3 ent2, string boneName1, string boneName2) => Function.Call(0x462FF2A432733A44, ropeId, entity1, entity2, ent1.X, ent1.Y, ent1.Z, ent2.X, ent2.Y, ent2.Z, boneName1, boneName2);
 		public static void _ATTACH_ENTITES_TO_ROPE_3(int ropeId, int entity1, int entity2, float p3, float p4, float p5, float p6, float p7, float p8, ulong p9, ulong p10) => Function.Call(0xE9CD9A67834985A7, ropeId, entity1, entity2, p3, p4, p5, p6, p7, p8, p9, p10);
 		public static void _0x69C810B72291D831(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6) => Function.Call(0x69C810B72291D831, p0, p1, p2, p3, p4, p5, p6);
 		public static void _0xB7469CB9AC3C0FD4(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7) => Function.Call(0xB7469CB9AC3C0FD4, p0, p1, p2, p3, p4, p5, p6, p7);
@@ -11986,7 +11991,7 @@ namespace RDR2.Native
 		public static int START_EXPENSIVE_SYNCHRONOUS_SHAPE_TEST_LOS_PROBE(float x1, float y1, float z1, float x2, float y2, float z2, int flags, int entityToIgnore, int p8) => Function.Call<int>(0x377906D8A31E5586, x1, y1, z1, x2, y2, z2, flags, entityToIgnore, p8);
 		public static int START_EXPENSIVE_SYNCHRONOUS_SHAPE_TEST_LOS_PROBE(Vector3 vec1, Vector3 vec2, int flags, int entityToIgnore, int p8) => Function.Call<int>(0x377906D8A31E5586, vec1.X, vec1.Y, vec1.Z, vec2.X, vec2.Y, vec2.Z, flags, entityToIgnore, p8);
 		public static int START_SHAPE_TEST_BOX(float x, float y, float z, float x1, float y2, float z2, float rotX, float rotY, float rotZ, ulong p9, ulong p10, ulong entity, ulong p12) => Function.Call<int>(0xFE466162C4401D18, x, y, z, x1, y2, z2, rotX, rotY, rotZ, p9, p10, entity, p12);
-		public static int START_SHAPE_TEST_BOX(Vector3 vec, float x1, float y2, float z2, Vector3 rotation, ulong p9, ulong p10, ulong entity, ulong p12) => Function.Call<int>(0xFE466162C4401D18, vec.X, vec.Y, vec.Z, x1, y2, z2, rotation.X, rotation.Y, rotation.Z, p9, p10, entity, p12);
+		public static int START_SHAPE_TEST_BOX(Vector3 vec, Vector3 vec1, Vector3 rot, ulong p9, ulong p10, ulong entity, ulong p12) => Function.Call<int>(0xFE466162C4401D18, vec.X, vec.Y, vec.Z, vec1.X, vec1.Y, vec1.Z, rot.X, rot.Y, rot.Z, p9, p10, entity, p12);
 		public static int START_SHAPE_TEST_CAPSULE(float x1, float y1, float z1, float x2, float y2, float z2, float radius, int flags, int entityToIgnore, int p9) => Function.Call<int>(0x28579D1B8F8AAC80, x1, y1, z1, x2, y2, z2, radius, flags, entityToIgnore, p9);
 		public static int START_SHAPE_TEST_CAPSULE(Vector3 vec1, Vector3 vec2, float radius, int flags, int entityToIgnore, int p9) => Function.Call<int>(0x28579D1B8F8AAC80, vec1.X, vec1.Y, vec1.Z, vec2.X, vec2.Y, vec2.Z, radius, flags, entityToIgnore, p9);
 		public static int START_SHAPE_TEST_SWEPT_SPHERE(float x1, float y1, float z1, float x2, float y2, float z2, float radius, int flags, int entity, ulong p9) => Function.Call<int>(0xAA5B7C8309F73230, x1, y1, z1, x2, y2, z2, radius, flags, entity, p9);
@@ -12373,7 +12378,7 @@ namespace RDR2.Native
 		public static void SET_ALL_MAPDATA_CULLED(ulong p0) => Function.Call(0x19ABCC581D28E6F9, p0);
 		public static void _0xF01D21DF39554115(ulong p0) => Function.Call(0xF01D21DF39554115, p0);
 		public static bool LOAD_SCENE_START(float posX, float posY, float posZ, float offsetX, float offsetY, float offsetZ, float radius, int p7) => Function.Call<bool>(0x387AD749E3B69B70, posX, posY, posZ, offsetX, offsetY, offsetZ, radius, p7);
-		public static bool LOAD_SCENE_START(Vector3 vec, Vector3 offset, float radius, int p7) => Function.Call<bool>(0x387AD749E3B69B70, vec.X, vec.Y, vec.Z, offset.X, offset.Y, offset.Z, radius, p7);
+		public static bool LOAD_SCENE_START(Vector3 pos, Vector3 offset, float radius, int p7) => Function.Call<bool>(0x387AD749E3B69B70, pos.X, pos.Y, pos.Z, offset.X, offset.Y, offset.Z, radius, p7);
 		public static bool LOAD_SCENE_START_SPHERE(float x, float y, float z, float radius, ulong p4) => Function.Call<bool>(0x513F8AA5BF2F17CF, x, y, z, radius, p4);
 		public static bool LOAD_SCENE_START_SPHERE(Vector3 vec, float radius, ulong p4) => Function.Call<bool>(0x513F8AA5BF2F17CF, vec.X, vec.Y, vec.Z, radius, p4);
 		public static void LOAD_SCENE_STOP() => Function.Call(0x5A8B01199C3E79C3);
@@ -12711,7 +12716,7 @@ namespace RDR2.Native
 		/// ikFlags: see TASK_PLAY_ANIM
 		/// </summary>
 		public static void TASK_PLAY_ANIM_ADVANCED(int ped, string animDict, string animName, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float speed, float speedMultiplier, int duration, int flags, float p13, int p14, int p15, int p16) => Function.Call(0x83CDB10EA29B370B, ped, animDict, animName, posX, posY, posZ, rotX, rotY, rotZ, speed, speedMultiplier, duration, flags, p13, p14, p15, p16);
-		public static void TASK_PLAY_ANIM_ADVANCED(int ped, string animDict, string animName, Vector3 vec, Vector3 rotation, float speed, float speedMultiplier, int duration, int flags, float p13, int p14, int p15, int p16) => Function.Call(0x83CDB10EA29B370B, ped, animDict, animName, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, speed, speedMultiplier, duration, flags, p13, p14, p15, p16);
+		public static void TASK_PLAY_ANIM_ADVANCED(int ped, string animDict, string animName, Vector3 pos, Vector3 rot, float speed, float speedMultiplier, int duration, int flags, float p13, int p14, int p15, int p16) => Function.Call(0x83CDB10EA29B370B, ped, animDict, animName, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, speed, speedMultiplier, duration, flags, p13, p14, p15, p16);
 		public static void TASK_PLAY_UPPER_ANIM_FACING_ENTITY(int ped, string animDict, string animName, int entity, int p4, float p5, float p6, int p7, float p8, bool p9, bool p10, float p11, string p12, int p13, float p14) => Function.Call(0xAD67214236AB1CFE, ped, animDict, animName, entity, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
 		public static void STOP_ANIM_TASK(int ped, string animDictionary, string animationName, float p3) => Function.Call(0x97FF36A1D40EA00A, ped, animDictionary, animationName, p3);
 		public static void TASK_SCRIPTED_ANIMATION(int ped, ulong* args) => Function.Call(0x126EF75F1E17ABE5, ped, args);
@@ -12936,6 +12941,7 @@ namespace RDR2.Native
 		public static void TASK_BOAT_MISSION(int pedDriver, int boat, ulong p2, ulong p3, Vector3 vec, ulong p7, float maxSpeed, int drivingStyle, float p10, ulong p11) => Function.Call(0x15C86013127CE63F, pedDriver, boat, p2, p3, vec.X, vec.Y, vec.Z, p7, maxSpeed, drivingStyle, p10, p11);
 		public static void TASK_WEAPON(int ped) => Function.Call(0x7157B82D60E4BC46, ped);
 		public static void TASK_DRIVE_BY(int driverPed, int targetPed, int targetVehicle, float targetX, float targetY, float targetZ, float distanceToShoot, int pedAccuracy, bool p8, uint firingPattern) => Function.Call(0x2F8AF0E82773A171, driverPed, targetPed, targetVehicle, targetX, targetY, targetZ, distanceToShoot, pedAccuracy, p8, firingPattern);
+		public static void TASK_DRIVE_BY(int driverPed, int targetPed, int targetVehicle, Vector3 target, float distanceToShoot, int pedAccuracy, bool p8, uint firingPattern) => Function.Call(0x2F8AF0E82773A171, driverPed, targetPed, targetVehicle, target.X, target.Y, target.Z, distanceToShoot, pedAccuracy, p8, firingPattern);
 		public static void SET_DRIVEBY_TASK_TARGET(int shootingPed, int targetPed, int targetVehicle, float x, float y, float z) => Function.Call(0xE5B302114D8162EE, shootingPed, targetPed, targetVehicle, x, y, z);
 		public static void SET_DRIVEBY_TASK_TARGET(int shootingPed, int targetPed, int targetVehicle, Vector3 vec) => Function.Call(0xE5B302114D8162EE, shootingPed, targetPed, targetVehicle, vec.X, vec.Y, vec.Z);
 		public static void CLEAR_DRIVEBY_TASK_UNDERNEATH_DRIVING_TASK(int ped) => Function.Call(0xC35B5CDB2824CF69, ped);
@@ -12999,7 +13005,7 @@ namespace RDR2.Native
 		public static void TASK_PUT_PED_DIRECTLY_INTO_COVER(int ped, float x, float y, float z, int timeout, bool p5, float p6, ulong p7, ulong p8, int coverpoint, bool p10, bool p11, ulong p12) => Function.Call(0x4172393E6BE1FECE, ped, x, y, z, timeout, p5, p6, p7, p8, coverpoint, p10, p11, p12);
 		public static void TASK_PUT_PED_DIRECTLY_INTO_COVER(int ped, Vector3 vec, int timeout, bool p5, float p6, ulong p7, ulong p8, int coverpoint, bool p10, bool p11, ulong p12) => Function.Call(0x4172393E6BE1FECE, ped, vec.X, vec.Y, vec.Z, timeout, p5, p6, p7, p8, coverpoint, p10, p11, p12);
 		public static void _TASK_PUT_PED_DIRECTLY_INTO_COVER_FROM_COORDS(int ped, float x, float y, float z, float fromX, float fromY, float fromZ, int timeout, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14, ulong p15, ulong p16, ulong p17) => Function.Call(0xDF8A5855B9F9A97B, ped, x, y, z, fromX, fromY, fromZ, timeout, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
-		public static void _TASK_PUT_PED_DIRECTLY_INTO_COVER_FROM_COORDS(int ped, Vector3 vec, float fromX, float fromY, float fromZ, int timeout, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14, ulong p15, ulong p16, ulong p17) => Function.Call(0xDF8A5855B9F9A97B, ped, vec.X, vec.Y, vec.Z, fromX, fromY, fromZ, timeout, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
+		public static void _TASK_PUT_PED_DIRECTLY_INTO_COVER_FROM_COORDS(int ped, Vector3 vec, Vector3 from, int timeout, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14, ulong p15, ulong p16, ulong p17) => Function.Call(0xDF8A5855B9F9A97B, ped, vec.X, vec.Y, vec.Z, from.X, from.Y, from.Z, timeout, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
 		/// <summary>
 		/// meleeStyles: AR_GRAPPLE_BACK_FROM_BACK, AR_GRAPPLE_MOUNT_FACEDOWN_FROM_FRONT, AR_ALLIGATOR_LEAPKILL, AR_ALLIGATOR_WAIST_AUTOKILL_FRONT
 		/// </summary>
@@ -13024,6 +13030,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static void SET_DRIVE_TASK_MAX_CRUISE_SPEED(int ped, float maxCruiseSpeed) => Function.Call(0x404A5AA9B9F0B746, ped, maxCruiseSpeed);
 		public static void ADD_COVER_BLOCKING_AREA(float playerX, float playerY, float playerZ, float radiusX, float radiusY, float radiusZ, bool p6, bool p7, bool p8, bool p9) => Function.Call(0x45C597097DD7CB81, playerX, playerY, playerZ, radiusX, radiusY, radiusZ, p6, p7, p8, p9);
+		public static void ADD_COVER_BLOCKING_AREA(Vector3 player, Vector3 radius, bool p6, bool p7, bool p8, bool p9) => Function.Call(0x45C597097DD7CB81, player.X, player.Y, player.Z, radius.X, radius.Y, radius.Z, p6, p7, p8, p9);
 		public static void _ADD_COVER_BLOCKING_VOLUME(int volume, bool p1, bool p2, bool p3, bool p4) => Function.Call(0xEB2ED1DC3AEC0654, volume, p1, p2, p3, p4);
 		public static void REMOVE_ALL_COVER_BLOCKING_AREAS() => Function.Call(0xDB6708C0B46F56D8);
 		public static void _0x2A10538D0A005E81(ulong p0, ulong p1) => Function.Call(0x2A10538D0A005E81, p0, p1);
@@ -13077,7 +13084,7 @@ namespace RDR2.Native
 		public static float _GET_SCENARIO_POINT_HEADING(int scenario, bool p1) => Function.Call<float>(0xB93EA7184BAA85C3, scenario, p1);
 		public static float _GET_SCENARIO_POINT_RADIUS(int scenario) => Function.Call<float>(0x6718F40313A2B5A6, scenario);
 		public static void _SET_SCENARIO_POINT_COORDS(int scenario, float xPos, float yPos, float zPos, bool p4) => Function.Call(0x2056AB38DF06825C, scenario, xPos, yPos, zPos, p4);
-		public static void _SET_SCENARIO_POINT_COORDS(int scenario, Vector3 vec, bool p4) => Function.Call(0x2056AB38DF06825C, scenario, vec.X, vec.Y, vec.Z, p4);
+		public static void _SET_SCENARIO_POINT_COORDS(int scenario, Vector3 pos, bool p4) => Function.Call(0x2056AB38DF06825C, scenario, pos.X, pos.Y, pos.Z, p4);
 		public static void _SET_SCENARIO_POINT_HEADING(int scenario, float heading, bool p2) => Function.Call(0xD3A0DA8F91612C6E, scenario, heading, p2);
 		public static void _SET_SCENARIO_POINT_RADIUS(int scenario, float radius) => Function.Call(0xC47D9080A9A8856A, scenario, radius);
 		/// <summary>
@@ -13089,7 +13096,7 @@ namespace RDR2.Native
 		/// Note: scenariosInRadius is an array, and its size and values should be aligned to 8 bytes.
 		/// </summary>
 		public static int GET_SCENARIO_POINTS_IN_AREA(float posX, float posY, float posZ, float radius, ulong* scenariosInRadius, int size) => Function.Call<int>(0x345EC3B7EBDE1CB5, posX, posY, posZ, radius, scenariosInRadius, size);
-		public static int GET_SCENARIO_POINTS_IN_AREA(Vector3 vec, float radius, ulong* scenariosInRadius, int size) => Function.Call<int>(0x345EC3B7EBDE1CB5, vec.X, vec.Y, vec.Z, radius, scenariosInRadius, size);
+		public static int GET_SCENARIO_POINTS_IN_AREA(Vector3 pos, float radius, ulong* scenariosInRadius, int size) => Function.Call<int>(0x345EC3B7EBDE1CB5, pos.X, pos.Y, pos.Z, radius, scenariosInRadius, size);
 		public static ulong _0xEFD875C2791EBEFD(ulong p0, ulong p1, ulong p2, ulong p3) => Function.Call<ulong>(0xEFD875C2791EBEFD, p0, p1, p2, p3);
 		public static ulong _0x152664AA3188B193(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5) => Function.Call<ulong>(0x152664AA3188B193, p0, p1, p2, p3, p4, p5);
 		public static ulong _0xE7BBC4E56B989449(ulong p0, ulong p1, ulong p2) => Function.Call<ulong>(0xE7BBC4E56B989449, p0, p1, p2);
@@ -13154,7 +13161,7 @@ namespace RDR2.Native
 		public static bool DOES_SCENARIO_OF_TYPE_EXIST_IN_AREA_HASH(float x, float y, float z, uint typeHash, float radius, bool p5) => Function.Call<bool>(0x6EEAD6AF637DA752, x, y, z, typeHash, radius, p5);
 		public static bool DOES_SCENARIO_OF_TYPE_EXIST_IN_AREA_HASH(Vector3 vec, uint typeHash, float radius, bool p5) => Function.Call<bool>(0x6EEAD6AF637DA752, vec.X, vec.Y, vec.Z, typeHash, radius, p5);
 		public static int FIND_SCENARIO_OF_TYPE_HASH(float xPos, float yPos, float zPos, uint scenarioType, float distance, ulong p5, bool p6) => Function.Call<int>(0xF533D68FF970D190, xPos, yPos, zPos, scenarioType, distance, p5, p6);
-		public static int FIND_SCENARIO_OF_TYPE_HASH(Vector3 vec, uint scenarioType, float distance, ulong p5, bool p6) => Function.Call<int>(0xF533D68FF970D190, vec.X, vec.Y, vec.Z, scenarioType, distance, p5, p6);
+		public static int FIND_SCENARIO_OF_TYPE_HASH(Vector3 pos, uint scenarioType, float distance, ulong p5, bool p6) => Function.Call<int>(0xF533D68FF970D190, pos.X, pos.Y, pos.Z, scenarioType, distance, p5, p6);
 		public static void _0x0D322AEF8878B8FE(ulong p0, ulong p1) => Function.Call(0x0D322AEF8878B8FE, p0, p1);
 		public static ulong _0xD508FA229F1C4900(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5) => Function.Call<ulong>(0xD508FA229F1C4900, p0, p1, p2, p3, p4, p5);
 		public static void _0xB8E213D02F37947D(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6) => Function.Call(0xB8E213D02F37947D, p0, p1, p2, p3, p4, p5, p6);
@@ -13287,6 +13294,7 @@ namespace RDR2.Native
 		public static void TASK_GO_TO_ENTITY_WHILE_AIMING_AT_ENTITY(int ped, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10) => Function.Call(0x97465886D35210E9, ped, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
 		public static void TASK_GO_TO_ENTITY_WHILE_AIMING_AT_ENTITY_USING_COMBAT_STYLE(int ped, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10) => Function.Call(0xCEF0117C233026AD, ped, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
 		public static void TASK_GO_TO_COORD_AND_AIM_AT_HATED_ENTITIES_NEAR_COORD(int ped, float goToLocationX, float goToLocationY, float goToLocationZ, float focusLocationX, float focusLocationY, float focusLocationZ, float speed, bool shootAtEnemies, float distanceToStopAt, float noRoadsDistance, bool unkTrue, int unkFlag, int aimingFlag, uint firingPattern) => Function.Call(0xA55547801EB331FC, ped, goToLocationX, goToLocationY, goToLocationZ, focusLocationX, focusLocationY, focusLocationZ, speed, shootAtEnemies, distanceToStopAt, noRoadsDistance, unkTrue, unkFlag, aimingFlag, firingPattern);
+		public static void TASK_GO_TO_COORD_AND_AIM_AT_HATED_ENTITIES_NEAR_COORD(int ped, Vector3 gotolocation, Vector3 focuslocation, float speed, bool shootAtEnemies, float distanceToStopAt, float noRoadsDistance, bool unkTrue, int unkFlag, int aimingFlag, uint firingPattern) => Function.Call(0xA55547801EB331FC, ped, gotolocation.X, gotolocation.Y, gotolocation.Z, focuslocation.X, focuslocation.Y, focuslocation.Z, speed, shootAtEnemies, distanceToStopAt, noRoadsDistance, unkTrue, unkFlag, aimingFlag, firingPattern);
 		public static void TASK_GO_TO_COORD_AND_AIM_AT_HATED_ENTITIES_NEAR_COORD_USING_COMBAT_STYLE(int ped, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14) => Function.Call(0x87BD711FC31EA273, ped, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
 		/// <summary>
 		/// Makes the ped ragdoll like when falling from a great height
@@ -13356,7 +13364,7 @@ namespace RDR2.Native
 		public static void TASK_MOVE_NETWORK_BY_NAME(int ped, string task, float multiplier, bool p3, string animDict, int flags) => Function.Call(0x2D537BA194896636, ped, task, multiplier, p3, animDict, flags);
 		public static void TASK_MOVE_NETWORK_BY_NAME_WITH_INIT_PARAMS(int ped, string moveNetworkDefName, ulong* taskData, float p3, bool p4, string animDict, int flags) => Function.Call(0x139805C2A67C4795, ped, moveNetworkDefName, taskData, p3, p4, animDict, flags);
 		public static void TASK_MOVE_NETWORK_ADVANCED_BY_NAME_WITH_INIT_PARAMS(int ped, string moveNetworkDefName, ulong* taskData, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, int p9, float p10, int p11, int p12, int flag, int p14) => Function.Call(0x7B6A04F98BBAFB2C, ped, moveNetworkDefName, taskData, xPos, yPos, zPos, xRot, yRot, zRot, p9, p10, p11, p12, flag, p14);
-		public static void TASK_MOVE_NETWORK_ADVANCED_BY_NAME_WITH_INIT_PARAMS(int ped, string moveNetworkDefName, ulong* taskData, Vector3 vec, Vector3 rotation, int p9, float p10, int p11, int p12, int flag, int p14) => Function.Call(0x7B6A04F98BBAFB2C, ped, moveNetworkDefName, taskData, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, p9, p10, p11, p12, flag, p14);
+		public static void TASK_MOVE_NETWORK_ADVANCED_BY_NAME_WITH_INIT_PARAMS(int ped, string moveNetworkDefName, ulong* taskData, Vector3 pos, Vector3 rot, int p9, float p10, int p11, int p12, int flag, int p14) => Function.Call(0x7B6A04F98BBAFB2C, ped, moveNetworkDefName, taskData, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, p9, p10, p11, p12, flag, p14);
 		public static void TASK_MOVE_NETWORK_ADVANCED_BY_NAME_WITH_INIT_PARAMS_ATTACHED(int ped, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14, ulong p15, ulong p16, ulong p17) => Function.Call(0xF92171093BCABED4, ped, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
 		public static bool IS_TASK_MOVE_NETWORK_ACTIVE(int ped) => Function.Call<bool>(0x921CE12C489C4C41, ped);
 		/// <summary>
@@ -13402,6 +13410,7 @@ namespace RDR2.Native
 		/// Params: p4 either 0.2f, 0.25f, 0.31f, 0.4f
 		/// </summary>
 		public static void TASK_DUEL(int ped, ulong p1, float p2, int entity, float p4, int p5, float vPosOpponentX, float vPosOpponentY, float vPosOpponentZ, float fOpponentHead, int p10) => Function.Call(0x5D5B0D5BC3626E5A, ped, p1, p2, entity, p4, p5, vPosOpponentX, vPosOpponentY, vPosOpponentZ, fOpponentHead, p10);
+		public static void TASK_DUEL(int ped, ulong p1, float p2, int entity, float p4, int p5, Vector3 vposopponent, float fOpponentHead, int p10) => Function.Call(0x5D5B0D5BC3626E5A, ped, p1, p2, entity, p4, p5, vposopponent.X, vposopponent.Y, vposopponent.Z, fOpponentHead, p10);
 		public static ulong _0x908BB14BCE85C80E(ulong p0) => Function.Call<ulong>(0x908BB14BCE85C80E, p0);
 		public static ulong _0x1F7A9A9C38C13A56(ulong p0) => Function.Call<ulong>(0x1F7A9A9C38C13A56, p0);
 		public static ulong _0x3FEB770D8ED9047A(ulong p0) => Function.Call<ulong>(0x3FEB770D8ED9047A, p0);
@@ -14949,28 +14958,28 @@ namespace RDR2.Native
 	public unsafe static class VOLUME
 	{
 		public static int _CREATE_VOLUME_BY_HASH(uint volumeType, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call<int>(0x502022FA1AF9DC86, volumeType, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static int _CREATE_VOLUME_BY_HASH(uint volumeType, Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call<int>(0x502022FA1AF9DC86, volumeType, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static int _CREATE_VOLUME_BY_HASH(uint volumeType, Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call<int>(0x502022FA1AF9DC86, volumeType, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static int CREATE_VOLUME_BOX(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call<int>(0xDF85637F22706891, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static int CREATE_VOLUME_BOX(Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call<int>(0xDF85637F22706891, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static int CREATE_VOLUME_BOX(Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call<int>(0xDF85637F22706891, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static int CREATE_VOLUME_CYLINDER(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call<int>(0x0522D4774B82E3E6, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static int CREATE_VOLUME_CYLINDER(Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call<int>(0x0522D4774B82E3E6, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static int CREATE_VOLUME_CYLINDER(Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call<int>(0x0522D4774B82E3E6, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static int CREATE_VOLUME_SPHERE(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call<int>(0xB3FB80A32BAE3065, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static int CREATE_VOLUME_SPHERE(Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call<int>(0xB3FB80A32BAE3065, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static int CREATE_VOLUME_SPHERE(Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call<int>(0xB3FB80A32BAE3065, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static int CREATE_VOLUME_AGGREGATE() => Function.Call<int>(0x59F6F5C1D129F106);
 		public static int _CREATE_VOLUME_BY_HASH_WITH_CUSTOM_NAME(uint volumeType, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, string name) => Function.Call<int>(0x1F85E4AC774A201E, volumeType, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, name);
-		public static int _CREATE_VOLUME_BY_HASH_WITH_CUSTOM_NAME(uint volumeType, Vector3 vec, Vector3 rotation, Vector3 scale, string name) => Function.Call<int>(0x1F85E4AC774A201E, volumeType, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, name);
+		public static int _CREATE_VOLUME_BY_HASH_WITH_CUSTOM_NAME(uint volumeType, Vector3 vec, Vector3 rot, Vector3 scale, string name) => Function.Call<int>(0x1F85E4AC774A201E, volumeType, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z, name);
 		public static int _CREATE_ANTI_GRIEF_VOLUME(uint volumeType, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call<int>(0x0EB78C2B156635B1, volumeType, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static int _CREATE_ANTI_GRIEF_VOLUME(uint volumeType, Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call<int>(0x0EB78C2B156635B1, volumeType, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static int _CREATE_ANTI_GRIEF_VOLUME(uint volumeType, Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call<int>(0x0EB78C2B156635B1, volumeType, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static void _SET_ANTI_GRIEF_VOLUME_BLOCKS_HORSE(int volume, bool toggle) => Function.Call(0xBE551C2CC421185D, volume, toggle);
 		public static void _SET_ANTI_GRIEF_VOLUME_BLOCKS_PLAYER(int volume, bool toggle) => Function.Call(0x5B23DFF8E0948BB2, volume, toggle);
 		public static int _CREATE_WALK_AND_TALK_VOLUME(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12) => Function.Call<int>(0xFD0E389CD44434B6, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
 		public static int _CREATE_SPEED_VOLUME(ulong p0, ulong p1, ulong p2, ulong p3, ulong p4, ulong p5, ulong p6, ulong p7, ulong p8, ulong p9, ulong p10, ulong p11, ulong p12, ulong p13, ulong p14) => Function.Call<int>(0xBBE768E3AE76E07C, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
 		public static int _CREATE_VOLUME_BOX_WITH_CUSTOM_NAME(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, string name) => Function.Call<int>(0xF68485C7495D848E, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, name);
-		public static int _CREATE_VOLUME_BOX_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rotation, Vector3 scale, string name) => Function.Call<int>(0xF68485C7495D848E, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, name);
+		public static int _CREATE_VOLUME_BOX_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rot, Vector3 scale, string name) => Function.Call<int>(0xF68485C7495D848E, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z, name);
 		public static int _CREATE_VOLUME_CYLINDER_WITH_CUSTOM_NAME(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, string name) => Function.Call<int>(0xDF1E350EDDF06E59, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, name);
-		public static int _CREATE_VOLUME_CYLINDER_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rotation, Vector3 scale, string name) => Function.Call<int>(0xDF1E350EDDF06E59, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, name);
+		public static int _CREATE_VOLUME_CYLINDER_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rot, Vector3 scale, string name) => Function.Call<int>(0xDF1E350EDDF06E59, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z, name);
 		public static int _CREATE_VOLUME_SPHERE_WITH_CUSTOM_NAME(float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ, string name) => Function.Call<int>(0x10157BC3247FF3BA, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, name);
-		public static int _CREATE_VOLUME_SPHERE_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rotation, Vector3 scale, string name) => Function.Call<int>(0x10157BC3247FF3BA, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, name);
+		public static int _CREATE_VOLUME_SPHERE_WITH_CUSTOM_NAME(Vector3 vec, Vector3 rot, Vector3 scale, string name) => Function.Call<int>(0x10157BC3247FF3BA, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z, name);
 		public static int _CREATE_VOLUME_AGGREGATE_WITH_CUSTOM_NAME(string name) => Function.Call<int>(0x5D580DE6398BB162, name);
 		/// <summary>
 		/// _ADD_R* - _ADD_V(OLUME?)*
@@ -14981,7 +14990,7 @@ namespace RDR2.Native
 		/// </summary>
 		public static void _REMOVE_BOUNDS_FROM_AGGREGATE_VOLUME(int volume, int aggregate) => Function.Call(0xF92FA8890DECECF6, volume, aggregate);
 		public static void _ADD_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, uint typeHash, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) => Function.Call(0x12FCAA23F2320422, aggregate, typeHash, x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
-		public static void _ADD_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, uint typeHash, Vector3 vec, Vector3 rotation, Vector3 scale) => Function.Call(0x12FCAA23F2320422, aggregate, typeHash, vec.X, vec.Y, vec.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+		public static void _ADD_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, uint typeHash, Vector3 vec, Vector3 rot, Vector3 scale) => Function.Call(0x12FCAA23F2320422, aggregate, typeHash, vec.X, vec.Y, vec.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		public static void _ADD_BOX_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, float p1, float p2, float p3, float p4, float p5, float p6, float p7, float p8, float p9) => Function.Call(0x39816F6F94F385AD, aggregate, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 		public static void _ADD_CYLINDER_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, float p1, float p2, float p3, float p4, float p5, float p6, float p7, float p8, float p9) => Function.Call(0xBCE668AAF83608BE, aggregate, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 		public static void _ADD_SPHERE_VOLUME_TO_VOLUME_AGGREGATE(int aggregate, float p1, float p2, float p3, float p4, float p5, float p6, float p7, float p8, float p9) => Function.Call(0x5B7D7BF36D2DE18B, aggregate, p1, p2, p3, p4, p5, p6, p7, p8, p9);
@@ -14994,10 +15003,10 @@ namespace RDR2.Native
 		public static bool IS_POINT_IN_VOLUME(int volume, Vector3 vec) => Function.Call<bool>(0xF256A75210C5C0EB, volume, vec.X, vec.Y, vec.Z);
 		public static Vector3 GET_VOLUME_COORDS(int volume) => Function.Call<Vector3>(0xF70F00013A62F866, volume);
 		public static bool SET_VOLUME_COORDS(int volume, float posX, float posY, float posZ) => Function.Call<bool>(0x541B8576615C33DE, volume, posX, posY, posZ);
-		public static bool SET_VOLUME_COORDS(int volume, Vector3 vec) => Function.Call<bool>(0x541B8576615C33DE, volume, vec.X, vec.Y, vec.Z);
+		public static bool SET_VOLUME_COORDS(int volume, Vector3 pos) => Function.Call<bool>(0x541B8576615C33DE, volume, pos.X, pos.Y, pos.Z);
 		public static Vector3 GET_VOLUME_ROTATION(int volume) => Function.Call<Vector3>(0x18675BC914891122, volume);
 		public static bool SET_VOLUME_ROTATION(int volume, float rotX, float rotY, float rotZ) => Function.Call<bool>(0xA07CF1B21B56F041, volume, rotX, rotY, rotZ);
-		public static bool SET_VOLUME_ROTATION(int volume, Vector3 rotation) => Function.Call<bool>(0xA07CF1B21B56F041, volume, rotation.X, rotation.Y, rotation.Z);
+		public static bool SET_VOLUME_ROTATION(int volume, Vector3 rot) => Function.Call<bool>(0xA07CF1B21B56F041, volume, rot.X, rot.Y, rot.Z);
 		public static Vector3 GET_VOLUME_SCALE(int volume) => Function.Call<Vector3>(0x3E2A25B2416DD67E, volume);
 		public static bool SET_VOLUME_SCALE(int volume, float scaleX, float scaleY, float scaleZ) => Function.Call<bool>(0xA46E98BDC407E23D, volume, scaleX, scaleY, scaleZ);
 		public static bool SET_VOLUME_SCALE(int volume, Vector3 scale) => Function.Call<bool>(0xA46E98BDC407E23D, volume, scale.X, scale.Y, scale.Z);
