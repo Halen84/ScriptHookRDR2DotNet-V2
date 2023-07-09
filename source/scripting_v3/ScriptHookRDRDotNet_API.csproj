@@ -1,66 +1,67 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project>
+    <PropertyGroup>
+      <BaseIntermediateOutputPath>..\..\intermediate\ScriptHookRDRDotNet\</BaseIntermediateOutputPath>
+    </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyName>ScriptHookRDRNetAPI</AssemblyName>
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>..\..\bin\$(Configuration)\$(AssemblyName).xml</DocumentationFile>
-    <PlatformTarget>x64</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageId>ScriptHookRDRDotNet</PackageId>
-    <Authors>Halen84 and contributors</Authors>
-    <Company>Halen84 and contributors</Company>
-    <Product>ScriptHookRDRDotNet</Product>
-    <Description>The .NET scripting API for Red Dead Redemption 2.</Description>
-    <PackageLicenseExpression>Zlib</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Halen84/ScriptHookRDR2DotNet-V2</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Halen84/ScriptHookRDR2DotNet-V2.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageOutputPath>..\..\bin\$(Configuration)NuGet</PackageOutputPath>
-    <LangVersion>8</LangVersion>
-    <PackageReadmeFile></PackageReadmeFile>
-    <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>2.2.0</AssemblyVersion>
-    <FileVersion>2.2.0</FileVersion>
+    <OutputType>Library</OutputType>
     <RootNamespace>RDR2</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1591</NoWarn>
+    <Title>ScriptHookRDRNetAPI</Title>
+    <AssemblyName>ScriptHookRDRNetAPI</AssemblyName>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Platforms>x64</Platforms>
+    <NoWarn>1591</NoWarn>
     <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <DocumentationFile>..\..\bin\Release\ScriptHookRDRNetAPI.xml</DocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;1591</NoWarn>
-    <DebugType>none</DebugType>
+  <PropertyGroup>
+    <Version>2.2.0.0</Version>
+    <FileVersion>2.2.0.0</FileVersion>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <Authors>Halen84 &amp; Salty &amp; crosire &amp; kagikn &amp; contributors</Authors>
+    <Company></Company>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Halen84/ScriptHookRDR2DotNet-V2</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Halen84/ScriptHookRDR2DotNet-V2/releases</PackageReleaseNotes>
+    <Description>The developer SDK for ScriptHookRDRDotNet scripts for Red Dead Redemption 2.</Description>
+    <Copyright>Copyright © 2020 Salty &amp; Halen84 | Copyright © 2015 crosire &amp; kagikn</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DebugType>none</DebugType>
-    <NoWarn>1701;1702;1591</NoWarn>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>none</DebugType>
-    <NoWarn>1701;1702;1591</NoWarn>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
   </PropertyGroup>
-
   <ItemGroup>
-    <Reference Include="ScriptHookRDRDotNet">
-      <HintPath>..\..\bin\$(Configuration)\ScriptHookRDRDotNet.dll</HintPath>
-    </Reference>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ScriptHookRDRDotNet.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y /d &quot;$(TargetPath)&quot; &quot;D:\Games\Red Dead Redemption 2&quot;" />
-  </Target>
-
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

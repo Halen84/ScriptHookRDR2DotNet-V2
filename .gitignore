@@ -3,6 +3,7 @@
 
 # Exclude Generated Folders
 obj/
+intermediate/
 sdk/
 [Dd]ebug/
 [Rr]elease/
