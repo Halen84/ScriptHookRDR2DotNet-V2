@@ -4,9 +4,19 @@ namespace RDR2
 {
 	public abstract class PedCoreAttribute
 	{
+		/// <summary>
+		/// The <see cref="eAttributeCore"/> of this <see cref="PedCoreAttribute"/>.
+		/// </summary>
 		public abstract eAttributeCore CoreType { get; }
-
+		/// <summary>
+		/// The <see cref="RDR2.Ped"/> to modify the <see cref="PedCoreAttribute"/> of.
+		/// </summary>
 		protected Ped Ped = null;
+
+		public PedCoreAttribute(Ped ped)
+		{
+			this.Ped = ped;
+		}
 
 		public int Value
 		{
@@ -32,20 +42,20 @@ namespace RDR2
 
 	public class HealthCore : PedCoreAttribute
 	{
-		internal HealthCore(Ped ped) { base.Ped = ped; }
-		public override eAttributeCore CoreType { get => eAttributeCore.Health; }
+		internal HealthCore(Ped ped) : base(ped) { }
+		public override eAttributeCore CoreType => eAttributeCore.Health;
 	}
 
 	public class StaminaCore : PedCoreAttribute
 	{
-		internal StaminaCore(Ped ped) { base.Ped = ped; }
-		public override eAttributeCore CoreType { get => eAttributeCore.Stamina; }
+		internal StaminaCore(Ped ped) : base(ped) { }
+		public override eAttributeCore CoreType => eAttributeCore.Stamina;
 	}
 
 	public class DeadEyeCore : PedCoreAttribute
 	{
-		internal DeadEyeCore(Ped ped) { base.Ped = ped; }
-		public override eAttributeCore CoreType { get => eAttributeCore.DeadEye; }
+		internal DeadEyeCore(Ped ped) : base(ped) { }
+		public override eAttributeCore CoreType => eAttributeCore.DeadEye;
 	}
 
 	public class PedCoreAttribs

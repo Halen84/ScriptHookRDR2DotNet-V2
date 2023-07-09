@@ -4,9 +4,19 @@ namespace RDR2
 {
 	public abstract class PedAttribute
 	{
+		/// <summary>
+		/// The <see cref="ePedAttribute"/> of this <see cref="PedAttribute"/>.
+		/// </summary>
 		public abstract ePedAttribute AttributeType { get; }
-
+		/// <summary>
+		/// The <see cref="RDR2.Ped"/> to modify the <see cref="PedAttribute"/> of.
+		/// </summary>
 		protected Ped Ped = null;
+
+		public PedAttribute(Ped ped)
+		{
+			this.Ped = ped;
+		}
 
 		public int Rank
 		{
@@ -67,139 +77,139 @@ namespace RDR2
 
 	public class HealthAttribute : PedAttribute
 	{
-		internal HealthAttribute(Ped ped) { base.Ped = ped; }
+		internal HealthAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Health;
 	}
 
 	public class StaminaAttribute : PedAttribute
 	{
-		internal StaminaAttribute(Ped ped) { base.Ped = ped; }
+		internal StaminaAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Stamina;
 	}
 
 	public class DeadEyeAttribute : PedAttribute
 	{
-		internal DeadEyeAttribute(Ped ped) { base.Ped = ped; }
+		internal DeadEyeAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.DeadEye;
 	}
 
 	public class CourageAttribute : PedAttribute
 	{
-		internal CourageAttribute(Ped ped) { base.Ped = ped; }
+		internal CourageAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Courage;
 	}
 
 	public class AgilityAttribute : PedAttribute
 	{
-		internal AgilityAttribute(Ped ped) { base.Ped = ped; }
+		internal AgilityAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Agility;
 	}
 
 	public class SpeedAttribute : PedAttribute
 	{
-		internal SpeedAttribute(Ped ped) { base.Ped = ped; }
+		internal SpeedAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Speed;
 	}
 
 	public class AccelerationAttribute : PedAttribute
 	{
-		internal AccelerationAttribute(Ped ped) { base.Ped = ped; }
+		internal AccelerationAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Acceleration;
 	}
 
 	public class BondingAttribute : PedAttribute
 	{
-		internal BondingAttribute(Ped ped) { base.Ped = ped; }
+		internal BondingAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Bonding;
 	}
 
 	public class HungerAttribute : PedAttribute
 	{
-		internal HungerAttribute(Ped ped) { base.Ped = ped; }
+		internal HungerAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Hunger;
 	}
 
 	public class FatiguedAttribute : PedAttribute
 	{
-		internal FatiguedAttribute(Ped ped) { base.Ped = ped; }
+		internal FatiguedAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Fatigued;
 	}
 
 	public class InebriatedAttribute : PedAttribute
 	{
-		internal InebriatedAttribute(Ped ped) { base.Ped = ped; }
+		internal InebriatedAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Inebriated;
 	}
 
 	public class PoisonedAttribute : PedAttribute
 	{
-		internal PoisonedAttribute(Ped ped) { base.Ped = ped; }
+		internal PoisonedAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Poisoned;
 	}
 
 	public class BodyHeatAttribute : PedAttribute
 	{
-		internal BodyHeatAttribute(Ped ped) { base.Ped = ped; }
+		internal BodyHeatAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.BodyHeat;
 	}
 
 	public class BodyWeightAttribute : PedAttribute
 	{
-		internal BodyWeightAttribute(Ped ped) { base.Ped = ped; }
+		internal BodyWeightAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.BodyWeight;
 	}
 
 	public class OverfedAttribute : PedAttribute
 	{
-		internal OverfedAttribute(Ped ped) { base.Ped = ped; }
+		internal OverfedAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Overfed;
 	}
 
 	public class SicknessAttribute : PedAttribute
 	{
-		internal SicknessAttribute(Ped ped) { base.Ped = ped; }
+		internal SicknessAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Sickness;
 	}
 
 	public class DirtinessAttribute : PedAttribute
 	{
-		internal DirtinessAttribute(Ped ped) { base.Ped = ped; }
+		internal DirtinessAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Dirtiness;
 	}
 
 	public class DirtinessHatAttribute : PedAttribute
 	{
-		internal DirtinessHatAttribute(Ped ped) { base.Ped = ped; }
+		internal DirtinessHatAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.DirtinessHat;
 	}
 
 	public class StrengthAttribute : PedAttribute
 	{
-		internal StrengthAttribute(Ped ped) { base.Ped = ped; }
+		internal StrengthAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Strength;
 	}
 
 	public class GritAttribute : PedAttribute
 	{
-		internal GritAttribute(Ped ped) { base.Ped = ped; }
+		internal GritAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Grit;
 	}
 
 	public class InstinctAttribute : PedAttribute
 	{
-		internal InstinctAttribute(Ped ped) { base.Ped = ped; }
+		internal InstinctAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Instinct;
 	}
 
 	public class UnrulinessAttribute : PedAttribute
 	{
-		internal UnrulinessAttribute(Ped ped) { base.Ped = ped; }
+		internal UnrulinessAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.Unruliness;
 	}
 
 	public class DirtinessSkinAttribute : PedAttribute
 	{
-		internal DirtinessSkinAttribute(Ped ped) { base.Ped = ped; }
+		internal DirtinessSkinAttribute(Ped ped) : base(ped) { }
 		public override ePedAttribute AttributeType => ePedAttribute.DirtinessSkin;
 	}
 
