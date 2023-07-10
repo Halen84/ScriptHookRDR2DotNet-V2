@@ -261,14 +261,7 @@ namespace RDR2.Native
 		{
 			unsafe
 			{
-				if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2))
-				{
-					return Function.ObjectFromNative<T>((ulong*)data);
-				}
-				else
-				{
-					return (T)Function.ObjectFromNative(typeof(T), (ulong*)data);
-				}
+				return Function.ReturnValueFromResultAddress<T>((ulong*)data);
 			}
 		}
 	}
