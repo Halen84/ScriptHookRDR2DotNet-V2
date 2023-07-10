@@ -1043,6 +1043,10 @@ namespace RDR2DN
 				compilerOptions.ReferencedAssemblies.Add("ScriptHookRDRNetAPI.dll");
 				compilerOptions.ReferencedAssemblies.Add(typeof(ScriptDomain).Assembly.Location);
 
+				// With this parameter, you can use natives that require accessible addresses without having to use
+				// members of the Marshall class
+				compilerOptions.CompilerOptions += " /unsafe";
+
 				foreach (Script script in ScriptDomain.CurrentDomain.RunningScripts.Where(x => x.IsRunning))
 				{
 					if (System.IO.File.Exists(script.FileName) && System.IO.Path.GetExtension(script.FileName) == ".dll")
