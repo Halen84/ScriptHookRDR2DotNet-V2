@@ -23,7 +23,10 @@ namespace BasicSetupExample
 			// OnKeyUp() will be called everytime a key is released
 			KeyUp += OnKeyUp;
 
-			// Set how often this script should run each frame (tick)
+			// OnAbort() will be called when this script thread gets aborted
+			Aborted += OnAbort;
+
+			// Sets the interval between each tick or "frame". 0 means this script will run every frame
 			Interval = 0;
 		}
 
@@ -40,6 +43,44 @@ namespace BasicSetupExample
 				// Do Stuff (Keyboard AND Controller)
 
 				RDR2.UI.Screen.PrintSubtitle("~COLOR_OBJECTIVE~Reload~s~ was pressed.");
+			}
+
+			{
+				//
+				// There are 2 ways to call natives.
+				// Function.Call(hash, args...) (old)  and  [Namespace].[Native Name] (new)
+				// Like so:
+				//
+
+				// Note: There is an implicit conversion when passing "INativeValue" or "PoolObject" classes to natives.
+				// At compile time, this call is converted to "player.Handle" instead.
+				PLAYER.SET_PLAYER_INVINCIBLE(player, true); // New way of calling natives (recommended)
+				Function.Call(0xFEBEEBC9CBDF4B12, true); // Old way of calling natives. 0xFEBEEBC9CBDF4B12 is the hash of SET_PLAYER_INVINCIBLE
+
+				bool isPlayerInvincible_1 = PLAYER.GET_PLAYER_INVINCIBLE(player);
+				bool isPlayerInvincible_2 = Function.Call<bool>(0x0CBBCB2CCFA7DC4E); // 0x0CBBCB2CCFA7DC4E is the hash of GET_PLAYER_INVINCIBLE
+			}
+
+			{
+				//
+				// Calling natives that have pointers:
+				//
+
+				// New way
+				unsafe
+				{
+					Vector3 min = Vector3.Zero;
+					Vector3 max = Vector3.Zero;
+					ENTITY._GET_ENTITY_WORLD_POSITION_OF_DIMENSIONS(player.Ped, &min, &max);
+				}
+
+				// Old way
+				OutputArgument out1 = new OutputArgument();
+				OutputArgument out2 = new OutputArgument();
+				Function.Call(0xF3FDA9A617A15145, player.Ped, out1, out2); // 0xF3FDA9A617A15145 is the hash of _GET_ENTITY_WORLD_POSITION_OF_DIMENSIONS
+				Vector3 _min = out1.GetResult<Vector3>();
+				Vector3 _max = out2.GetResult<Vector3>();
+
 			}
 		}
 
@@ -59,6 +100,11 @@ namespace BasicSetupExample
 			{
 				// Do Stuff
 			}
+		}
+
+		private void OnAbort(object sender, EventArgs e)
+		{
+			// Do work when this script thread has been aborted
 		}
 	}
 }
