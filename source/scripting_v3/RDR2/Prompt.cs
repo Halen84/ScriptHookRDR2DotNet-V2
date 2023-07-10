@@ -245,6 +245,8 @@ namespace RDR2.UI
 		{
 			return Handle.GetHashCode();
 		}
+
+		public static implicit operator int(Prompt prompt) => prompt.Handle;
 	}
 
 	public enum eUseContextMode : int
