@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace RDR2.Native
@@ -316,20 +317,69 @@ namespace RDR2.Native
 			return args;
 		}
 
+		/// <summary>
+		/// Calls the specified native script function and returns its value.
+		/// </summary>
+		/// <param name="hash">The hashed name of the script function.</param>
+		/// <param name="arguments">The input or output arguments to pass to the native script function.</param>
+		/// <returns>The return value of the native.</returns>
 		public static unsafe T Call<T>(ulong hash, params InputArgument[] arguments)
 		{
 			ulong[] args = FillArgsArray(arguments);
+			ulong* result = RDR2DN.NativeFunc.Invoke(hash, args);
+			return ReturnValueFromNativeIfNotNull<T>(result);
+		}
 
-			var result = RDR2DN.NativeFunc.Invoke(hash, args);
+		/// <summary>
+		/// Calls the specified native script function that doesn't have any arguments and returns its value.
+		/// </summary>
+		/// <param name="hash">The hashed name of the script function.</param>
+		/// <returns>The return value of the native.</returns>
+		public static unsafe T Call<T>(ulong hash)
+		{
+			ulong* result = RDR2DN.NativeFunc.Invoke(hash, Array.Empty<ulong>());
+			return ReturnValueFromNativeIfNotNull<T>(result);
+		}
 
+		/// <summary>
+		/// Calls the specified native script function.
+		/// </summary>
+		/// <param name="hash">The hashed name of the script function.</param>
+		/// <param name="arguments">The input or output arguments to pass to the native script function.</param>
+		/// <returns>Nothing, void call</returns>
+		public static unsafe void Call(ulong hash, params InputArgument[] arguments)
+		{
+			ulong[] args = FillArgsArray(arguments);
+			RDR2DN.NativeFunc.Invoke(hash, args);
+		}
+
+		/// <summary>
+		/// Calls the specified native script function that doesn't have any arguments.
+		/// </summary>
+		/// <param name="hash">The hashed name of the script function.</param>
+		/// <returns>Nothing, void call</returns>
+		public static unsafe void Call(ulong hash)
+		{
+			RDR2DN.NativeFunc.Invoke(hash, Array.Empty<ulong>());
+		}
+
+		static unsafe T ReturnValueFromNativeIfNotNull<T>(ulong* result)
+		{
 			// The result will be null when this method is called from a thread other than the main thread
 			if (result == null)
 			{
-				throw new InvalidOperationException("Native.Function.Call can only be called from the main thread.");
+				ThrowInvalidOperationExceptionForInvalidNativeCall();
 			}
 
-			// Get native return value
-			if (typeof(T).IsEnum || typeof(T).IsPrimitive || typeof(T) == typeof(Vector3) || typeof(T) == typeof(Vector2))
+			return ReturnValueFromResultAddress<T>(result);
+		}
+		// have to create this method to let JIT inline ReturnValueFromNativeIfNotNull
+		static void ThrowInvalidOperationExceptionForInvalidNativeCall() => throw new InvalidOperationException("Native.Function.Call can only be called from the main thread.");
+
+		internal static unsafe T ReturnValueFromResultAddress<T>(ulong* result)
+		{
+			// The Entity class is abstract and can't be instantiated with our InstanceCreator class as expected
+			if (IsKnownClassTypeAssignableFromINativeValueAndNotPoolObject(typeof(T)) || typeof(T).IsValueType || typeof(T).IsEnum || (typeof(T) != typeof(Entity) && typeof(T).IsSubclassOf(typeof(PoolObject))))
 			{
 				return ObjectFromNative<T>(result);
 			}
@@ -339,10 +389,10 @@ namespace RDR2.Native
 			}
 		}
 
-		public static unsafe void Call(ulong hash, params InputArgument[] arguments)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsKnownClassTypeAssignableFromINativeValueAndNotPoolObject(Type type)
 		{
-			ulong[] args = FillArgsArray(arguments);
-			RDR2DN.NativeFunc.Invoke(hash, args);
+			return type == typeof(Player);
 		}
 
 		internal static unsafe ulong ObjectToNative(object value)
