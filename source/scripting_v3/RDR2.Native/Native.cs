@@ -238,6 +238,9 @@ namespace RDR2.Native
 			}
 		}
 
+		/// <summary>
+		/// Frees the unmanaged resources associated with this <see cref="OutputArgument"/>.
+		/// </summary>
 		~OutputArgument()
 		{
 			Dispose(false);
@@ -257,6 +260,9 @@ namespace RDR2.Native
 			}
 		}
 
+		/// <summary>
+		/// Gets the value of data stored in this <see cref="OutputArgument"/>.
+		/// </summary>
 		public T GetResult<T>()
 		{
 			unsafe
@@ -269,6 +275,11 @@ namespace RDR2.Native
 
 	public static class Function
 	{
+		/// <summary>
+		/// Allocates a <see langword="ulong[]"/> array that contains all <see cref="InputArgument"/>'s passed to a native, including variadic natives.
+		/// </summary>
+		/// <param name="arguments">Array of <see cref="InputArgument"/>'s</param>
+		/// <returns>An <see langword="ulong[]"/> array of all <see cref="InputArgument"/>'s passed</returns>
 		internal static ulong[] FillArgsArray(InputArgument[] arguments)
 		{
 			// The total number of args passed to the native
