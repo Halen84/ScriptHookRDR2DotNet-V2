@@ -45,6 +45,8 @@ namespace BasicSetupExample
 				RDR2.UI.Screen.PrintSubtitle("~COLOR_OBJECTIVE~Reload~s~ was pressed.");
 			}
 
+			// Note: Remove this if statement for the below code to run
+			if (false)
 			{
 				//
 				// There are 2 ways to call natives.
@@ -61,6 +63,8 @@ namespace BasicSetupExample
 				bool isPlayerInvincible_2 = Function.Call<bool>(0x0CBBCB2CCFA7DC4E); // 0x0CBBCB2CCFA7DC4E is the hash of GET_PLAYER_INVINCIBLE
 			}
 
+			// Note: Remove this if statement for the below code to run
+			if (false)
 			{
 				//
 				// Calling natives that have pointers:
