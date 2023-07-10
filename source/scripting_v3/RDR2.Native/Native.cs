@@ -282,11 +282,12 @@ namespace RDR2.Native
 			int argCount = arguments.Length;
 			// The number of var args passed to the native
 			int variadicArgsCount = 0;
+			int lastArgIndex = arguments.Length - 1;
 
 			if (argCount > 0)
 			{
 				// Templated natives have their var args param as the last one
-				variadicArgsCount = arguments[arguments.Length - 1].variadicData.Count;
+				variadicArgsCount = arguments[lastArgIndex].variadicData.Count;
 				// Check if this is a templated native, and get number of var args passed to it
 				if (variadicArgsCount > 0)
 				{
@@ -298,19 +299,19 @@ namespace RDR2.Native
 
 			ulong[] args = new ulong[argCount];
 
-			// Add InputArgument.Data
-			int len = (variadicArgsCount > 0 ? (arguments.Length - 1) : arguments.Length);
+			// Add InputArgument.Data to the array
+			int len = (variadicArgsCount > 0 ? (lastArgIndex) : arguments.Length);
 			for (int i = 0; i < len; i++)
 			{
 				args[i] = arguments[i].data;
 			}
 
-			// Add InputArgument.variadicData
+			// Add InputArgument.variadicData to the array
 			if (variadicArgsCount > 0)
 			{
 				for (int i = 0; i < variadicArgsCount; i++)
 				{
-					args[i + (args.Length - variadicArgsCount)] = arguments[arguments.Length - 1].variadicData[i];
+					args[i + (argCount - variadicArgsCount)] = arguments[lastArgIndex].variadicData[i];
 				}
 			}
 
@@ -395,6 +396,11 @@ namespace RDR2.Native
 			return type == typeof(Player);
 		}
 
+		/// <summary>
+		/// Converts a managed object to a native value.
+		/// </summary>
+		/// <param name="value">The object to convert.</param>
+		/// <returns>A native value representing the input <paramref name="value"/>.</returns>
 		internal static unsafe ulong ObjectToNative(object value)
 		{
 			if (value is null)
@@ -431,6 +437,7 @@ namespace RDR2.Native
 			if (value is string valueString)
 			{
 				// A C# null/empty string is different from a C++ null/empty string, which is 0.
+				// Doing this prevents a crash when calling some natives.
 				if (string.IsNullOrEmpty(valueString))
 				{
 					return 0;
@@ -452,93 +459,81 @@ namespace RDR2.Native
 			throw new InvalidCastException(string.Concat("Unable to cast object of type '", value.GetType(), "' to native value"));
 		}
 
+		/// <summary>
+		/// Converts a native value to a managed object of a value type.
+		/// </summary>
+		/// <typeparam name="T">The return type. The type should be a value type.</typeparam>
+		/// <param name="value">The native value to convert.</param>
+		/// <returns>A managed object representing the input <paramref name="value"/>.</returns>
 		internal static unsafe T ObjectFromNative<T>(ulong* value)
 		{
-			if (typeof(T).IsEnum)
-			{
-				return NativeHelper<T>.Convert(*value);
-			}
-
 			if (typeof(T) == typeof(bool))
 			{
 				// Return proper boolean values (true if non-zero and false if zero)
 				bool valueBool = *value != 0;
 				return NativeHelper<T>.PtrToStructure(new IntPtr(&valueBool));
 			}
+			if (typeof(T) == typeof(IntPtr)) // Has to be before 'IsPrimitive' check
+			{
+				return InstanceCreator<long, T>.Create((long)(*value));
+			}
 
-			if (typeof(T) == typeof(int) || typeof(T) == typeof(uint) || typeof(T) == typeof(long) || typeof(T) == typeof(ulong) || typeof(T) == typeof(float))
+			if (typeof(T) == typeof(Vector2))
+			{
+				float* data = (float*)value;
+				return InstanceCreator<float, float, T>.Create(data[0], data[2]);
+
+			}
+			if (typeof(T) == typeof(Vector3))
+			{
+				float* data = (float*)value;
+				return InstanceCreator<float, float, float, T>.Create(data[0], data[2], data[4]);
+			}
+
+			if (typeof(T).IsPrimitive)
 			{
 				return NativeHelper<T>.PtrToStructure(new IntPtr(value));
 			}
-
-			if (typeof(T) == typeof(double))
+			if (typeof(T).IsEnum)
 			{
-				return NativeHelper<T>.Convert(NativeHelper<T>.PtrToStructure(new IntPtr(value)));
+				return NativeHelper<T>.Convert(*value);
 			}
 
-			if (typeof(T) == typeof(Vector2) || typeof(T) == typeof(Vector3))
+			if (IsKnownClassTypeAssignableFromINativeValueAndNotPoolObject(typeof(T)) || (typeof(T).IsSubclassOf(typeof(PoolObject)) && !typeof(T).IsAbstract))
 			{
-				return NativeHelper<T>.Convert(*(NativeVector3*)value);
-			}
-
-			if (typeof(T) == typeof(IntPtr))
-			{
-				return NativeHelper<T>.PtrToStructure(new IntPtr(value));
+				return InstanceCreator<int, T>.Create((int)*value);
 			}
 
 			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", typeof(T), "'"));
 		}
 
+		/// <summary>
+		/// Converts a native value to a managed object of a reference type.
+		/// </summary>
+		/// <param name="type">The type to convert to. The type should be a reference type.</param>
+		/// <param name="value">The native value to convert.</param>
+		/// <returns>A managed object representing the input <paramref name="value"/>.</returns>
 		internal static unsafe object ObjectFromNative(Type type, ulong* value)
 		{
 			if (type == typeof(string))
 			{
-				return RDR2DN.NativeMemory.PtrToStringUTF8(new IntPtr((byte*)*value));
+				return RDR2DN.NativeMemory.PtrToStringUTF8(new IntPtr((char*)*value));
 			}
 
-			// Scripting types
-			if (type == typeof(AnimScene))
-			{
-				return new AnimScene(*(int*)value);
-			}
-			if (type == typeof(Blip))
-			{
-				return new Blip(*(int*)value);
-			}
-			if (type == typeof(Camera))
-			{
-				return new Camera(*(int*)value);
-			}
 			if (type == typeof(Entity))
 			{
 				return Entity.FromHandle(*(int*)value);
 			}
-			if (type == typeof(Ped))
+			if (typeof(INativeValue).IsAssignableFrom(type))
 			{
-				return new Ped(*(int*)value);
-			}
-			if (type == typeof(Player))
-			{
-				return new Player(*(int*)value);
-			}
-			if (type == typeof(Prop))
-			{
-				return new Prop(*(int*)value);
-			}
-			if (type == typeof(Rope))
-			{
-				return new Rope(*(int*)value);
-			}
-			if (type == typeof(Vehicle))
-			{
-				return new Vehicle(*(int*)value);
-			}
-			if (type == typeof(Volume))
-			{
-				return new Volume(*(int*)value);
+				// Edge case. Warning: Requires classes implementing 'INativeValue' to repeat all constructor work in the setter of 'NativeValue'
+				var result = (INativeValue)(System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type));
+				result.NativeValue = *value;
+
+				return result;
 			}
 
-			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", type, "'"));
+			throw new InvalidCastException(string.Concat("Unable to cast native value to object of type '", type.FullName, "'"));
 		}
 	}
 }
