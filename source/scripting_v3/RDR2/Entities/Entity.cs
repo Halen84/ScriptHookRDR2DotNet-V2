@@ -732,56 +732,86 @@ namespace RDR2
 		#endregion
 
 		/// <summary>
-		/// Instantly delete this <see cref="Entity"/> from the game world.
+		/// <para>
+		/// Destroys this <see cref="Entity"/> and sets <see cref="PoolObject.Handle"/> to 0.
+		/// If this <see cref="Entity"/> is <see cref="Vehicle"/>, the occupants will not be deleted but their tasks will be cleared.
+		/// </para>
+		/// <para>
+		/// If you need to remove this <see cref="Entity"/> from collections that use <see cref="object.Equals(object)"/> for equality comparison (e.g. <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/>),
+		/// remove this <see cref="Entity"/> element from these collections before calling this method.
+		/// </para>
 		/// </summary>
 		public override void Delete()
 		{
 			int handle = Handle;
 
-			// Request ownership of entity if we do not have it
+			// We need to have thread ownership of this entity to be able to delete it
 			if (!IsOwnedByThisScript)
 			{
 				this.RequestOwnership();
 			}
 
-			unsafe { ENTITY.DELETE_ENTITY(&handle); }
+			unsafe
+			{
+				ENTITY.DELETE_ENTITY(&handle);
+			}
+
+			// This will be zero now
+			Handle = handle;
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="Entity"/> exists in the game world.
+		/// Determines if this <see cref="Entity"/> exists.
+		/// You should ensure <see cref="Entity"/>'s still exist before manipulating them or getting some values for them on every tick, since some native functions may crash the game if invalid entity handles are passed.
 		/// </summary>
+		/// <returns><see langword="true" /> if this <see cref="Entity"/> exists; otherwise, <see langword="false" /></returns>.
+		/// <seealso cref="IsDead"/>
 		public override bool Exists()
 		{
 			return ENTITY.DOES_ENTITY_EXIST(Handle);
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether an <see cref="Entity"/> is not <see langword="null"/>, and exists in the game world.
+		/// Determines if an <see cref="object"/> refers to the same entity as this <see cref="Entity"/>.
 		/// </summary>
-		/// <returns><see langword="true"/> if <see cref="Entity"/> is not <see langword="null"/> and exists in the game world; otherwise, <see langword="false"/>.</returns>
-		public static bool Exists(Entity entity)
-		{
-			return entity != null && entity.Exists();
-		}
-
-		public bool Equals(Entity obj)
-		{
-			return !(obj is null) && Handle == obj.Handle;
-		}
+		/// <param name="obj">The <see cref="object"/> to check.</param>
+		/// <returns><see langword="true" /> if the <paramref name="obj"/> is the same entity as this <see cref="Entity"/>; otherwise, <see langword="false" />.</returns>
 		public override bool Equals(object obj)
 		{
-			return !(obj is null) && obj.GetType() == GetType() && Equals((Entity)obj);
+			if (obj is Entity entity)
+			{
+				return Handle == entity.Handle;
+			}
+
+			return false;
 		}
 
+		/// <summary>
+		/// Determines if two <see cref="Entity"/>'s refer to the same entity.
+		/// </summary>
+		/// <param name="left">The left <see cref="Entity"/>.</param>
+		/// <param name="right">The right <see cref="Entity"/>.</param>
+		/// <returns><see langword="true" /> if <paramref name="left"/> is the same entity as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
 		public static bool operator ==(Entity left, Entity right)
 		{
-			return left is null ? right is null : left.Equals(right);
+			return left?.Equals(right) ?? right is null;
 		}
+
+		/// <summary>
+		/// Determines if two <see cref="Entity"/>'s don't refer to the same entity.
+		/// </summary>
+		/// <param name="left">The left <see cref="Entity"/>.</param>
+		/// <param name="right">The right <see cref="Entity"/>.</param>
+		/// <returns><see langword="true" /> if <paramref name="left"/> is not the same entity as <paramref name="right"/>; otherwise, <see langword="false" />.</returns>
 		public static bool operator !=(Entity left, Entity right)
 		{
 			return !(left == right);
 		}
 
+		/// <summary>
+		/// Returns a new instance of <see cref="Entity"/> via its handle
+		/// </summary>
+		/// <param name="handle">The handle of the entity</param>
 		public static implicit operator Entity(int handle) => Entity.FromHandle(handle);
 
 		public override int GetHashCode()
