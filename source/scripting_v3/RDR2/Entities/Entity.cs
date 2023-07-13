@@ -732,6 +732,34 @@ namespace RDR2
 		#endregion
 
 		/// <summary>
+		/// Marks this <see cref="Entity"/> as a mission entity.
+		/// </summary>
+		/// <param name="grabFromOtherScript">
+		/// If <see langword="true"/>, this <see cref="Entity"/> will be grabbed off any script that currently owns it even if the current owner script is not one of RDR2DN scripts.
+		/// If <see langword="false"/>, this method won't do anything if the script that owns this <see cref="Entity"/> is not one of RDR2DN scripts (e.g. a ysc script).
+		/// </param>
+		/// <remarks>This method is similar to the setter of <see cref="IsMissionEntity"/>, but allows you to control the last parameter.</remarks>
+		public void MarkAsMissionEntity(bool grabFromOtherScript = false)
+		{
+			// The 2nd parameter is only for multiplayer and we aren't interested in that mode (set to true in most SP scripts)
+			ENTITY.SET_ENTITY_AS_MISSION_ENTITY(Handle, true, grabFromOtherScript);
+		}
+
+		/// <summary>
+		/// Marks this <see cref="Entity"/> as no longer needed to keep and lets the game delete it when its too far away.
+		/// You can still manipulate this <see cref="Entity"/> as long as the <see cref="Entity"/> exists.
+		/// </summary>
+		public void MarkAsNoLongerNeeded()
+		{
+			int handle = Handle;
+			unsafe
+			{
+				ENTITY.SET_ENTITY_AS_NO_LONGER_NEEDED(&handle);
+			}
+			// Do not set "Handle" property to the value of "handle" again, since the native will have set it to zero, but we still may want to use it otherwise
+		}
+
+		/// <summary>
 		/// <para>
 		/// Destroys this <see cref="Entity"/> and sets <see cref="PoolObject.Handle"/> to 0.
 		/// If this <see cref="Entity"/> is <see cref="Vehicle"/>, the occupants will not be deleted but their tasks will be cleared.
